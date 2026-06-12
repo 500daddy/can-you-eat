@@ -1,0 +1,1649 @@
+{
+  "source": "assets/sprites/source/sprite_sheet_original.png",
+  "source_size": [
+    1536,
+    1024
+  ],
+  "generated_count": 126,
+  "assets": [
+    {
+      "name": "mascot_baby_front",
+      "folder": "mascot",
+      "path": "assets/sprites/mascot/mascot_baby_front.png",
+      "bbox": [
+        27,
+        62,
+        91,
+        172
+      ],
+      "target_size": 160,
+      "kind": "sprite"
+    },
+    {
+      "name": "mascot_baby_side",
+      "folder": "mascot",
+      "path": "assets/sprites/mascot/mascot_baby_side.png",
+      "bbox": [
+        104,
+        62,
+        164,
+        172
+      ],
+      "target_size": 160,
+      "kind": "sprite"
+    },
+    {
+      "name": "mascot_baby_back",
+      "folder": "mascot",
+      "path": "assets/sprites/mascot/mascot_baby_back.png",
+      "bbox": [
+        176,
+        62,
+        239,
+        172
+      ],
+      "target_size": 160,
+      "kind": "sprite"
+    },
+    {
+      "name": "mascot_baby_basket",
+      "folder": "mascot",
+      "path": "assets/sprites/mascot/mascot_baby_basket.png",
+      "bbox": [
+        252,
+        62,
+        324,
+        172
+      ],
+      "target_size": 160,
+      "kind": "sprite"
+    },
+    {
+      "name": "mascot_baby_wave",
+      "folder": "mascot",
+      "path": "assets/sprites/mascot/mascot_baby_wave.png",
+      "bbox": [
+        340,
+        62,
+        408,
+        172
+      ],
+      "target_size": 160,
+      "kind": "sprite"
+    },
+    {
+      "name": "mascot_baby_happy",
+      "folder": "mascot",
+      "path": "assets/sprites/mascot/mascot_baby_happy.png",
+      "bbox": [
+        94,
+        198,
+        147,
+        262
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "mascot_baby_sad",
+      "folder": "mascot",
+      "path": "assets/sprites/mascot/mascot_baby_sad.png",
+      "bbox": [
+        356,
+        198,
+        409,
+        263
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "mascot_chick_question",
+      "folder": "mascot",
+      "path": "assets/sprites/mascot/mascot_chick_question.png",
+      "bbox": [
+        20,
+        300,
+        90,
+        386
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "mascot_chick_love",
+      "folder": "mascot",
+      "path": "assets/sprites/mascot/mascot_chick_love.png",
+      "bbox": [
+        218,
+        300,
+        286,
+        386
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "mascot_chick_sleep",
+      "folder": "mascot",
+      "path": "assets/sprites/mascot/mascot_chick_sleep.png",
+      "bbox": [
+        350,
+        300,
+        420,
+        386
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "empty_fridge",
+      "folder": "mascot",
+      "path": "assets/sprites/mascot/empty_fridge.png",
+      "bbox": [
+        945,
+        665,
+        1115,
+        815
+      ],
+      "target_size": 240,
+      "kind": "sprite"
+    },
+    {
+      "name": "empty_no_food",
+      "folder": "mascot",
+      "path": "assets/sprites/mascot/empty_no_food.png",
+      "bbox": [
+        1168,
+        665,
+        1295,
+        815
+      ],
+      "target_size": 220,
+      "kind": "sprite"
+    },
+    {
+      "name": "empty_not_found",
+      "folder": "mascot",
+      "path": "assets/sprites/mascot/empty_not_found.png",
+      "bbox": [
+        1330,
+        665,
+        1500,
+        815
+      ],
+      "target_size": 240,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_broccoli",
+      "folder": "food",
+      "path": "assets/sprites/food/food_broccoli.png",
+      "bbox": [
+        453,
+        59,
+        506,
+        114
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_carrot",
+      "folder": "food",
+      "path": "assets/sprites/food/food_carrot.png",
+      "bbox": [
+        525,
+        60,
+        573,
+        114
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_pumpkin",
+      "folder": "food",
+      "path": "assets/sprites/food/food_pumpkin.png",
+      "bbox": [
+        593,
+        62,
+        646,
+        111
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_tomato",
+      "folder": "food",
+      "path": "assets/sprites/food/food_tomato.png",
+      "bbox": [
+        665,
+        64,
+        713,
+        111
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_spinach",
+      "folder": "food",
+      "path": "assets/sprites/food/food_spinach.png",
+      "bbox": [
+        732,
+        63,
+        777,
+        114
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_cabbage",
+      "folder": "food",
+      "path": "assets/sprites/food/food_cabbage.png",
+      "bbox": [
+        795,
+        59,
+        843,
+        117
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_potato",
+      "folder": "food",
+      "path": "assets/sprites/food/food_potato.png",
+      "bbox": [
+        866,
+        67,
+        910,
+        110
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_sweet_potato",
+      "folder": "food",
+      "path": "assets/sprites/food/food_sweet_potato.png",
+      "bbox": [
+        932,
+        65,
+        981,
+        111
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_corn",
+      "folder": "food",
+      "path": "assets/sprites/food/food_corn.png",
+      "bbox": [
+        457,
+        135,
+        500,
+        185
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_cucumber",
+      "folder": "food",
+      "path": "assets/sprites/food/food_cucumber.png",
+      "bbox": [
+        523,
+        135,
+        571,
+        184
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_eggplant",
+      "folder": "food",
+      "path": "assets/sprites/food/food_eggplant.png",
+      "bbox": [
+        594,
+        133,
+        643,
+        185
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_green_pepper",
+      "folder": "food",
+      "path": "assets/sprites/food/food_green_pepper.png",
+      "bbox": [
+        666,
+        135,
+        711,
+        184
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_mushroom",
+      "folder": "food",
+      "path": "assets/sprites/food/food_mushroom.png",
+      "bbox": [
+        732,
+        137,
+        777,
+        184
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_onion",
+      "folder": "food",
+      "path": "assets/sprites/food/food_onion.png",
+      "bbox": [
+        800,
+        137,
+        842,
+        182
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_garlic",
+      "folder": "food",
+      "path": "assets/sprites/food/food_garlic.png",
+      "bbox": [
+        867,
+        137,
+        910,
+        181
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_lotus_root",
+      "folder": "food",
+      "path": "assets/sprites/food/food_lotus_root.png",
+      "bbox": [
+        933,
+        140,
+        982,
+        182
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_apple",
+      "folder": "food",
+      "path": "assets/sprites/food/food_apple.png",
+      "bbox": [
+        457,
+        205,
+        503,
+        256
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_banana",
+      "folder": "food",
+      "path": "assets/sprites/food/food_banana.png",
+      "bbox": [
+        523,
+        207,
+        571,
+        254
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_blueberry",
+      "folder": "food",
+      "path": "assets/sprites/food/food_blueberry.png",
+      "bbox": [
+        594,
+        208,
+        640,
+        254
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_strawberry",
+      "folder": "food",
+      "path": "assets/sprites/food/food_strawberry.png",
+      "bbox": [
+        669,
+        210,
+        710,
+        253
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_kiwi",
+      "folder": "food",
+      "path": "assets/sprites/food/food_kiwi.png",
+      "bbox": [
+        733,
+        209,
+        778,
+        254
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_avocado",
+      "folder": "food",
+      "path": "assets/sprites/food/food_avocado.png",
+      "bbox": [
+        801,
+        207,
+        843,
+        257
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_orange",
+      "folder": "food",
+      "path": "assets/sprites/food/food_orange.png",
+      "bbox": [
+        867,
+        209,
+        913,
+        256
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_lemon",
+      "folder": "food",
+      "path": "assets/sprites/food/food_lemon.png",
+      "bbox": [
+        937,
+        212,
+        981,
+        253
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_egg",
+      "folder": "food",
+      "path": "assets/sprites/food/food_egg.png",
+      "bbox": [
+        460,
+        281,
+        497,
+        326
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_chicken",
+      "folder": "food",
+      "path": "assets/sprites/food/food_chicken.png",
+      "bbox": [
+        520,
+        279,
+        571,
+        324
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_beef",
+      "folder": "food",
+      "path": "assets/sprites/food/food_beef.png",
+      "bbox": [
+        593,
+        280,
+        643,
+        326
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_fish",
+      "folder": "food",
+      "path": "assets/sprites/food/food_fish.png",
+      "bbox": [
+        666,
+        283,
+        720,
+        324
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_shrimp",
+      "folder": "food",
+      "path": "assets/sprites/food/food_shrimp.png",
+      "bbox": [
+        736,
+        284,
+        780,
+        325
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_tofu",
+      "folder": "food",
+      "path": "assets/sprites/food/food_tofu.png",
+      "bbox": [
+        804,
+        283,
+        852,
+        326
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_milk",
+      "folder": "food",
+      "path": "assets/sprites/food/food_milk.png",
+      "bbox": [
+        877,
+        275,
+        916,
+        331
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_cheese",
+      "folder": "food",
+      "path": "assets/sprites/food/food_cheese.png",
+      "bbox": [
+        939,
+        281,
+        988,
+        323
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_rice",
+      "folder": "food",
+      "path": "assets/sprites/food/food_rice.png",
+      "bbox": [
+        456,
+        354,
+        504,
+        399
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_bread",
+      "folder": "food",
+      "path": "assets/sprites/food/food_bread.png",
+      "bbox": [
+        526,
+        351,
+        571,
+        397
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_noodle",
+      "folder": "food",
+      "path": "assets/sprites/food/food_noodle.png",
+      "bbox": [
+        593,
+        351,
+        648,
+        399
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_bun",
+      "folder": "food",
+      "path": "assets/sprites/food/food_bun.png",
+      "bbox": [
+        667,
+        354,
+        714,
+        397
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_porridge",
+      "folder": "food",
+      "path": "assets/sprites/food/food_porridge.png",
+      "bbox": [
+        736,
+        358,
+        783,
+        399
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_baby_puree",
+      "folder": "food",
+      "path": "assets/sprites/food/food_baby_puree.png",
+      "bbox": [
+        806,
+        348,
+        855,
+        400
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "food_jar",
+      "folder": "food",
+      "path": "assets/sprites/food/food_jar.png",
+      "bbox": [
+        879,
+        350,
+        913,
+        399
+      ],
+      "target_size": 128,
+      "kind": "sprite"
+    },
+    {
+      "name": "status_baby_ok",
+      "folder": "status",
+      "path": "assets/sprites/status/status_baby_ok.png",
+      "bbox": [
+        1042,
+        57,
+        1190,
+        89
+      ],
+      "target_size": null,
+      "kind": "label"
+    },
+    {
+      "name": "status_baby_can_eat",
+      "folder": "status",
+      "path": "assets/sprites/status/status_baby_can_eat.png",
+      "bbox": [
+        1042,
+        95,
+        1190,
+        128
+      ],
+      "target_size": null,
+      "kind": "label"
+    },
+    {
+      "name": "status_baby_today",
+      "folder": "status",
+      "path": "assets/sprites/status/status_baby_today.png",
+      "bbox": [
+        1042,
+        137,
+        1201,
+        169
+      ],
+      "target_size": null,
+      "kind": "label"
+    },
+    {
+      "name": "status_not_recommended",
+      "folder": "status",
+      "path": "assets/sprites/status/status_not_recommended.png",
+      "bbox": [
+        1042,
+        212,
+        1201,
+        244
+      ],
+      "target_size": null,
+      "kind": "label"
+    },
+    {
+      "name": "status_expired",
+      "folder": "status",
+      "path": "assets/sprites/status/status_expired.png",
+      "bbox": [
+        1042,
+        250,
+        1200,
+        282
+      ],
+      "target_size": null,
+      "kind": "label"
+    },
+    {
+      "name": "status_finished",
+      "folder": "status",
+      "path": "assets/sprites/status/status_finished.png",
+      "bbox": [
+        1042,
+        291,
+        1200,
+        322
+      ],
+      "target_size": null,
+      "kind": "label"
+    },
+    {
+      "name": "status_fridge",
+      "folder": "status",
+      "path": "assets/sprites/status/status_fridge.png",
+      "bbox": [
+        1042,
+        328,
+        1200,
+        360
+      ],
+      "target_size": null,
+      "kind": "label"
+    },
+    {
+      "name": "status_freezer",
+      "folder": "status",
+      "path": "assets/sprites/status/status_freezer.png",
+      "bbox": [
+        1042,
+        364,
+        1200,
+        395
+      ],
+      "target_size": null,
+      "kind": "label"
+    },
+    {
+      "name": "status_room",
+      "folder": "status",
+      "path": "assets/sprites/status/status_room.png",
+      "bbox": [
+        1042,
+        398,
+        1200,
+        430
+      ],
+      "target_size": null,
+      "kind": "label"
+    },
+    {
+      "name": "nav_home_active",
+      "folder": "nav",
+      "path": "assets/sprites/nav/nav_home_active.png",
+      "bbox": [
+        35,
+        478,
+        85,
+        528
+      ],
+      "target_size": 64,
+      "kind": "sprite"
+    },
+    {
+      "name": "nav_food_active",
+      "folder": "nav",
+      "path": "assets/sprites/nav/nav_food_active.png",
+      "bbox": [
+        116,
+        475,
+        174,
+        529
+      ],
+      "target_size": 64,
+      "kind": "sprite"
+    },
+    {
+      "name": "nav_reminder_active",
+      "folder": "nav",
+      "path": "assets/sprites/nav/nav_reminder_active.png",
+      "bbox": [
+        203,
+        475,
+        255,
+        529
+      ],
+      "target_size": 64,
+      "kind": "sprite"
+    },
+    {
+      "name": "nav_mine_active",
+      "folder": "nav",
+      "path": "assets/sprites/nav/nav_mine_active.png",
+      "bbox": [
+        286,
+        475,
+        337,
+        529
+      ],
+      "target_size": 64,
+      "kind": "sprite"
+    },
+    {
+      "name": "nav_home_inactive",
+      "folder": "nav",
+      "path": "assets/sprites/nav/nav_home_inactive.png",
+      "bbox": [
+        35,
+        548,
+        85,
+        598
+      ],
+      "target_size": 64,
+      "kind": "sprite"
+    },
+    {
+      "name": "nav_food_inactive",
+      "folder": "nav",
+      "path": "assets/sprites/nav/nav_food_inactive.png",
+      "bbox": [
+        116,
+        548,
+        174,
+        598
+      ],
+      "target_size": 64,
+      "kind": "sprite"
+    },
+    {
+      "name": "nav_reminder_inactive",
+      "folder": "nav",
+      "path": "assets/sprites/nav/nav_reminder_inactive.png",
+      "bbox": [
+        203,
+        548,
+        255,
+        598
+      ],
+      "target_size": 64,
+      "kind": "sprite"
+    },
+    {
+      "name": "nav_mine_inactive",
+      "folder": "nav",
+      "path": "assets/sprites/nav/nav_mine_inactive.png",
+      "bbox": [
+        286,
+        548,
+        337,
+        598
+      ],
+      "target_size": 64,
+      "kind": "sprite"
+    },
+    {
+      "name": "action_add",
+      "folder": "actions",
+      "path": "assets/sprites/actions/action_add.png",
+      "bbox": [
+        418,
+        487,
+        534,
+        528
+      ],
+      "target_size": null,
+      "kind": "button"
+    },
+    {
+      "name": "action_camera",
+      "folder": "actions",
+      "path": "assets/sprites/actions/action_camera.png",
+      "bbox": [
+        1260,
+        236,
+        1295,
+        267
+      ],
+      "target_size": 64,
+      "kind": "icon"
+    },
+    {
+      "name": "action_camera_button",
+      "folder": "actions",
+      "path": "assets/sprites/actions/action_camera_button.png",
+      "bbox": [
+        550,
+        487,
+        660,
+        527
+      ],
+      "target_size": null,
+      "kind": "button"
+    },
+    {
+      "name": "action_save",
+      "folder": "actions",
+      "path": "assets/sprites/actions/action_save.png",
+      "bbox": [
+        676,
+        487,
+        764,
+        527
+      ],
+      "target_size": null,
+      "kind": "button"
+    },
+    {
+      "name": "action_edit",
+      "folder": "actions",
+      "path": "assets/sprites/actions/action_edit.png",
+      "bbox": [
+        1332,
+        235,
+        1364,
+        268
+      ],
+      "target_size": 64,
+      "kind": "icon"
+    },
+    {
+      "name": "action_edit_button",
+      "folder": "actions",
+      "path": "assets/sprites/actions/action_edit_button.png",
+      "bbox": [
+        781,
+        487,
+        862,
+        527
+      ],
+      "target_size": null,
+      "kind": "button"
+    },
+    {
+      "name": "action_delete",
+      "folder": "actions",
+      "path": "assets/sprites/actions/action_delete.png",
+      "bbox": [
+        1399,
+        235,
+        1430,
+        268
+      ],
+      "target_size": 64,
+      "kind": "icon"
+    },
+    {
+      "name": "action_delete_button",
+      "folder": "actions",
+      "path": "assets/sprites/actions/action_delete_button.png",
+      "bbox": [
+        666,
+        551,
+        768,
+        593
+      ],
+      "target_size": null,
+      "kind": "button"
+    },
+    {
+      "name": "action_confirm",
+      "folder": "actions",
+      "path": "assets/sprites/actions/action_confirm.png",
+      "bbox": [
+        1464,
+        235,
+        1497,
+        268
+      ],
+      "target_size": 64,
+      "kind": "icon"
+    },
+    {
+      "name": "action_cancel",
+      "folder": "actions",
+      "path": "assets/sprites/actions/action_cancel.png",
+      "bbox": [
+        1261,
+        294,
+        1294,
+        327
+      ],
+      "target_size": 64,
+      "kind": "icon"
+    },
+    {
+      "name": "action_cancel_button",
+      "folder": "actions",
+      "path": "assets/sprites/actions/action_cancel_button.png",
+      "bbox": [
+        785,
+        552,
+        861,
+        591
+      ],
+      "target_size": null,
+      "kind": "button"
+    },
+    {
+      "name": "action_search",
+      "folder": "actions",
+      "path": "assets/sprites/actions/action_search.png",
+      "bbox": [
+        1465,
+        178,
+        1498,
+        211
+      ],
+      "target_size": 64,
+      "kind": "icon"
+    },
+    {
+      "name": "action_back",
+      "folder": "actions",
+      "path": "assets/sprites/actions/action_back.png",
+      "bbox": [
+        1470,
+        296,
+        1498,
+        327
+      ],
+      "target_size": 64,
+      "kind": "icon"
+    },
+    {
+      "name": "action_menu",
+      "folder": "actions",
+      "path": "assets/sprites/actions/action_menu.png",
+      "bbox": [
+        1390,
+        355,
+        1438,
+        393
+      ],
+      "target_size": 64,
+      "kind": "icon"
+    },
+    {
+      "name": "action_eaten_button",
+      "folder": "actions",
+      "path": "assets/sprites/actions/action_eaten_button.png",
+      "bbox": [
+        418,
+        551,
+        516,
+        593
+      ],
+      "target_size": null,
+      "kind": "button"
+    },
+    {
+      "name": "action_keep_adult_button",
+      "folder": "actions",
+      "path": "assets/sprites/actions/action_keep_adult_button.png",
+      "bbox": [
+        532,
+        551,
+        650,
+        593
+      ],
+      "target_size": null,
+      "kind": "button"
+    },
+    {
+      "name": "ui_card_plain",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_card_plain.png",
+      "bbox": [
+        918,
+        486,
+        1046,
+        610
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_card_green",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_card_green.png",
+      "bbox": [
+        1068,
+        486,
+        1206,
+        610
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_card_yellow",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_card_yellow.png",
+      "bbox": [
+        1218,
+        482,
+        1364,
+        610
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_card_dashed",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_card_dashed.png",
+      "bbox": [
+        1378,
+        486,
+        1512,
+        610
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_bubble_green",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_bubble_green.png",
+      "bbox": [
+        36,
+        680,
+        155,
+        719
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_bubble_yellow",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_bubble_yellow.png",
+      "bbox": [
+        174,
+        679,
+        296,
+        714
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_bubble_red",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_bubble_red.png",
+      "bbox": [
+        36,
+        725,
+        161,
+        759
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_modal_confirm",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_modal_confirm.png",
+      "bbox": [
+        33,
+        765,
+        267,
+        867
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_bubble_heart",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_bubble_heart.png",
+      "bbox": [
+        286,
+        835,
+        335,
+        887
+      ],
+      "target_size": 96,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_progress_green",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_progress_green.png",
+      "bbox": [
+        379,
+        695,
+        571,
+        708
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_progress_yellow",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_progress_yellow.png",
+      "bbox": [
+        379,
+        747,
+        571,
+        759
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_progress_orange",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_progress_orange.png",
+      "bbox": [
+        379,
+        796,
+        571,
+        809
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_decoration_cloud_white",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_decoration_cloud_white.png",
+      "bbox": [
+        652,
+        681,
+        698,
+        712
+      ],
+      "target_size": 96,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_decoration_cloud_blue",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_decoration_cloud_blue.png",
+      "bbox": [
+        711,
+        681,
+        757,
+        712
+      ],
+      "target_size": 96,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_decoration_cloud_outline",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_decoration_cloud_outline.png",
+      "bbox": [
+        781,
+        695,
+        828,
+        712
+      ],
+      "target_size": 96,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_decoration_sun",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_decoration_sun.png",
+      "bbox": [
+        842,
+        683,
+        872,
+        709
+      ],
+      "target_size": 80,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_decoration_sparkle_yellow",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_decoration_sparkle_yellow.png",
+      "bbox": [
+        654,
+        736,
+        673,
+        756
+      ],
+      "target_size": 64,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_decoration_sparkle_green",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_decoration_sparkle_green.png",
+      "bbox": [
+        690,
+        737,
+        706,
+        754
+      ],
+      "target_size": 64,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_decoration_heat",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_decoration_heat.png",
+      "bbox": [
+        734,
+        737,
+        756,
+        757
+      ],
+      "target_size": 64,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_decoration_heart_small",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_decoration_heart_small.png",
+      "bbox": [
+        826,
+        737,
+        846,
+        756
+      ],
+      "target_size": 64,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_decoration_flower_white",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_decoration_flower_white.png",
+      "bbox": [
+        652,
+        781,
+        674,
+        806
+      ],
+      "target_size": 64,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_decoration_flower_orange",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_decoration_flower_orange.png",
+      "bbox": [
+        689,
+        781,
+        713,
+        802
+      ],
+      "target_size": 64,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_decoration_flower_pink",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_decoration_flower_pink.png",
+      "bbox": [
+        731,
+        782,
+        755,
+        802
+      ],
+      "target_size": 64,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_decoration_heart",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_decoration_heart.png",
+      "bbox": [
+        778,
+        782,
+        805,
+        805
+      ],
+      "target_size": 64,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_decoration_heart_solid",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_decoration_heart_solid.png",
+      "bbox": [
+        819,
+        782,
+        846,
+        805
+      ],
+      "target_size": 64,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_decoration_heart_outline",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_decoration_heart_outline.png",
+      "bbox": [
+        864,
+        785,
+        883,
+        802
+      ],
+      "target_size": 64,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_decoration_fence",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_decoration_fence.png",
+      "bbox": [
+        652,
+        832,
+        750,
+        884
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_decoration_signpost",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_decoration_signpost.png",
+      "bbox": [
+        774,
+        830,
+        810,
+        884
+      ],
+      "target_size": 96,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_sign_board",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_sign_board.png",
+      "bbox": [
+        832,
+        822,
+        886,
+        890
+      ],
+      "target_size": 128,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_divider_vine",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_divider_vine.png",
+      "bbox": [
+        35,
+        977,
+        307,
+        999
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_divider_dashed",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_divider_dashed.png",
+      "bbox": [
+        35,
+        945,
+        307,
+        964
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_divider_green_bar",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_divider_green_bar.png",
+      "bbox": [
+        327,
+        954,
+        558,
+        966
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_divider_yellow_bar",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_divider_yellow_bar.png",
+      "bbox": [
+        329,
+        982,
+        556,
+        998
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_pattern_gingham",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_pattern_gingham.png",
+      "bbox": [
+        572,
+        947,
+        749,
+        989
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_banner_village",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_banner_village.png",
+      "bbox": [
+        767,
+        923,
+        1520,
+        1014
+      ],
+      "target_size": null,
+      "kind": "ui"
+    },
+    {
+      "name": "status_adult_only",
+      "folder": "status",
+      "path": "assets/sprites/status/status_adult_only.png",
+      "bbox": [
+        532,
+        551,
+        650,
+        593
+      ],
+      "target_size": null,
+      "kind": "label",
+      "note": "Source has no exact adult-only status chip; cropped from 留给大人吃 button for semantic match."
+    },
+    {
+      "name": "status_near_expiry",
+      "folder": "status",
+      "path": "assets/sprites/status/status_near_expiry.png",
+      "bbox": [
+        1042,
+        174,
+        1200,
+        207
+      ],
+      "target_size": null,
+      "kind": "label"
+    },
+    {
+      "name": "ui_badge_shield_ok",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_badge_shield_ok.png",
+      "bbox": [
+        383,
+        839,
+        424,
+        886
+      ],
+      "target_size": 96,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_badge_shield_warn",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_badge_shield_warn.png",
+      "bbox": [
+        441,
+        839,
+        482,
+        886
+      ],
+      "target_size": 96,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_badge_shield_error",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_badge_shield_error.png",
+      "bbox": [
+        497,
+        839,
+        542,
+        886
+      ],
+      "target_size": 96,
+      "kind": "ui"
+    },
+    {
+      "name": "ui_badge_crown",
+      "folder": "ui",
+      "path": "assets/sprites/ui/ui_badge_crown.png",
+      "bbox": [
+        555,
+        836,
+        599,
+        887
+      ],
+      "target_size": 96,
+      "kind": "ui"
+    }
+  ]
+}
