@@ -1,0 +1,1151 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>宝宝食材小管家 UI Prototype v2</title>
+  <style>
+    /*
+      v2 goal:
+      - Closer to the provided "养娃新手村" target board.
+      - 5 core screens only, with higher density and stronger pixel-game UI.
+      - Original placeholder pixel sprites are inline SVG symbols, ready to swap for PNG sprite assets.
+    */
+
+    :root {
+      --bg: #f9f5dd;
+      --paper: #fff8df;
+      --paper-2: #fffdf0;
+      --green-dark: #286c34;
+      --green: #52a458;
+      --green-light: #dff0c8;
+      --green-line: #8ab66d;
+      --brown: #4d351e;
+      --brown-2: #7b532b;
+      --wood: #a7652e;
+      --wood-hi: #d3944a;
+      --gold: #f2bc4c;
+      --orange: #e79623;
+      --red: #e66760;
+      --red-bg: #fff0e9;
+      --line: #cdbb82;
+      --muted: #7b6f55;
+      --ink: #332818;
+      --phone-border: #efd99e;
+      --shadow: 0 10px 0 rgba(111, 82, 34, .10), 0 18px 34px rgba(79, 60, 25, .16);
+      --font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 4%, rgba(96, 165, 78, .18), transparent 22%),
+        radial-gradient(circle at 80% 8%, rgba(244, 197, 78, .20), transparent 18%),
+        linear-gradient(#fbfbec, var(--bg));
+    }
+
+    svg { shape-rendering: crispEdges; }
+
+    .board {
+      width: 1536px;
+      min-height: 1080px;
+      margin: 0 auto;
+      padding: 24px 26px 26px;
+    }
+
+    .top-kv {
+      height: 142px;
+      display: grid;
+      grid-template-columns: 430px 1fr 420px;
+      gap: 22px;
+      align-items: center;
+      padding: 14px 28px;
+      border: 5px solid #9bc47c;
+      border-radius: 10px;
+      background:
+        linear-gradient(90deg, rgba(223, 242, 202, .96), rgba(239, 249, 219, .94)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.18) 0 14px, transparent 14px 28px);
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,.45), 0 7px 0 rgba(119, 150, 83, .24);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .top-kv:before {
+      content: "";
+      position: absolute;
+      inset: auto 380px 0 360px;
+      height: 104px;
+      background:
+        linear-gradient(135deg, transparent 0 48%, #bad4b1 49% 66%, transparent 67%) 0 12px / 140px 90px repeat-x,
+        linear-gradient(150deg, transparent 0 54%, #9fc0a2 55% 68%, transparent 69%) 42px 22px / 180px 78px repeat-x,
+        linear-gradient(#f49b6e 0 20px, transparent 21px) 150px 50px / 58px 40px no-repeat,
+        linear-gradient(135deg, transparent 0 48%, #d45e43 49% 70%, transparent 71%) 138px 26px / 84px 42px no-repeat,
+        linear-gradient(#fff5dc 0 100%) 158px 60px / 40px 28px no-repeat,
+        linear-gradient(#8fb66c 0 100%) 0 86px / 440px 18px no-repeat,
+        repeating-linear-gradient(90deg, #9a6b34 0 6px, transparent 6px 24px) 285px 70px / 145px 38px no-repeat;
+      opacity: .9;
+      pointer-events: none;
+    }
+
+    .brand {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 84px 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .brand-title {
+      margin: 0;
+      color: #653c1d;
+      font-size: 48px;
+      line-height: .98;
+      font-weight: 1000;
+      letter-spacing: 1px;
+      text-shadow:
+        3px 0 #fff0b8, -3px 0 #fff0b8,
+        0 3px #fff0b8, 0 -3px #fff0b8,
+        6px 6px 0 rgba(97, 63, 25, .16);
+    }
+
+    .brand-heart {
+      display: inline-block;
+      margin-left: 8px;
+      color: #ef6a77;
+      font-size: 30px;
+      text-shadow: 2px 2px 0 #fff0b8;
+    }
+
+    .wood-sign {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 28px 9px;
+      border: 5px solid #6c421e;
+      border-radius: 5px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.18), transparent 30%),
+        linear-gradient(#c4833d, #965822);
+      color: #fff4d0;
+      font-size: 28px;
+      font-weight: 1000;
+      box-shadow: inset 0 -5px rgba(84, 47, 19, .18), 5px 5px 0 rgba(83, 54, 22, .2);
+    }
+
+    .value-scroll {
+      position: relative;
+      z-index: 1;
+      justify-self: center;
+      min-width: 360px;
+      padding: 18px 34px;
+      border: 4px solid #aa7d46;
+      background: #fff8e7;
+      color: #3d2c19;
+      font-size: 25px;
+      line-height: 1.6;
+      font-weight: 850;
+      box-shadow: 6px 6px 0 rgba(108, 73, 31, .12);
+      clip-path: polygon(0 12px, 12px 12px, 12px 0, calc(100% - 12px) 0, calc(100% - 12px) 12px, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 12px calc(100% - 12px), 0 calc(100% - 12px));
+    }
+
+    .feature-row {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      align-items: center;
+      text-align: center;
+      color: var(--green-dark);
+      font-weight: 1000;
+    }
+
+    .feature {
+      display: grid;
+      justify-items: center;
+      gap: 5px;
+      padding-left: 16px;
+      border-left: 2px dashed rgba(92, 135, 74, .45);
+    }
+
+    .feature:first-child { border-left: 0; }
+    .feature small {
+      display: block;
+      color: #6e7856;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .icon-box {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+    }
+
+    .icon-box svg { width: 100%; height: 100%; }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 18px;
+      margin: 26px 48px 12px;
+      align-items: center;
+    }
+
+    .step {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--green-dark);
+      font-size: 20px;
+      font-weight: 1000;
+    }
+
+    .step:not(:last-child):after {
+      content: "";
+      position: absolute;
+      left: calc(50% + 75px);
+      width: calc(100% - 130px);
+      height: 2px;
+      background: #93bb76;
+    }
+
+    .step-no {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 4px solid #8eb776;
+      border-radius: 9px;
+      background: linear-gradient(#86bf68, #4d9a48);
+      color: #fff;
+      box-shadow: inset 0 3px rgba(255,255,255,.28);
+    }
+
+    .screens {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 24px;
+      padding: 0 18px;
+      align-items: start;
+    }
+
+    .screen-block {
+      display: grid;
+      justify-items: center;
+      gap: 10px;
+    }
+
+    .caption {
+      color: #4d321d;
+      font-weight: 1000;
+      font-size: 16px;
+    }
+
+    .phone {
+      width: 270px;
+      height: 650px;
+      border: 5px solid var(--phone-border);
+      border-radius: 32px;
+      background: #fff8dd;
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow);
+    }
+
+    .phone.green {
+      background: linear-gradient(#4ea855 0 118px, #fff8dd 118px);
+    }
+
+    .phone.camera {
+      background: linear-gradient(#2e793a 0 100%, #2e793a);
+    }
+
+    .status {
+      height: 27px;
+      padding: 8px 17px 0;
+      display: flex;
+      justify-content: space-between;
+      color: #1c1a13;
+      font-size: 10px;
+      font-weight: 950;
+    }
+
+    .green .status,
+    .camera .status { color: #fff; }
+
+    .nav {
+      height: 38px;
+      padding: 0 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 1000;
+    }
+
+    .plain .nav { color: #1f1b14; }
+
+    .wx {
+      min-width: 44px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.82);
+      color: #1d211b;
+      font-size: 11px;
+      text-align: center;
+      font-weight: 950;
+    }
+
+    .content {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      top: 65px;
+      bottom: 56px;
+      overflow: hidden;
+    }
+
+    .camera .content {
+      top: 64px;
+      bottom: 18px;
+    }
+
+    .tabbar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 56px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 3px solid #e8d096;
+      background: rgba(255, 247, 220, .97);
+      z-index: 4;
+    }
+
+    .tab {
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 1px;
+      color: #6e6148;
+      font-size: 10px;
+      font-weight: 950;
+    }
+
+    .tab svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .tab.active {
+      color: var(--green-dark);
+    }
+
+    .home-title {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 7px;
+      align-items: center;
+      margin: 2px 2px 8px;
+      color: #fff8d5;
+      font-size: 20px;
+      font-weight: 1000;
+      text-shadow: 2px 2px 0 rgba(65, 48, 22, .25);
+    }
+
+    .home-title small {
+      display: block;
+      margin-top: 2px;
+      color: #eaffd8;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .paper {
+      border: 3px solid #88ae6a;
+      border-radius: 6px;
+      background: var(--paper-2);
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,.5), 4px 4px 0 rgba(104, 126, 68, .12);
+    }
+
+    .paper-title {
+      padding: 12px 12px 8px;
+      font-size: 18px;
+      color: #342513;
+      font-weight: 1000;
+      border-bottom: 2px solid #e3d29e;
+      background: linear-gradient(#fff8df, #fff4cb);
+    }
+
+    .paper-title .chick {
+      float: right;
+      margin-top: -5px;
+    }
+
+    .tip {
+      margin: 8px 10px;
+      padding: 7px 8px;
+      border: 1.8px solid #e6cc80;
+      border-radius: 8px;
+      background: #fff0bd;
+      color: #7a5d24;
+      font-size: 10px;
+      line-height: 1.35;
+      font-weight: 850;
+    }
+
+    .food-card {
+      display: grid;
+      grid-template-columns: 58px 1fr 18px;
+      gap: 8px;
+      align-items: center;
+      margin: 8px 10px;
+      padding: 8px;
+      border: 2.5px solid #7fac62;
+      border-radius: 5px;
+      background: #fbfff0;
+      box-shadow: 3px 3px 0 rgba(94, 117, 58, .13);
+    }
+
+    .food-card.warn {
+      border-color: #d59728;
+      background: #fff7dc;
+    }
+
+    .food-card.danger {
+      border-color: #e87871;
+      background: #fff1ec;
+    }
+
+    .food-card.tight {
+      grid-template-columns: 40px 1fr auto;
+      margin: 6px 0;
+      padding: 7px;
+      border-width: 2px;
+    }
+
+    .food-card h3,
+    .food-card h4 {
+      margin: 0;
+      color: #2e2519;
+      font-size: 16px;
+      font-weight: 1000;
+    }
+
+    .food-card h4 { font-size: 14px; }
+
+    .food-card p {
+      margin: 2px 0 0;
+      color: #665c45;
+      font-size: 10px;
+      line-height: 1.35;
+      font-weight: 850;
+    }
+
+    .status-tag {
+      display: inline-block;
+      margin-top: 3px;
+      padding: 4px 8px;
+      border: 2px solid;
+      border-radius: 4px;
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 1000;
+      white-space: nowrap;
+    }
+
+    .status-tag.ok { color: #277536; border-color: #65a85e; background: #e9f8d7; }
+    .status-tag.adult { color: #9d6210; border-color: #d89a2b; background: #fff1c8; }
+    .status-tag.bad { color: #c6423d; border-color: #e36d67; background: #ffe0de; }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .pixel-btn {
+      min-height: 42px;
+      display: grid;
+      place-items: center;
+      padding: 8px 10px;
+      border: 4px solid #317239;
+      border-radius: 6px;
+      background: linear-gradient(#70bc62, #3f9548);
+      color: #fffce7;
+      font-size: 16px;
+      font-weight: 1000;
+      box-shadow: inset 0 3px rgba(255,255,255,.22), 0 5px 0 #276232;
+    }
+
+    .pixel-btn.gold {
+      border-color: #ad7724;
+      background: linear-gradient(#ffe39a, #e9a837);
+      color: #5d3b17;
+      box-shadow: inset 0 3px rgba(255,255,255,.35), 0 5px 0 #9b6821;
+    }
+
+    .pixel-btn.ghost {
+      min-height: 36px;
+      border-width: 3px;
+      background: #fff9e8;
+      color: var(--green-dark);
+      box-shadow: 0 3px 0 rgba(91, 119, 64, .18);
+    }
+
+    .more-link {
+      padding: 6px 0 10px;
+      color: #638c4b;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .searchbar {
+      display: grid;
+      grid-template-columns: 1fr 54px;
+      gap: 8px;
+      margin: 4px 0 12px;
+    }
+
+    .input {
+      min-height: 39px;
+      padding: 9px 10px;
+      border: 3px solid #cdbb82;
+      border-radius: 6px;
+      background: #fffdf0;
+      color: #8b8169;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .wood-pill {
+      padding: 5px 18px 6px;
+      border: 4px solid #6c421e;
+      border-radius: 999px;
+      background: linear-gradient(#c4833d, #965822);
+      color: #fff5d1;
+      font-size: 16px;
+      font-weight: 1000;
+      box-shadow: inset 0 2px rgba(255,255,255,.2), 3px 3px 0 rgba(82, 50, 22, .18);
+    }
+
+    .section-name {
+      margin: 10px 0 7px;
+      color: #58401f;
+      font-size: 15px;
+      font-weight: 1000;
+    }
+
+    .tile-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .food-tile {
+      height: 74px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 2px;
+      border: 2.5px solid #92b874;
+      border-radius: 5px;
+      background: #fffced;
+      color: #44341d;
+      font-size: 12px;
+      font-weight: 950;
+      box-shadow: 2px 2px 0 rgba(108, 134, 73, .12);
+    }
+
+    .recent {
+      margin-top: 10px;
+      padding: 9px;
+      border: 3px solid #b7aa7b;
+      border-radius: 6px;
+      background: #fff9e7;
+    }
+
+    .camera-frame {
+      height: 264px;
+      margin: 2px 0 12px;
+      border: 5px solid #f0dfb4;
+      border-radius: 6px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.18) 0 4px, transparent 4px 100%) 0 0 / 30px 100%,
+        radial-gradient(circle at 58% 58%, #dd7d28 0 28px, transparent 29px),
+        radial-gradient(circle at 38% 57%, #cf6e22 0 27px, transparent 28px),
+        linear-gradient(104deg, transparent 0 40%, rgba(107, 152, 80, .9) 41% 52%, transparent 53%),
+        linear-gradient(#8eb46e, #507935);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .corner {
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      border-color: #fff;
+      border-style: solid;
+    }
+    .c1 { left: 12px; top: 12px; border-width: 4px 0 0 4px; }
+    .c2 { right: 12px; bottom: 12px; border-width: 0 4px 4px 0; }
+
+    .scan-text {
+      margin: 0 0 10px;
+      color: #fff7d9;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 1000;
+    }
+
+    .result-panel {
+      padding: 10px;
+      border: 3px solid #d7c28c;
+      border-radius: 6px;
+      background: var(--paper);
+    }
+
+    .result-title {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 7px;
+      color: #3c2f1d;
+      font-size: 13px;
+      font-weight: 1000;
+    }
+
+    .bar {
+      height: 7px;
+      margin-top: 5px;
+      border: 1.5px solid #316332;
+      background: #eee0aa;
+      overflow: hidden;
+    }
+
+    .bar i { display: block; height: 100%; background: #42a641; }
+    .bar.orange i { background: #e4a229; }
+    .bar.red i { background: #d57045; }
+
+    .detail-head {
+      display: grid;
+      grid-template-columns: 76px 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 9px;
+      padding: 8px;
+      border: 3px solid #8fb36e;
+      background: #fff4cd;
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,.45);
+    }
+
+    .detail-head h2 {
+      margin: 0 0 6px;
+      font-size: 23px;
+      font-weight: 1000;
+    }
+
+    .table {
+      border: 2px solid #d2bf86;
+      background: #fffdf0;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .table-row {
+      display: grid;
+      grid-template-columns: 78px 1fr;
+      min-height: 27px;
+      border-bottom: 1px solid #e8d7a3;
+    }
+
+    .table-row:last-child { border-bottom: 0; }
+    .table-row span { padding: 6px 8px; }
+    .table-row span:first-child {
+      color: #72613f;
+      background: #fff4d1;
+      border-right: 1px solid #e8d7a3;
+    }
+
+    .advice {
+      display: grid;
+      grid-template-columns: 50px 1fr;
+      gap: 8px;
+      align-items: center;
+      margin-top: 9px;
+      padding: 9px;
+      border: 2.5px solid #e5746d;
+      background: #fff0e9;
+      color: #c84940;
+      font-weight: 1000;
+    }
+
+    .advice b {
+      display: block;
+      font-size: 18px;
+    }
+
+    .sign-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    .sign {
+      padding: 6px 2px;
+      border: 2px solid #d4bf87;
+      border-radius: 4px;
+      background: #fff9e5;
+      text-align: center;
+      color: #5b4b30;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .profile-card {
+      display: grid;
+      grid-template-columns: 62px 1fr 18px;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border: 3px solid #8fb36e;
+      background: #fff7df;
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,.45);
+    }
+
+    .profile-card h3 {
+      margin: 0 0 3px;
+      font-size: 17px;
+      font-weight: 1000;
+    }
+
+    .profile-card p {
+      margin: 0;
+      color: #786d55;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .settings-panel {
+      margin-top: 10px;
+      padding: 10px;
+      border: 2.5px solid #d7c28c;
+      border-radius: 12px;
+      background: #fff9e7;
+    }
+
+    .settings-panel h4 {
+      margin: 0 0 8px;
+      color: #4a361d;
+      font-size: 15px;
+      font-weight: 1000;
+    }
+
+    .setting-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 36px;
+      padding: 8px 9px;
+      border: 1.5px solid #e2cf96;
+      border-radius: 6px;
+      background: #fffdf0;
+      color: #55462e;
+      font-size: 12px;
+      font-weight: 900;
+      margin-top: 6px;
+    }
+
+    .switch {
+      width: 43px;
+      height: 24px;
+      border: 2px solid #3d7c3d;
+      border-radius: 99px;
+      background: #58a956;
+      position: relative;
+      box-shadow: inset 0 2px rgba(255,255,255,.25);
+    }
+
+    .switch:after {
+      content: "";
+      position: absolute;
+      right: 2px;
+      top: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff9e6;
+      box-shadow: 0 2px rgba(0,0,0,.18);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+    }
+
+    .stat {
+      min-height: 54px;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      border: 1.5px solid #e2cf96;
+      border-radius: 5px;
+      background: #fffdf0;
+    }
+
+    .stat b { font-size: 20px; }
+    .stat small {
+      color: #766a52;
+      font-size: 9px;
+      font-weight: 850;
+    }
+
+    .footer {
+      margin-top: 26px;
+      height: 70px;
+      display: grid;
+      grid-template-columns: 72px 1fr 560px;
+      gap: 18px;
+      align-items: center;
+      padding: 12px 22px;
+      border: 3px dashed #8ab66d;
+      border-radius: 14px;
+      background: rgba(255, 253, 240, .82);
+      color: #3f6b36;
+      font-weight: 950;
+    }
+
+    .footer small {
+      display: block;
+      margin-top: 4px;
+      color: #73674d;
+      font-size: 12px;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .legend .status-tag { font-size: 11px; }
+
+    .sprite-32 { width: 32px; height: 32px; }
+    .sprite-40 { width: 40px; height: 40px; }
+    .sprite-48 { width: 48px; height: 48px; }
+    .sprite-58 { width: 58px; height: 58px; }
+    .sprite-70 { width: 70px; height: 70px; }
+    .sprite-78 { width: 78px; height: 78px; }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <symbol id="px-baby" viewBox="0 0 32 32">
+        <rect x="9" y="2" width="5" height="7" fill="#754520"/><rect x="18" y="2" width="5" height="7" fill="#754520"/>
+        <rect x="5" y="8" width="22" height="20" rx="4" fill="#5d3b20"/>
+        <rect x="7" y="6" width="18" height="20" rx="4" fill="#ffd8b7"/>
+        <rect x="9" y="8" width="14" height="5" fill="#ffe7c9"/>
+        <rect x="11" y="16" width="3" height="3" fill="#5b3c2a"/><rect x="20" y="16" width="3" height="3" fill="#5b3c2a"/>
+        <rect x="15" y="22" width="3" height="3" fill="#df6b61"/>
+      </symbol>
+      <symbol id="px-broccoli" viewBox="0 0 32 32">
+        <rect x="13" y="16" width="6" height="11" fill="#63a440"/><rect x="10" y="23" width="12" height="5" fill="#3d7b37"/>
+        <rect x="7" y="9" width="8" height="8" fill="#2c7b35"/><rect x="13" y="6" width="9" height="10" fill="#3e963f"/><rect x="20" y="10" width="7" height="8" fill="#2f7d36"/>
+        <rect x="5" y="13" width="8" height="7" fill="#55ad4d"/><rect x="12" y="12" width="9" height="8" fill="#75be52"/><rect x="20" y="15" width="6" height="6" fill="#4a9b3d"/>
+        <rect x="8" y="7" width="5" height="4" fill="#84ca61"/><rect x="16" y="5" width="4" height="4" fill="#8bd166"/>
+      </symbol>
+      <symbol id="px-carrot" viewBox="0 0 32 32">
+        <rect x="18" y="3" width="3" height="8" fill="#49a53e"/><rect x="21" y="6" width="5" height="3" fill="#49a53e"/><rect x="14" y="7" width="5" height="3" fill="#2c7d35"/>
+        <rect x="13" y="10" width="12" height="8" fill="#f29a22"/><rect x="10" y="15" width="12" height="7" fill="#ef7a1e"/><rect x="7" y="21" width="11" height="5" fill="#df5d1c"/><rect x="5" y="26" width="6" height="3" fill="#b9461b"/>
+        <rect x="17" y="12" width="5" height="2" fill="#ffd071"/><rect x="12" y="18" width="5" height="2" fill="#ffc464"/>
+      </symbol>
+      <symbol id="px-blueberry" viewBox="0 0 32 32">
+        <rect x="7" y="13" width="11" height="11" fill="#2f467f"/><rect x="15" y="8" width="11" height="12" fill="#4259a2"/><rect x="13" y="17" width="12" height="10" fill="#5268b6"/>
+        <rect x="10" y="15" width="4" height="4" fill="#6f83cd"/><rect x="18" y="10" width="4" height="4" fill="#8192d8"/><rect x="18" y="20" width="4" height="3" fill="#26376d"/>
+      </symbol>
+      <symbol id="px-pumpkin" viewBox="0 0 32 32">
+        <rect x="15" y="5" width="4" height="5" fill="#4d8536"/>
+        <rect x="7" y="11" width="18" height="14" fill="#d97521"/><rect x="4" y="14" width="9" height="9" fill="#f09822"/><rect x="20" y="14" width="8" height="9" fill="#c9631d"/>
+        <rect x="12" y="12" width="3" height="12" fill="#ffb33c"/><rect x="19" y="12" width="3" height="12" fill="#b8521b"/>
+      </symbol>
+      <symbol id="px-apple" viewBox="0 0 32 32">
+        <rect x="16" y="5" width="3" height="5" fill="#7c4a21"/><rect x="19" y="6" width="6" height="4" fill="#52a247"/>
+        <rect x="8" y="11" width="16" height="15" fill="#d94439"/><rect x="6" y="14" width="9" height="9" fill="#ef6654"/><rect x="18" y="14" width="8" height="9" fill="#bd332f"/>
+        <rect x="10" y="13" width="4" height="4" fill="#ff9a82"/>
+      </symbol>
+      <symbol id="px-egg" viewBox="0 0 32 32">
+        <rect x="11" y="7" width="10" height="4" fill="#fffef0"/><rect x="8" y="11" width="16" height="14" fill="#efe6d0"/><rect x="10" y="9" width="13" height="15" fill="#fffdf4"/>
+        <rect x="11" y="11" width="4" height="3" fill="#fff"/><rect x="20" y="20" width="3" height="3" fill="#d7c9ab"/>
+      </symbol>
+      <symbol id="px-avocado" viewBox="0 0 32 32">
+        <rect x="9" y="6" width="15" height="20" fill="#416b2f"/><rect x="11" y="8" width="11" height="16" fill="#85bf55"/><rect x="14" y="13" width="7" height="8" fill="#d6a24b"/>
+        <rect x="15" y="14" width="5" height="6" fill="#8d5f28"/>
+      </symbol>
+      <symbol id="px-heart" viewBox="0 0 32 32">
+        <rect x="8" y="8" width="7" height="5" fill="#ff9bae"/><rect x="18" y="8" width="7" height="5" fill="#ff9bae"/>
+        <rect x="6" y="12" width="21" height="7" fill="#ef6377"/><rect x="9" y="19" width="15" height="5" fill="#d84660"/><rect x="13" y="24" width="7" height="4" fill="#c43b56"/>
+        <rect x="10" y="10" width="3" height="3" fill="#ffd1da"/>
+      </symbol>
+      <symbol id="px-clock" viewBox="0 0 32 32">
+        <rect x="9" y="3" width="14" height="4" fill="#8a5b2b"/><rect x="6" y="7" width="20" height="20" fill="#8a5b2b"/>
+        <rect x="8" y="9" width="16" height="16" fill="#fff4d6"/><rect x="15" y="11" width="3" height="8" fill="#6f4a24"/><rect x="17" y="17" width="5" height="3" fill="#df6b61"/>
+      </symbol>
+      <symbol id="px-house" viewBox="0 0 32 32">
+        <rect x="7" y="15" width="18" height="12" fill="#f5deb0"/><rect x="5" y="13" width="22" height="5" fill="#a65a31"/>
+        <rect x="10" y="18" width="5" height="5" fill="#8db2cf"/><rect x="18" y="18" width="5" height="9" fill="#7a4c28"/>
+      </symbol>
+      <symbol id="px-basket" viewBox="0 0 32 32">
+        <rect x="8" y="12" width="16" height="4" fill="#7b532b"/><rect x="6" y="15" width="20" height="11" fill="#b77a35"/>
+        <rect x="8" y="17" width="16" height="2" fill="#e1a052"/><rect x="10" y="21" width="12" height="2" fill="#8f5a2d"/>
+        <rect x="12" y="8" width="8" height="4" fill="#7b532b"/>
+      </symbol>
+      <symbol id="px-bell" viewBox="0 0 32 32">
+        <rect x="11" y="8" width="10" height="4" fill="#c68221"/><rect x="8" y="12" width="16" height="12" fill="#e3a737"/><rect x="6" y="22" width="20" height="4" fill="#9d6a22"/>
+        <rect x="14" y="26" width="5" height="3" fill="#6e4b1e"/><rect x="11" y="13" width="4" height="4" fill="#ffd36a"/>
+      </symbol>
+      <symbol id="px-user" viewBox="0 0 32 32">
+        <rect x="11" y="5" width="10" height="10" fill="#557d4a"/><rect x="9" y="15" width="14" height="5" fill="#f2d0aa"/><rect x="7" y="20" width="18" height="8" fill="#4e9b4f"/>
+      </symbol>
+      <symbol id="px-chick" viewBox="0 0 32 32">
+        <rect x="9" y="10" width="14" height="14" fill="#ffd45a"/><rect x="7" y="14" width="18" height="8" fill="#f0b93c"/>
+        <rect x="13" y="14" width="3" height="3" fill="#4c351d"/><rect x="18" y="14" width="3" height="3" fill="#4c351d"/><rect x="16" y="18" width="5" height="3" fill="#e77926"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <main class="board">
+    <section class="top-kv">
+      <div class="brand">
+        <svg class="sprite-78"><use href="#px-baby"/></svg>
+        <div>
+          <h1 class="brand-title">养娃新手村<span class="brand-heart">♥</span></h1>
+          <div class="wood-sign">食材小管家</div>
+        </div>
+      </div>
+      <div class="value-scroll">记录食材 · 了解存储时间<br>判断是否适合宝宝食用</div>
+      <div class="feature-row">
+        <div class="feature"><span class="icon-box"><svg><use href="#px-broccoli"/></svg></span>记录<small>食材管理</small></div>
+        <div class="feature"><span class="icon-box"><svg><use href="#px-clock"/></svg></span>判断<small>宝宝可食期</small></div>
+        <div class="feature"><span class="icon-box"><svg><use href="#px-heart"/></svg></span>安心<small>科学喂养</small></div>
+      </div>
+    </section>
+
+    <section class="steps">
+      <div class="step"><span class="step-no">1</span>首页</div>
+      <div class="step"><span class="step-no">2</span>添加 / 搜索</div>
+      <div class="step"><span class="step-no">3</span>拍照识别</div>
+      <div class="step"><span class="step-no">4</span>食材详情</div>
+      <div class="step"><span class="step-no">5</span>提醒 / 我的</div>
+    </section>
+
+    <section class="screens">
+      <article class="screen-block">
+        <div class="caption">01 首页</div>
+        <div class="phone green">
+          <div class="status"><span>9:41</span><span>⌁ Wi-Fi ▰</span></div>
+          <div class="nav"><span></span><span></span><span class="wx">••• ⦿</span></div>
+          <div class="content">
+            <div class="home-title">
+              <svg class="sprite-40"><use href="#px-baby"/></svg>
+              <div>养娃新手村 ♡<small>宝宝月龄：8个月12天 ✦</small></div>
+            </div>
+            <div class="paper">
+              <div class="paper-title">今天先给宝宝吃这些 <svg class="sprite-32 chick"><use href="#px-chick"/></svg></div>
+              <div class="tip">💡 根据存储时间和新鲜度，为宝宝优先推荐</div>
+
+              <div class="food-card">
+                <svg class="sprite-58"><use href="#px-broccoli"/></svg>
+                <div><h3>西兰花</h3><span class="status-tag ok">建议今天给宝宝吃</span><p>冷藏 · 剩余1天<br>购买：05/12　冷藏保存</p></div>
+                <b>›</b>
+              </div>
+              <div class="food-card warn">
+                <svg class="sprite-58"><use href="#px-carrot"/></svg>
+                <div><h3>胡萝卜</h3><span class="status-tag adult">可留给大人吃</span><p>冷藏 · 剩余2天<br>购买：05/08　冷藏保存</p></div>
+                <b>›</b>
+              </div>
+              <div class="food-card danger">
+                <svg class="sprite-58"><use href="#px-blueberry"/></svg>
+                <div><h3>蓝莓</h3><span class="status-tag bad">不建议给宝宝食用</span><p>冷藏 · 已超期1天<br>购买：05/10　冷藏保存</p></div>
+                <b>›</b>
+              </div>
+              <div class="more-link">查看全部食材（12） ›</div>
+            </div>
+            <div class="btn-row"><div class="pixel-btn">＋ 添加食材</div><div class="pixel-btn gold">📷 拍照识别</div></div>
+          </div>
+          <nav class="tabbar">
+            <div class="tab active"><svg><use href="#px-house"/></svg>首页</div>
+            <div class="tab"><svg><use href="#px-basket"/></svg>食材</div>
+            <div class="tab"><svg><use href="#px-bell"/></svg>提醒</div>
+            <div class="tab"><svg><use href="#px-user"/></svg>我的</div>
+          </nav>
+        </div>
+      </article>
+
+      <article class="screen-block">
+        <div class="caption">02 添加 / 搜索</div>
+        <div class="phone plain">
+          <div class="status"><span>9:41</span><span>⌁ Wi-Fi ▰</span></div>
+          <div class="nav"><span>‹</span><span class="wood-pill">添加食材</span><span class="wx">••• ⦿</span></div>
+          <div class="content" style="top:72px;">
+            <div class="searchbar"><div class="input">🔍 搜索食材名称</div><div class="pixel-btn" style="min-height:39px;font-size:13px;border-width:3px;">搜索</div></div>
+            <div class="section-name">常见食材</div>
+            <div class="tile-grid">
+              <div class="food-tile"><svg class="sprite-40"><use href="#px-broccoli"/></svg>西兰花</div>
+              <div class="food-tile"><svg class="sprite-40"><use href="#px-pumpkin"/></svg>南瓜</div>
+              <div class="food-tile"><svg class="sprite-40"><use href="#px-apple"/></svg>苹果</div>
+              <div class="food-tile"><svg class="sprite-40"><use href="#px-egg"/></svg>鸡蛋</div>
+              <div class="food-tile"><svg class="sprite-40"><use href="#px-avocado"/></svg>牛油果</div>
+              <div class="food-tile"><svg class="sprite-40"><use href="#px-carrot"/></svg>胡萝卜</div>
+            </div>
+            <div class="more-link">更多食材 ›</div>
+            <div class="recent">
+              <div class="section-name" style="margin-top:0;">最近添加</div>
+              <div class="food-card tight"><svg class="sprite-40"><use href="#px-broccoli"/></svg><div><h4>西兰花</h4><p>05/12　冷藏</p></div><b>›</b></div>
+              <div class="food-card tight"><svg class="sprite-40"><use href="#px-carrot"/></svg><div><h4>胡萝卜</h4><p>05/08　冷藏</p></div><b>›</b></div>
+              <div class="food-card tight"><svg class="sprite-40"><use href="#px-blueberry"/></svg><div><h4>蓝莓</h4><p>05/10　冷藏</p></div><b>›</b></div>
+            </div>
+            <div class="pixel-btn" style="margin-top:14px;">手动输入食材</div>
+          </div>
+          <nav class="tabbar">
+            <div class="tab"><svg><use href="#px-house"/></svg>首页</div>
+            <div class="tab active"><svg><use href="#px-basket"/></svg>食材</div>
+            <div class="tab"><svg><use href="#px-bell"/></svg>提醒</div>
+            <div class="tab"><svg><use href="#px-user"/></svg>我的</div>
+          </nav>
+        </div>
+      </article>
+
+      <article class="screen-block">
+        <div class="caption">03 拍照识别</div>
+        <div class="phone camera">
+          <div class="status"><span>9:41</span><span>⌁ Wi-Fi ▰</span></div>
+          <div class="nav"><span>‹</span><span>拍照识别</span><span class="wx">••• ⦿</span></div>
+          <div class="content">
+            <div class="camera-frame"><span class="corner c1"></span><span class="corner c2"></span></div>
+            <div class="scan-text"><svg class="sprite-32" style="vertical-align:middle;"><use href="#px-baby"/></svg> 识别中...</div>
+            <div class="result-panel">
+              <div class="result-title"><span>识别结果</span><span>（可能是）</span></div>
+              <div class="food-card tight"><svg class="sprite-40"><use href="#px-carrot"/></svg><div><h4>胡萝卜</h4><div class="bar"><i style="width:92%"></i></div></div><b>92%</b></div>
+              <div class="food-card tight"><svg class="sprite-40"><use href="#px-pumpkin"/></svg><div><h4>南瓜</h4><div class="bar orange"><i style="width:64%"></i></div></div><b>64%</b></div>
+              <div class="food-card tight"><svg class="sprite-40"><use href="#px-carrot"/></svg><div><h4>红薯</h4><div class="bar red"><i style="width:51%"></i></div></div><b>51%</b></div>
+            </div>
+            <div class="pixel-btn ghost" style="margin-top:12px;font-size:17px;">🔍 手动搜索</div>
+            <p style="margin:14px 0 0;color:#dfeccc;text-align:center;font-size:11px;font-weight:850;">识别仅供参考，请以实际为准</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="screen-block">
+        <div class="caption">04 食材详情</div>
+        <div class="phone green">
+          <div class="status"><span>9:41</span><span>⌁ Wi-Fi ▰</span></div>
+          <div class="nav"><span>‹</span><span>食材详情</span><span class="wx">••• ⦿</span></div>
+          <div class="content">
+            <div class="detail-head">
+              <svg class="sprite-70"><use href="#px-broccoli"/></svg>
+              <div><h2>西兰花 ✎</h2><span class="status-tag ok">状态：建议今天给宝宝吃</span></div>
+            </div>
+            <div class="table">
+              <div class="table-row"><span>购买日期</span><span>2024-05-12</span></div>
+              <div class="table-row"><span>存储方式</span><span>冷藏保存（保鲜袋）</span></div>
+              <div class="table-row"><span>当前位置</span><span>冰箱冷藏室</span></div>
+              <div class="table-row"><span>备注</span><span>宝宝辅食专用</span></div>
+            </div>
+            <div class="section-name">时间建议</div>
+            <div class="table">
+              <div class="table-row"><span>室温</span><span>不超过4小时 · 当日食用完</span></div>
+              <div class="table-row"><span>冷藏</span><span>3-4天 · 成人5-7天</span></div>
+              <div class="table-row"><span>冷冻</span><span>1个月 · 成人2-3个月</span></div>
+            </div>
+            <div class="advice">
+              <svg class="sprite-48"><use href="#px-baby"/></svg>
+              <div><b>今天优先做熟食用 ❤</b><span style="font-size:11px;">超过宝宝建议期后，可留给大人判断食用</span></div>
+            </div>
+            <div class="section-name">变质提示</div>
+            <div class="sign-grid">
+              <div class="sign">🥬<br>发黄</div><div class="sign">💧<br>发黏</div><div class="sign">🌫<br>有异味</div>
+            </div>
+            <div class="btn-row"><div class="pixel-btn">✓ 记录食用</div><div class="pixel-btn gold">✎ 编辑信息</div></div>
+          </div>
+          <nav class="tabbar">
+            <div class="tab active"><svg><use href="#px-house"/></svg>首页</div>
+            <div class="tab"><svg><use href="#px-basket"/></svg>食材</div>
+            <div class="tab"><svg><use href="#px-bell"/></svg>提醒</div>
+            <div class="tab"><svg><use href="#px-user"/></svg>我的</div>
+          </nav>
+        </div>
+      </article>
+
+      <article class="screen-block">
+        <div class="caption">05 我的</div>
+        <div class="phone green">
+          <div class="status"><span>9:41</span><span>⌁ Wi-Fi ▰</span></div>
+          <div class="nav"><span></span><span>我的</span><span class="wx">••• ⦿</span></div>
+          <div class="content">
+            <div class="profile-card">
+              <svg class="sprite-58"><use href="#px-baby"/></svg>
+              <div><h3>新手村村民 🐣</h3><p>宝宝月龄：8个月12天</p></div>
+              <b>›</b>
+            </div>
+            <div class="settings-panel">
+              <h4>🔔 提醒设置</h4>
+              <div class="setting-line"><span>食材到期提醒</span><span>提前1天提醒 ›</span></div>
+              <div class="setting-line"><span>每日喂养建议</span><span>每天 08:00 ›</span></div>
+              <div class="setting-line"><span>冰箱整理提醒</span><span>每周日 10:00 ›</span></div>
+            </div>
+            <div class="settings-panel">
+              <h4>👶 宝宝模式</h4>
+              <div class="setting-line"><span>优先展示宝宝饮食建议</span><span class="switch"></span></div>
+            </div>
+            <div class="settings-panel">
+              <h4>📊 使用统计</h4>
+              <div class="stats">
+                <div class="stat"><b>12</b><small>记录食材</small></div>
+                <div class="stat"><b>8</b><small>今日建议</small></div>
+                <div class="stat"><b>3</b><small>即将过期</small></div>
+                <div class="stat"><b>98%</b><small>安心指数</small></div>
+              </div>
+            </div>
+            <div class="settings-panel">
+              <div class="setting-line"><span>💬 意见反馈</span><span>›</span></div>
+              <div class="setting-line"><span>ℹ️ 关于小程序</span><span>版本 1.0.0</span></div>
+            </div>
+          </div>
+          <nav class="tabbar">
+            <div class="tab"><svg><use href="#px-house"/></svg>首页</div>
+            <div class="tab"><svg><use href="#px-basket"/></svg>食材</div>
+            <div class="tab"><svg><use href="#px-bell"/></svg>提醒</div>
+            <div class="tab active"><svg><use href="#px-user"/></svg>我的</div>
+          </nav>
+        </div>
+      </article>
+    </section>
+
+    <section class="footer">
+      <svg class="sprite-58"><use href="#px-baby"/></svg>
+      <div>温馨提示：<small>食材新鲜，宝宝吃得香，妈妈更安心。所有建议仅供参考，请结合食材实际状态判断。</small></div>
+      <div class="legend">
+        <span class="status-tag ok">建议给宝宝吃</span>
+        <span class="status-tag adult">可留给大人吃</span>
+        <span class="status-tag bad">不建议给宝宝食用</span>
+        <span class="status-tag" style="color:#777;border-color:#aaa;background:#eee;">已处理</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
