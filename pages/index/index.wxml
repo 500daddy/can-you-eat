@@ -1,0 +1,45 @@
+<view class="page with-tab">
+  <view class="village-hero">
+    <image class="hero-bg" src="{{assets.ui.bannerVillage}}" mode="aspectFill" />
+    <view class="hero-content">
+      <view class="baby-row">
+        <image class="baby-avatar" src="{{assets.mascot.babyHappy}}" mode="aspectFit" />
+        <view>
+          <view class="pixel-title">养娃新手村</view>
+          <view class="subtitle">宝宝月龄：{{babyAgeText}}</view>
+        </view>
+      </view>
+      <view class="hero-card">
+        <view class="page-title">今天先给宝宝吃这些</view>
+        <view class="subtitle">根据购买时间、保存方式和宝宝建议期，为你优先排序</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="button-row">
+    <button class="pixel-btn" bindtap="goAdd">
+      <image class="btn-icon" src="{{assets.actions.add}}" mode="aspectFit" />添加食材
+    </button>
+    <button class="pixel-btn secondary" bindtap="goRecognize">
+      <image class="btn-icon" src="{{assets.actions.camera}}" mode="aspectFit" />拍照识别
+    </button>
+  </view>
+
+  <block wx:if="{{records.length}}">
+    <block wx:for="{{sections}}" wx:key="title">
+      <view class="section-head">
+        <view class="section-title">{{item.title}}</view>
+        <view class="section-more">{{item.items.length}} 个</view>
+      </view>
+      <block wx:for="{{item.items}}" wx:key="id" wx:for-item="food">
+        <food-card food="{{food}}" />
+      </block>
+    </block>
+  </block>
+
+  <pixel-empty wx:else />
+
+  <view class="disclaimer">
+    本工具提供食材保存和宝宝食用建议参考，不能替代专业医疗或食品安全判断。请结合食材实际状态、宝宝身体情况和医生建议综合判断。
+  </view>
+</view>

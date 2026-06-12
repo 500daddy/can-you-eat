@@ -1,0 +1,57 @@
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 22rpx;
+  border: 4rpx solid #8ebf7b;
+  border-radius: 28rpx;
+  background: linear-gradient(180deg, #fff8d8, #fffdf2);
+  box-shadow: 0 6rpx 0 rgba(81, 53, 31, 0.1);
+}
+
+.detail-food {
+  width: 132rpx;
+  height: 132rpx;
+}
+
+.detail-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-name {
+  margin-bottom: 12rpx;
+  color: #2d261c;
+  font-size: 42rpx;
+  font-weight: 900;
+}
+
+.edit-icon {
+  width: 46rpx;
+  height: 46rpx;
+}
+
+.advice-text,
+.tip,
+.adult-note {
+  color: #51351f;
+  font-size: 27rpx;
+  line-height: 1.65;
+}
+
+.tip {
+  margin-top: 12rpx;
+  padding-left: 18rpx;
+  border-left: 6rpx solid #8bb774;
+}
+
+.signs {
+  margin-top: 16rpx;
+}
+
+.detail-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18rpx;
+  margin-top: 28rpx;
+}

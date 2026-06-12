@@ -1,0 +1,66 @@
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 22rpx;
+  border: 4rpx solid #8ebf7b;
+  border-radius: 28rpx;
+  background: #fffdf2;
+}
+
+.profile-avatar {
+  width: 116rpx;
+  height: 116rpx;
+  border: 3rpx solid #51351f;
+  border-radius: 22rpx;
+  background: #fff9e9;
+}
+
+.profile-main {
+  flex: 1;
+}
+
+.profile-name {
+  color: #2d261c;
+  font-size: 34rpx;
+  font-weight: 900;
+}
+
+.profile-level {
+  padding: 8rpx 14rpx;
+  border: 2rpx solid #e4bf68;
+  border-radius: 14rpx;
+  background: #fff0b8;
+  color: #9a5c12;
+  font-size: 22rpx;
+  font-weight: 900;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12rpx;
+  margin-top: 22rpx;
+}
+
+.stat-card {
+  min-height: 120rpx;
+  padding: 18rpx 8rpx;
+  border: 3rpx solid #d8c99d;
+  border-radius: 22rpx;
+  background: #fffdf2;
+  text-align: center;
+}
+
+.stat-value {
+  color: #2d261c;
+  font-size: 34rpx;
+  font-weight: 900;
+}
+
+.stat-label {
+  margin-top: 8rpx;
+  color: #7c735f;
+  font-size: 21rpx;
+  line-height: 1.25;
+}

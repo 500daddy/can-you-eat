@@ -1,0 +1,33 @@
+<view class="page with-tab">
+  <view class="page-title">提醒中心</view>
+  <view class="subtitle">优先处理接近宝宝建议期的食材，订阅消息能力先预留。</view>
+
+  <view class="tabs">
+    <view wx:for="{{tabs}}" wx:key="*this" class="tab {{active === index ? 'active' : ''}}" data-index="{{index}}" bindtap="switchTab">
+      {{item}}
+    </view>
+  </view>
+
+  <view wx:if="{{active === 0}}">
+    <food-card wx:for="{{today}}" wx:key="id" food="{{item}}" />
+  </view>
+  <view wx:elif="{{active === 1}}">
+    <food-card wx:for="{{soon}}" wx:key="id" food="{{item}}" />
+  </view>
+  <view wx:else>
+    <food-card wx:for="{{overdue}}" wx:key="id" food="{{item}}" />
+  </view>
+
+  <view class="paper-card">
+    <view class="section-title">提醒设置</view>
+    <view class="setting-row">
+      <text>临期前 1 天提醒</text>
+      <switch checked="{{reminderEnabled}}" color="#55a85a" />
+    </view>
+    <view class="setting-row">
+      <text>每日早上 8 点摘要</text>
+      <switch checked="{{dailyEnabled}}" color="#55a85a" />
+    </view>
+    <button class="pixel-btn ghost" bindtap="requestSubscribe">开启微信提醒</button>
+  </view>
+</view>

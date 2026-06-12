@@ -1,0 +1,17 @@
+{
+  "description": "宝宝食材小管家微信小程序",
+  "appid": "touristappid",
+  "projectname": "宝宝食材小管家",
+  "miniprogramRoot": "./",
+  "cloudfunctionRoot": "cloudfunctions/",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "compileHotReLoad": true
+  },
+  "compileType": "miniprogram",
+  "libVersion": "3.8.0"
+}

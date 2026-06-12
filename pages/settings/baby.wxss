@@ -1,0 +1,12 @@
+@import "../food/add.wxss";
+
+.baby-card {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
+
+.baby-img {
+  width: 126rpx;
+  height: 126rpx;
+}

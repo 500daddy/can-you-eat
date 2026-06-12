@@ -1,0 +1,25 @@
+.baby-row {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
+
+.baby-avatar {
+  width: 96rpx;
+  height: 96rpx;
+  border: 3rpx solid #51351f;
+  border-radius: 22rpx;
+  background: #fff9e9;
+}
+
+.hero-card {
+  margin-top: 18rpx;
+  padding: 18rpx 20rpx;
+  border: 3rpx solid rgba(81, 53, 31, 0.2);
+  border-radius: 22rpx;
+  background: rgba(255, 253, 242, 0.86);
+}
+
+.button-row .pixel-btn {
+  flex: 1;
+}

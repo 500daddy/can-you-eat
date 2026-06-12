@@ -1,0 +1,43 @@
+<view class="page with-tab">
+  <view class="profile-card">
+    <image class="profile-avatar" src="{{assets.mascot.babyFront}}" mode="aspectFit" />
+    <view class="profile-main">
+      <view class="profile-name">新手村村民</view>
+      <view class="subtitle">宝宝月龄：8个月12天</view>
+    </view>
+    <text class="profile-level">Lv.3</text>
+  </view>
+
+  <view class="stats-grid">
+    <view class="stat-card" wx:for="{{stats}}" wx:key="label">
+      <view class="stat-value">{{item.value}}</view>
+      <view class="stat-label">{{item.label}}</view>
+    </view>
+  </view>
+
+  <view class="paper-card">
+    <view class="list-cell" bindtap="goBaby">
+      <text>宝宝模式设置</text>
+      <text class="cell-note">开启中 ›</text>
+    </view>
+    <view class="list-cell" bindtap="goReminder">
+      <text>提醒设置</text>
+      <text class="cell-note">08:00 ›</text>
+    </view>
+    <view class="list-cell" bindtap="toast">
+      <text>识别记录</text>
+      <text class="cell-note">24 次 ›</text>
+    </view>
+  </view>
+
+  <view class="paper-card">
+    <view class="list-cell" bindtap="toast">
+      <text>意见反馈</text>
+      <text class="cell-note">帮助我们做得更好 ›</text>
+    </view>
+    <view class="list-cell" bindtap="toast">
+      <text>关于小程序</text>
+      <text class="cell-note">MVP 0.1 ›</text>
+    </view>
+  </view>
+</view>

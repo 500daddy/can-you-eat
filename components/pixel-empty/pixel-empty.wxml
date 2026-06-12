@@ -1,0 +1,9 @@
+<view class="empty-card">
+  <image class="empty-img" src="{{image || defaultImage}}" mode="aspectFit" />
+  <view class="empty-title">{{title}}</view>
+  <view class="empty-desc">{{desc}}</view>
+  <view class="empty-actions">
+    <button class="empty-btn primary" bindtap="addFood">添加食材</button>
+    <button class="empty-btn secondary" bindtap="recognize">拍照识别</button>
+  </view>
+</view>

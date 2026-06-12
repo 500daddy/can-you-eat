@@ -1,0 +1,65 @@
+<view class="page">
+  <view class="page-title">添加食材</view>
+  <view class="subtitle">先记录关键字段，宝宝建议期会按食材和保存方式保守计算。</view>
+
+  <view class="selected-food">
+    <image class="selected-icon" src="{{form.icon}}" mode="aspectFit" />
+    <view class="selected-main">
+      <view class="selected-name">{{form.name}}</view>
+      <view class="subtitle">默认推荐保存方式已带入</view>
+    </view>
+    <button class="change-btn" size="mini" bindtap="goSearch">更换</button>
+  </view>
+
+  <view class="form-card">
+    <view class="field">
+      <text class="label">食材名称 <text class="required">*</text></text>
+      <input class="input" value="{{form.name}}" bindinput="onNameInput" placeholder="请输入食材名称" />
+    </view>
+
+    <view class="field">
+      <text class="label">购买日期 <text class="required">*</text></text>
+      <picker mode="date" value="{{form.purchaseDate}}" bindchange="onDateChange">
+        <view class="picker-box">{{form.purchaseDate}}</view>
+      </picker>
+    </view>
+
+    <view class="field">
+      <text class="label">保存方式 <text class="required">*</text></text>
+      <view class="segmented">
+        <view wx:for="{{storageOptions}}" wx:key="key" class="segment {{form.storageMethod === item.key ? 'active' : ''}}" data-key="{{item.key}}" bindtap="chooseStorage">
+          {{item.text}}
+        </view>
+      </view>
+    </view>
+
+    <view class="field field-grid">
+      <view>
+        <text class="label">数量</text>
+        <input class="input" value="{{form.quantity}}" bindinput="onQuantityInput" type="number" />
+      </view>
+      <view>
+        <text class="label">单位</text>
+        <input class="input" value="{{form.unit}}" bindinput="onUnitInput" />
+      </view>
+    </view>
+
+    <view class="switch-row">
+      <view>
+        <view class="label no-margin">宝宝食材</view>
+        <view class="subtitle">开启后会优先使用宝宝建议期</view>
+      </view>
+      <switch checked="{{form.isBabyFood}}" color="#55a85a" bindchange="onBabySwitch" />
+    </view>
+
+    <view class="field">
+      <text class="label">备注</text>
+      <textarea class="textarea" value="{{form.note}}" bindinput="onNoteInput" placeholder="例如：切开了 / 已清洗 / 宝宝辅食专用" />
+    </view>
+
+    <view class="remind-box">{{form.remindText}}</view>
+  </view>
+
+  <button class="pixel-btn save-btn" bindtap="save">保存</button>
+  <view class="disclaimer">保存后仍需结合食材实际外观、气味和宝宝身体情况判断。</view>
+</view>

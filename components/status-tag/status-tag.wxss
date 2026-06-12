@@ -1,0 +1,44 @@
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42rpx;
+  padding: 6rpx 16rpx;
+  border: 2rpx solid #69aa63;
+  border-radius: 14rpx;
+  background: #eaf7d8;
+  color: #2f6c37;
+  font-size: 22rpx;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.status-tag.baby_today {
+  border-color: #ee9b30;
+  background: #fff0bd;
+  color: #9a5c12;
+}
+
+.status-tag.adult_only {
+  border-color: #ee9b30;
+  background: #ffe5bf;
+  color: #9a5c12;
+}
+
+.status-tag.not_recommended {
+  border-color: #e76b64;
+  background: #ffe2dd;
+  color: #b84b43;
+}
+
+.status-tag.expired {
+  border-color: #c94c43;
+  background: #ffd5d2;
+  color: #8b2d27;
+}
+
+.status-tag.finished {
+  border-color: #c4bca8;
+  background: #eeeeea;
+  color: #7c735f;
+}

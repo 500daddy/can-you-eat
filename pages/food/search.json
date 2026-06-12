@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "添加 / 搜索食材",
+  "usingComponents": {
+    "status-tag": "/components/status-tag/status-tag"
+  }
+}

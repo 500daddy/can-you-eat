@@ -1,0 +1,37 @@
+<view class="page">
+  <view class="page-title">编辑记录</view>
+  <view class="subtitle">修改后会重新计算宝宝建议期和提醒时间。</view>
+
+  <view class="selected-food">
+    <image class="selected-icon" src="{{form.icon}}" mode="aspectFit" />
+    <view>
+      <view class="selected-name">{{form.name}}</view>
+      <view class="subtitle">{{form.statusText}}</view>
+    </view>
+  </view>
+
+  <view class="form-card">
+    <view class="field">
+      <text class="label">购买日期</text>
+      <picker mode="date" value="{{form.purchaseDate}}" bindchange="onDateChange">
+        <view class="picker-box">{{form.purchaseDate}}</view>
+      </picker>
+    </view>
+
+    <view class="field">
+      <text class="label">保存方式</text>
+      <view class="segmented">
+        <view wx:for="{{storageOptions}}" wx:key="key" class="segment {{form.storageMethod === item.key ? 'active' : ''}}" data-key="{{item.key}}" bindtap="chooseStorage">
+          {{item.text}}
+        </view>
+      </view>
+    </view>
+
+    <view class="field">
+      <text class="label">备注</text>
+      <textarea class="textarea" value="{{form.note}}" placeholder="补充食材状态或处理方式" />
+    </view>
+  </view>
+
+  <button class="pixel-btn save-btn" bindtap="save">保存修改</button>
+</view>

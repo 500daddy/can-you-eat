@@ -1,0 +1,56 @@
+.empty-card {
+  margin-top: 28rpx;
+  padding: 40rpx 28rpx;
+  border: 3rpx dashed #8bb774;
+  border-radius: 26rpx;
+  background: rgba(255, 253, 242, 0.86);
+  text-align: center;
+}
+
+.empty-img {
+  width: 220rpx;
+  height: 180rpx;
+}
+
+.empty-title {
+  margin-top: 8rpx;
+  color: #214d28;
+  font-size: 32rpx;
+  font-weight: 900;
+}
+
+.empty-desc {
+  margin: 12rpx auto 0;
+  max-width: 480rpx;
+  color: #7c735f;
+  font-size: 25rpx;
+  line-height: 1.55;
+}
+
+.empty-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.empty-btn {
+  width: 210rpx;
+  height: 68rpx;
+  border-radius: 18rpx;
+  font-size: 26rpx;
+  font-weight: 900;
+  line-height: 64rpx;
+}
+
+.empty-btn.primary {
+  border: 3rpx solid #2f6c37;
+  background: #55a85a;
+  color: #fff;
+}
+
+.empty-btn.secondary {
+  border: 3rpx solid #b87835;
+  background: #fff0b8;
+  color: #51351f;
+}

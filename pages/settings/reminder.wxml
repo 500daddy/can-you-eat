@@ -1,0 +1,36 @@
+<view class="page">
+  <view class="page-title">提醒设置</view>
+  <view class="subtitle">先做小程序内提醒列表，微信订阅消息模板 ID 后续配置。</view>
+
+  <view class="paper-card">
+    <view class="setting-row">
+      <view>
+        <view class="setting-title">临期前提醒</view>
+        <view class="subtitle">在宝宝建议期结束前提醒</view>
+      </view>
+      <switch checked="{{reminderEnabled}}" color="#55a85a" />
+    </view>
+    <view class="setting-row">
+      <view>
+        <view class="setting-title">当天提醒</view>
+        <view class="subtitle">当天仍未处理时提醒</view>
+      </view>
+      <switch checked="{{todayEnabled}}" color="#55a85a" />
+    </view>
+    <view class="setting-row">
+      <view>
+        <view class="setting-title">每日摘要</view>
+        <view class="subtitle">每天 {{dailyTime}} 汇总食材情况</view>
+      </view>
+      <switch checked="{{dailyEnabled}}" color="#55a85a" />
+    </view>
+  </view>
+
+  <view class="paper-card yellow">
+    <view class="section-title">微信提醒预留</view>
+    <view class="subtitle">TEMPLATE_ID_FOOD_EXPIRE = 请替换为实际订阅消息模板ID</view>
+    <button class="pixel-btn ghost" bindtap="requestSubscribe">开启微信提醒</button>
+  </view>
+
+  <button class="pixel-btn save-btn" bindtap="save">保存设置</button>
+</view>

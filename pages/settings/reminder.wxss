@@ -1,0 +1,11 @@
+@import "../reminder/index.wxss";
+
+.setting-title {
+  color: #51351f;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.save-btn {
+  margin-top: 28rpx;
+}

@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "宝宝食材小管家",
+  "usingComponents": {
+    "food-card": "/components/food-card/food-card",
+    "pixel-empty": "/components/pixel-empty/pixel-empty"
+  }
+}

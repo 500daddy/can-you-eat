@@ -1,0 +1,72 @@
+.selected-food {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin-top: 24rpx;
+  padding: 18rpx;
+  border: 3rpx solid #8ebf7b;
+  border-radius: 24rpx;
+  background: #fffdf2;
+}
+
+.selected-icon {
+  width: 104rpx;
+  height: 104rpx;
+}
+
+.selected-main {
+  flex: 1;
+}
+
+.selected-name {
+  color: #2d261c;
+  font-size: 34rpx;
+  font-weight: 900;
+}
+
+.change-btn {
+  width: 100rpx;
+  height: 54rpx;
+  margin: 0;
+  border: 2rpx solid #b87835;
+  border-radius: 16rpx;
+  background: #fff0b8;
+  color: #51351f;
+  font-size: 23rpx;
+  font-weight: 900;
+  line-height: 50rpx;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18rpx;
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 26rpx;
+  padding: 18rpx;
+  border-radius: 18rpx;
+  background: #f3f8df;
+}
+
+.no-margin {
+  margin-bottom: 0;
+}
+
+.remind-box {
+  padding: 18rpx;
+  border: 2rpx dashed #8bb774;
+  border-radius: 18rpx;
+  background: #fbfff0;
+  color: #2f6c37;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.save-btn {
+  margin-top: 28rpx;
+}

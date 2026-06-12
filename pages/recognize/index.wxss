@@ -1,0 +1,134 @@
+.camera-card {
+  margin-top: 24rpx;
+  padding: 20rpx;
+  border: 4rpx solid #2f6c37;
+  border-radius: 28rpx;
+  background: linear-gradient(180deg, #4ba952, #2f6c37);
+}
+
+.camera-frame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 520rpx;
+  overflow: hidden;
+  border-radius: 22rpx;
+  background: #fffdf2;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+}
+
+.camera-icon {
+  width: 100rpx;
+  height: 100rpx;
+}
+
+.camera-text {
+  position: absolute;
+  bottom: 150rpx;
+  color: #51351f;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.corner {
+  position: absolute;
+  width: 56rpx;
+  height: 56rpx;
+  border-color: #fffdf2;
+  border-style: solid;
+}
+
+.lt {
+  left: 28rpx;
+  top: 28rpx;
+  border-width: 6rpx 0 0 6rpx;
+}
+
+.rt {
+  right: 28rpx;
+  top: 28rpx;
+  border-width: 6rpx 6rpx 0 0;
+}
+
+.lb {
+  left: 28rpx;
+  bottom: 28rpx;
+  border-width: 0 0 6rpx 6rpx;
+}
+
+.rb {
+  right: 28rpx;
+  bottom: 28rpx;
+  border-width: 0 6rpx 6rpx 0;
+}
+
+.recognize-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  margin-top: 16rpx;
+  color: #fffdf2;
+  font-size: 25rpx;
+  font-weight: 800;
+}
+
+.tiny-baby {
+  width: 44rpx;
+  height: 44rpx;
+}
+
+.result-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 18rpx 0;
+  border-bottom: 2rpx solid rgba(216, 201, 157, 0.6);
+}
+
+.result-row:last-child {
+  border-bottom: 0;
+}
+
+.result-icon {
+  width: 82rpx;
+  height: 82rpx;
+}
+
+.result-main {
+  flex: 1;
+}
+
+.result-name {
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.confidence-bar {
+  height: 16rpx;
+  margin-top: 12rpx;
+  overflow: hidden;
+  border: 2rpx solid #8bb774;
+  border-radius: 12rpx;
+  background: #fff9e9;
+}
+
+.confidence-fill {
+  height: 100%;
+  background: #55a85a;
+}
+
+.confidence-text {
+  color: #51351f;
+  font-size: 25rpx;
+  font-weight: 900;
+}
+
+.manual-btn {
+  margin-top: 28rpx;
+}

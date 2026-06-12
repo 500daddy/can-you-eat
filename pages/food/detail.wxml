@@ -1,0 +1,66 @@
+<view class="page detail-page">
+  <view class="detail-header">
+    <image class="detail-food" src="{{record.icon}}" mode="aspectFit" />
+    <view class="detail-main">
+      <view class="detail-name">{{record.name}}</view>
+      <status-tag status="{{record.status}}" />
+      <view class="subtitle">{{statusInfo.adviceTitle}}</view>
+    </view>
+    <image class="edit-icon" src="{{assets.actions.edit}}" mode="aspectFit" bindtap="edit" />
+  </view>
+
+  <view class="paper-card yellow">
+    <view class="section-title">宝宝建议</view>
+    <view class="advice-text">{{statusInfo.advice}}</view>
+  </view>
+
+  <view class="paper-card">
+    <view class="info-row">
+      <text>购买日期</text>
+      <text class="info-value">{{record.purchaseDate}}</text>
+    </view>
+    <view class="info-row">
+      <text>保存方式</text>
+      <text class="info-value">{{record.storageText}}</text>
+    </view>
+    <view class="info-row">
+      <text>已保存天数</text>
+      <text class="info-value">{{record.savedDays}}</text>
+    </view>
+    <view class="info-row">
+      <text>宝宝建议截止日</text>
+      <text class="info-value">{{record.babyExpireDate}}</text>
+    </view>
+    <view class="info-row">
+      <text>成人参考截止日</text>
+      <text class="info-value">{{record.adultExpireDate}}</text>
+    </view>
+  </view>
+
+  <view class="paper-card green">
+    <view class="section-title">保存建议</view>
+    <view class="tip" wx:for="{{base.tips}}" wx:key="*this">{{item}}</view>
+  </view>
+
+  <view class="paper-card">
+    <view class="section-title">变质迹象</view>
+    <view class="chip-row signs">
+      <text class="chip" wx:for="{{base.spoilageSigns}}" wx:key="*this">{{item}}</text>
+    </view>
+  </view>
+
+  <view class="paper-card adult-note">
+    成人参考不是安全承诺。超过宝宝建议期后，请结合食材外观、气味、触感判断。
+  </view>
+
+  <view class="detail-actions">
+    <button class="pixel-btn" bindtap="finish">已吃掉</button>
+    <button class="pixel-btn secondary" bindtap="keepAdult">留给大人吃</button>
+    <button class="pixel-btn ghost" bindtap="edit">编辑记录</button>
+    <button class="pixel-btn danger" bindtap="remove">删除</button>
+  </view>
+
+  <view class="disclaimer">
+    本工具提供食材保存和宝宝食用建议参考，不能替代专业医疗或食品安全判断。
+  </view>
+</view>

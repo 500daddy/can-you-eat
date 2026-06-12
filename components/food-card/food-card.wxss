@@ -1,0 +1,105 @@
+.food-card {
+  position: relative;
+  display: flex;
+  gap: 18rpx;
+  margin-bottom: 18rpx;
+  padding: 20rpx 50rpx 20rpx 18rpx;
+  border: 3rpx solid #8ebf7b;
+  border-radius: 24rpx;
+  background: #fffdf2;
+  box-shadow: 0 5rpx 0 rgba(81, 53, 31, 0.08);
+}
+
+.food-card.baby_today,
+.food-card.adult_only {
+  border-color: #ee9b30;
+}
+
+.food-card.not_recommended,
+.food-card.expired {
+  border-color: #e76b64;
+}
+
+.food-icon {
+  flex: 0 0 auto;
+  width: 98rpx;
+  height: 98rpx;
+  margin-top: 6rpx;
+}
+
+.food-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.food-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.food-name {
+  color: #2d261c;
+  font-size: 31rpx;
+  font-weight: 900;
+}
+
+.food-meta,
+.food-note,
+.food-days {
+  margin-top: 8rpx;
+  color: #7c735f;
+  font-size: 23rpx;
+  line-height: 1.45;
+}
+
+.food-note {
+  color: #51351f;
+  font-weight: 700;
+}
+
+.food-days {
+  display: flex;
+  flex-direction: column;
+  gap: 2rpx;
+}
+
+.food-actions {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+
+.mini-action {
+  min-width: 118rpx;
+  height: 48rpx;
+  margin: 0;
+  padding: 0 14rpx;
+  border-radius: 13rpx;
+  font-size: 22rpx;
+  font-weight: 900;
+  line-height: 44rpx;
+}
+
+.mini-action.finish {
+  border: 2rpx solid #68aa63;
+  background: #e7f4d8;
+  color: #2f6c37;
+}
+
+.mini-action.detail {
+  border: 2rpx solid #d8c99d;
+  background: #fff9e9;
+  color: #51351f;
+}
+
+.arrow {
+  position: absolute;
+  right: 18rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8a806d;
+  font-size: 46rpx;
+  font-weight: 900;
+}
