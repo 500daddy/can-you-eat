@@ -1,0 +1,1464 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>宝宝食材小管家 UI Prototype</title>
+  <style>
+    /*
+      Assumptions:
+      - This is a high-fidelity visual prototype, not production mini-program code.
+      - Pixel icons are original placeholders built from CSS/emoji-like blocks.
+      - The target direction is "养娃新手村": warm village, game-like but still a practical food safety tool.
+      - Production assets can replace .pixel-icon blocks with 32/48/96px transparent PNG sprites later.
+    */
+
+    :root {
+      --cream: #fbf6df;
+      --cream-2: #fff9e9;
+      --paper: #fffdf2;
+      --paper-deep: #fff2ca;
+      --green-900: #214d28;
+      --green-800: #2f6c37;
+      --green-700: #3f8a43;
+      --green-600: #55a85a;
+      --green-200: #cde7bd;
+      --green-100: #e7f4d8;
+      --brown-900: #51351f;
+      --brown-700: #8a5a2d;
+      --wood: #b87835;
+      --wood-light: #f2cf89;
+      --gold: #f4b33e;
+      --orange: #ee9b30;
+      --red: #e76b64;
+      --red-soft: #ffe2df;
+      --blueberry: #495eaa;
+      --line: #d8c99d;
+      --ink: #2d261c;
+      --muted: #7c735f;
+      --shadow: 0 8px 0 rgba(92, 69, 34, 0.08), 0 18px 36px rgba(85, 67, 32, 0.12);
+      --pixel-border: 3px solid #79a35e;
+      --radius-card: 18px;
+      --radius-small: 10px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--font);
+      background:
+        radial-gradient(circle at 10% 8%, rgba(139, 190, 94, .2), transparent 18%),
+        radial-gradient(circle at 92% 12%, rgba(244, 179, 62, .15), transparent 16%),
+        linear-gradient(180deg, #f8f8e8 0%, var(--cream) 48%, #f7f0d1 100%);
+    }
+
+    .prototype {
+      min-width: 1320px;
+      padding: 28px 32px 34px;
+    }
+
+    .hero-banner {
+      position: relative;
+      display: grid;
+      grid-template-columns: 360px 1fr 430px;
+      align-items: center;
+      gap: 28px;
+      min-height: 126px;
+      padding: 18px 28px;
+      border: 5px solid #9bc27b;
+      border-radius: 18px;
+      background:
+        linear-gradient(90deg, rgba(226, 244, 203, .98), rgba(241, 249, 220, .94)),
+        repeating-linear-gradient(45deg, rgba(255,255,255,.25) 0 6px, transparent 6px 12px);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.6), var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero-banner:before,
+    .hero-banner:after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      pointer-events: none;
+    }
+
+    .hero-banner:before {
+      left: 345px;
+      width: 430px;
+      height: 84px;
+      background:
+        linear-gradient(135deg, transparent 0 62%, #b7d79d 63% 69%, transparent 70%) 0 0 / 120px 84px repeat-x,
+        linear-gradient(165deg, transparent 0 58%, #cfddae 59% 70%, transparent 71%) 26px 12px / 150px 78px repeat-x;
+      opacity: .75;
+    }
+
+    .hero-banner:after {
+      left: 490px;
+      width: 260px;
+      height: 66px;
+      background:
+        linear-gradient(#e9855c 0 28px, transparent 28px) 96px 26px / 64px 40px no-repeat,
+        linear-gradient(135deg, transparent 0 48%, #cc5f45 49% 72%, transparent 73%) 86px 8px / 84px 44px no-repeat,
+        linear-gradient(#fff8df 0 100%) 104px 34px / 48px 28px no-repeat,
+        linear-gradient(#7aa75a 0 100%) 0 52px / 250px 14px no-repeat,
+        linear-gradient(#9bc27b 0 100%) 18px 36px / 24px 38px no-repeat,
+        radial-gradient(circle, #6f9b55 0 22px, transparent 23px) 8px 14px / 52px 52px no-repeat,
+        radial-gradient(circle, #6f9b55 0 26px, transparent 27px) 190px 3px / 60px 60px no-repeat;
+      opacity: .9;
+    }
+
+    .brand-lockup {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .baby-head {
+      width: 74px;
+      height: 74px;
+      border: 4px solid var(--brown-900);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 32% 47%, #593b26 0 3px, transparent 4px),
+        radial-gradient(circle at 68% 47%, #593b26 0 3px, transparent 4px),
+        radial-gradient(circle at 50% 65%, #de776b 0 4px, transparent 5px),
+        linear-gradient(#ffe5c9 0 100%);
+      box-shadow:
+        inset 0 0 0 5px #f3c194,
+        6px 6px 0 rgba(74, 58, 28, .16);
+      image-rendering: pixelated;
+    }
+
+    .baby-head:before {
+      content: "";
+      position: absolute;
+      width: 38px;
+      height: 24px;
+      margin: -15px 0 0 16px;
+      background:
+        linear-gradient(90deg, transparent 0 8px, #7d4f2c 8px 18px, transparent 18px 22px, #7d4f2c 22px 32px, transparent 32px);
+      border-radius: 12px 12px 0 0;
+    }
+
+    .title-stack h1 {
+      margin: 0;
+      color: #5c361b;
+      font-size: 42px;
+      line-height: 1;
+      font-weight: 950;
+      letter-spacing: 1px;
+      text-shadow:
+        3px 0 #fff5c8,
+        -3px 0 #fff5c8,
+        0 3px #fff5c8,
+        0 -3px #fff5c8,
+        5px 5px 0 rgba(88, 61, 25, .15);
+    }
+
+    .wood-sign {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 9px 26px 10px;
+      color: #fffbe5;
+      font-size: 26px;
+      font-weight: 900;
+      border: 4px solid #70431e;
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, #c9863a, #9e5b25);
+      box-shadow: inset 0 3px rgba(255,255,255,.25), 4px 4px 0 rgba(91, 54, 22, .2);
+    }
+
+    .value-card {
+      position: relative;
+      z-index: 1;
+      justify-self: center;
+      width: 380px;
+      padding: 18px 26px;
+      color: #3e2d19;
+      font-size: 24px;
+      line-height: 1.65;
+      border: 4px solid #b78445;
+      background: #fff9e8;
+      box-shadow: 6px 6px 0 rgba(105, 72, 31, .13);
+      clip-path: polygon(0 14px, 14px 14px, 14px 0, calc(100% - 14px) 0, calc(100% - 14px) 14px, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 14px calc(100% - 14px), 0 calc(100% - 14px));
+    }
+
+    .hero-features {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      align-items: center;
+      justify-items: center;
+    }
+
+    .feature {
+      width: 112px;
+      text-align: center;
+      color: var(--green-900);
+      font-weight: 800;
+    }
+
+    .feature .feature-icon {
+      width: 54px;
+      height: 54px;
+      margin: 0 auto 8px;
+      display: grid;
+      place-items: center;
+      border: 3px solid #7ca766;
+      border-radius: 14px;
+      background: #fff8dc;
+      font-size: 30px;
+      box-shadow: 4px 4px 0 rgba(83, 112, 58, .14);
+    }
+
+    .feature small {
+      display: block;
+      margin-top: 3px;
+      color: #6b7658;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .flow-line {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 18px;
+      align-items: center;
+      margin: 24px 8px 18px;
+    }
+
+    .flow-step {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      height: 34px;
+      color: var(--green-800);
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .flow-step:not(:last-child):after {
+      content: "";
+      position: absolute;
+      left: calc(50% + 76px);
+      width: calc(100% - 126px);
+      height: 2px;
+      background: #9abb82;
+    }
+
+    .badge-num {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      color: #fff;
+      border: 3px solid #7ea766;
+      border-radius: 10px;
+      background: linear-gradient(#77b961, #4c934a);
+      box-shadow: inset 0 3px rgba(255,255,255,.3);
+    }
+
+    .screens {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .screen-wrap {
+      display: grid;
+      gap: 10px;
+      justify-items: center;
+    }
+
+    .screen-label {
+      color: var(--brown-900);
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .phone {
+      width: 236px;
+      height: 506px;
+      overflow: hidden;
+      border: 4px solid #efd39b;
+      border-radius: 30px;
+      background: var(--cream-2);
+      box-shadow: 0 12px 0 rgba(111, 79, 36, .08), 0 20px 38px rgba(82, 66, 32, .18);
+      position: relative;
+    }
+
+    .statusbar {
+      height: 28px;
+      padding: 8px 14px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      font-size: 10px;
+      color: #1d1a13;
+      font-weight: 800;
+    }
+
+    .wx-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 3px 7px;
+      border-radius: 99px;
+      background: rgba(255,255,255,.75);
+      color: #1a1a1a;
+      font-size: 11px;
+    }
+
+    .topbar {
+      min-height: 34px;
+      padding: 0 14px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #fff;
+      font-weight: 900;
+      font-size: 15px;
+    }
+
+    .topbar.light {
+      color: #1e2419;
+    }
+
+    .green-screen .statusbar,
+    .green-screen .topbar {
+      color: #fff;
+    }
+
+    .screen-content {
+      height: calc(100% - 62px);
+      padding: 0 12px 58px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .green-screen {
+      background:
+        linear-gradient(180deg, rgba(70, 157, 73, .95) 0 120px, var(--cream-2) 120px 100%);
+    }
+
+    .deep-green {
+      background:
+        linear-gradient(180deg, var(--green-800), #2b6f36 52%, var(--green-900) 100%);
+    }
+
+    .plain-screen {
+      background:
+        radial-gradient(circle at 80% 12%, rgba(255, 236, 165, .4), transparent 22%),
+        var(--cream-2);
+    }
+
+    .page-title {
+      font-size: 18px;
+      line-height: 1.15;
+      color: #fff9d8;
+      font-weight: 950;
+      text-shadow: 2px 2px 0 rgba(65, 48, 22, .25);
+    }
+
+    .subline {
+      margin-top: 4px;
+      color: rgba(255,255,255,.9);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .panel {
+      border: 2px solid var(--line);
+      border-radius: var(--radius-card);
+      background: rgba(255, 253, 242, .96);
+      box-shadow: 0 5px 0 rgba(124, 95, 43, .08);
+    }
+
+    .panel.pixel {
+      border: 3px solid #85a86a;
+      border-radius: 8px;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.65), 4px 4px 0 rgba(90, 119, 64, .12);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 8px 0 6px;
+      color: var(--brown-900);
+      font-size: 14px;
+      font-weight: 950;
+    }
+
+    .hint-strip {
+      margin: 8px 0;
+      padding: 7px 9px;
+      border: 1px solid #ead39c;
+      border-radius: 10px;
+      background: #fff4c9;
+      color: #8a6428;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .food-card {
+      display: grid;
+      grid-template-columns: 54px 1fr 16px;
+      gap: 8px;
+      align-items: center;
+      margin: 8px 0;
+      padding: 9px 8px;
+      border: 2px solid #91b978;
+      border-radius: 10px;
+      background: #fffef4;
+      box-shadow: 0 4px 0 rgba(126, 97, 45, .07);
+    }
+
+    .food-card.orange {
+      border-color: #dda340;
+      background: #fff8e5;
+    }
+
+    .food-card.red {
+      border-color: #ed847b;
+      background: #fff0ef;
+    }
+
+    .food-card.compact {
+      grid-template-columns: 38px 1fr auto;
+      padding: 7px;
+      margin: 6px 0;
+    }
+
+    .food-card h4 {
+      margin: 0 0 4px;
+      font-size: 14px;
+      color: #2e2a1f;
+    }
+
+    .food-card p {
+      margin: 1px 0;
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .chevron {
+      color: #7b8a5d;
+      font-size: 20px;
+      font-weight: 950;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 7px;
+      border: 1.8px solid;
+      border-radius: 6px;
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .tag.ok {
+      color: #2f7d37;
+      border-color: #69aa63;
+      background: #eaf7d8;
+    }
+
+    .tag.today {
+      color: #a26412;
+      border-color: #df9d2e;
+      background: #fff2c3;
+    }
+
+    .tag.adult {
+      color: #9c6715;
+      border-color: #d9952e;
+      background: #fff0cb;
+    }
+
+    .tag.bad {
+      color: #c44943;
+      border-color: #e47d73;
+      background: #ffe4e1;
+    }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .pixel-btn {
+      border: 3px solid #377c3e;
+      border-radius: 9px;
+      padding: 9px 8px;
+      color: #fffbe9;
+      background: linear-gradient(#6ebd64, #3f9147);
+      font-size: 13px;
+      font-weight: 950;
+      text-align: center;
+      box-shadow: inset 0 3px rgba(255,255,255,.25), 0 4px 0 #2b6833;
+    }
+
+    .pixel-btn.secondary {
+      color: #674620;
+      border-color: #c58e32;
+      background: linear-gradient(#fff0b9, #f5c45b);
+      box-shadow: inset 0 3px rgba(255,255,255,.45), 0 4px 0 #b17b28;
+    }
+
+    .pixel-btn.ghost {
+      color: #37763d;
+      border-color: #86b56b;
+      background: #fffef4;
+      box-shadow: 0 3px 0 rgba(91, 125, 64, .18);
+    }
+
+    .tabbar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 54px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 2px solid #ecd8a7;
+      background: rgba(255, 251, 232, .98);
+      z-index: 5;
+    }
+
+    .tab {
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 2px;
+      color: #6f634f;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .tab b {
+      display: block;
+      font-size: 18px;
+      line-height: 1;
+      filter: saturate(.8);
+    }
+
+    .tab.active {
+      color: var(--green-700);
+    }
+
+    .pixel-icon {
+      width: 48px;
+      height: 48px;
+      position: relative;
+      display: inline-grid;
+      place-items: center;
+      image-rendering: pixelated;
+    }
+
+    .pixel-icon.small {
+      width: 34px;
+      height: 34px;
+    }
+
+    .pixel-icon.large {
+      width: 64px;
+      height: 64px;
+    }
+
+    .pixel-icon:before {
+      content: attr(data-emoji);
+      font-size: 35px;
+      line-height: 1;
+      filter: saturate(.95) contrast(1.04);
+      text-shadow: 2px 2px 0 rgba(76, 52, 24, .18);
+    }
+
+    .pixel-icon.small:before {
+      font-size: 25px;
+    }
+
+    .pixel-icon.large:before {
+      font-size: 52px;
+    }
+
+    .searchbar {
+      display: grid;
+      grid-template-columns: 1fr 48px;
+      gap: 8px;
+      margin: 8px 0 10px;
+    }
+
+    .input,
+    .textarea,
+    .select-like {
+      min-height: 36px;
+      padding: 8px 10px;
+      border: 2px solid #d9c99b;
+      border-radius: 9px;
+      background: #fffdf3;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .input.muted {
+      color: #9a927d;
+    }
+
+    .form-row {
+      margin: 9px 0;
+    }
+
+    .form-row label {
+      display: block;
+      margin-bottom: 5px;
+      color: #3e392e;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .segmented span {
+      padding: 7px 4px;
+      border: 2px solid #ded1a8;
+      border-radius: 8px;
+      background: #fffdf2;
+      color: #685c45;
+      font-size: 11px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .segmented .selected {
+      color: #2f7b37;
+      border-color: #5cad5a;
+      background: #e8f6d8;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.6);
+    }
+
+    .switch {
+      width: 42px;
+      height: 24px;
+      border-radius: 99px;
+      background: #55a85a;
+      border: 2px solid #438a46;
+      position: relative;
+      box-shadow: inset 0 2px rgba(255,255,255,.28);
+    }
+
+    .switch:after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 0 rgba(0,0,0,.16);
+    }
+
+    .grid-foods {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .food-tile {
+      min-height: 72px;
+      display: grid;
+      place-items: center;
+      gap: 2px;
+      padding: 6px 3px;
+      border: 2px solid #9abb82;
+      border-radius: 8px;
+      background: #fffdf2;
+      color: #483b25;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .camera-frame {
+      height: 220px;
+      margin-top: 2px;
+      border: 4px solid #f4dfb3;
+      border-radius: 14px;
+      background:
+        linear-gradient(rgba(30, 65, 30, .15), rgba(30, 65, 30, .2)),
+        radial-gradient(circle at 58% 46%, #e27a2e 0 28px, transparent 29px),
+        radial-gradient(circle at 36% 48%, #e87525 0 24px, transparent 25px),
+        linear-gradient(100deg, transparent 0 32%, #6a9f52 33% 44%, transparent 45%),
+        linear-gradient(180deg, #8caf6d 0 44%, #5f813c 45% 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .camera-frame:before,
+    .camera-frame:after {
+      content: "";
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      border-color: #fff;
+      border-style: solid;
+      opacity: .94;
+    }
+
+    .camera-frame:before {
+      left: 12px;
+      top: 12px;
+      border-width: 4px 0 0 4px;
+    }
+
+    .camera-frame:after {
+      right: 12px;
+      bottom: 12px;
+      border-width: 0 4px 4px 0;
+    }
+
+    .recognize-card {
+      margin-top: 12px;
+      padding: 10px;
+    }
+
+    .bar {
+      height: 7px;
+      border: 1px solid #305f2e;
+      border-radius: 10px;
+      background: #e9e2c2;
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, #79bd4d, #2d8f38);
+    }
+
+    .detail-hero {
+      margin-top: 4px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 10px;
+      align-items: center;
+      border: 3px solid #90ad70;
+      border-radius: 8px;
+      background: #fff7dd;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.75);
+    }
+
+    .detail-hero h3 {
+      margin: 0 0 5px;
+      font-size: 22px;
+      color: #302516;
+      font-weight: 950;
+    }
+
+    .table-like {
+      display: grid;
+      border: 2px solid #d9c89c;
+      border-radius: 9px;
+      overflow: hidden;
+      background: #fffdf4;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .table-like div {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      border-bottom: 1px solid #eadbb0;
+    }
+
+    .table-like div:last-child {
+      border-bottom: 0;
+    }
+
+    .table-like span {
+      padding: 6px 8px;
+    }
+
+    .table-like span:first-child {
+      color: #766644;
+      background: #fff7df;
+      border-right: 1px solid #eadbb0;
+    }
+
+    .baby-advice {
+      margin-top: 10px;
+      padding: 10px;
+      border: 2px solid #e68075;
+      border-radius: 8px;
+      background: #fff0eb;
+      color: #c5483f;
+      font-weight: 950;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .sign-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .sign {
+      padding: 6px 2px;
+      border: 1.8px solid #ddcda4;
+      border-radius: 8px;
+      background: #fff9e8;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      margin: 8px 0;
+    }
+
+    .stat {
+      padding: 7px 2px;
+      border: 1px solid #e2d3a7;
+      border-radius: 8px;
+      background: #fffdf2;
+      text-align: center;
+    }
+
+    .stat b {
+      display: block;
+      font-size: 18px;
+      color: #584024;
+    }
+
+    .stat small {
+      display: block;
+      color: #7d735d;
+      font-size: 8px;
+      font-weight: 800;
+    }
+
+    .menu-list {
+      display: grid;
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 35px;
+      padding: 7px 10px;
+      border: 1.5px solid #e0d0a4;
+      border-radius: 9px;
+      background: #fffdf3;
+      color: #433827;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #eadbb0;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .setting-row:last-child {
+      border-bottom: 0;
+    }
+
+    .empty-center {
+      height: 330px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    .fridge {
+      width: 96px;
+      height: 132px;
+      border: 4px solid #4c5e42;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 37% 48%, #44523d 0 4px, transparent 5px),
+        radial-gradient(circle at 65% 48%, #44523d 0 4px, transparent 5px),
+        linear-gradient(#a4e7c0, #8dd0ac);
+      box-shadow: inset 0 0 0 6px #c6f2d4, 7px 7px 0 rgba(62, 75, 44, .15);
+      position: relative;
+      image-rendering: pixelated;
+    }
+
+    .fridge:before {
+      content: "";
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      top: 74px;
+      height: 6px;
+      border-radius: 99px;
+      background: #6fae91;
+    }
+
+    .fridge:after {
+      content: "♡";
+      position: absolute;
+      top: -24px;
+      right: -26px;
+      width: 26px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      color: #e56969;
+      border: 2px solid #d8c99d;
+      border-radius: 9px;
+      background: #fffdf2;
+      font-weight: 950;
+    }
+
+    .footer-note {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: 74px 1fr 560px;
+      align-items: center;
+      gap: 18px;
+      padding: 14px 22px;
+      border: 3px dashed #91b978;
+      border-radius: 18px;
+      background: rgba(255,253,242,.78);
+    }
+
+    .legend {
+      display: flex;
+      gap: 12px;
+      justify-content: end;
+      flex-wrap: wrap;
+    }
+
+    .disclaimer {
+      color: #4d703d;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .disclaimer small {
+      display: block;
+      margin-top: 4px;
+      color: #746a56;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="prototype">
+    <section class="hero-banner">
+      <div class="brand-lockup">
+        <div class="baby-head" aria-label="像素宝宝头像"></div>
+        <div class="title-stack">
+          <h1>养娃新手村</h1>
+          <div class="wood-sign">食材小管家</div>
+        </div>
+      </div>
+
+      <div class="value-card">
+        记录食材 · 了解存储时间<br />
+        判断是否适合宝宝食用
+      </div>
+
+      <div class="hero-features">
+        <div class="feature">
+          <div class="feature-icon">🥦</div>
+          记录
+          <small>食材管理</small>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">⏰</div>
+          判断
+          <small>宝宝可食期</small>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">💗</div>
+          安心
+          <small>科学喂养</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="flow-line">
+      <div class="flow-step"><span class="badge-num">1</span>首页</div>
+      <div class="flow-step"><span class="badge-num">2</span>添加 / 搜索</div>
+      <div class="flow-step"><span class="badge-num">3</span>拍照识别</div>
+      <div class="flow-step"><span class="badge-num">4</span>食材详情</div>
+      <div class="flow-step"><span class="badge-num">5</span>提醒 / 我的</div>
+    </section>
+
+    <section class="screens">
+      <article class="screen-wrap">
+        <div class="screen-label">01 首页</div>
+        <div class="phone green-screen">
+          <div class="statusbar"><span>9:41</span><span>⌁ Wi-Fi ▰</span></div>
+          <div class="topbar">
+            <div>
+              <div class="page-title">养娃新手村 ♡</div>
+              <div class="subline">宝宝月龄：8个月12天</div>
+            </div>
+            <span class="wx-dot">••• ⦿</span>
+          </div>
+          <div class="screen-content">
+            <div class="panel pixel" style="padding:10px;">
+              <div class="section-title">
+                <span>今天先给宝宝吃这些</span>
+                <span style="font-size:24px;">🐥</span>
+              </div>
+              <div class="hint-strip">💡 根据存储时间和新鲜度，为宝宝优先推荐</div>
+
+              <div class="food-card">
+                <span class="pixel-icon large" data-emoji="🥦"></span>
+                <div>
+                  <h4>西兰花</h4>
+                  <span class="tag ok">建议今天给宝宝吃</span>
+                  <p>冷藏 · 剩余1天</p>
+                  <p>购买：05/12　冷藏保存</p>
+                </div>
+                <div class="chevron">›</div>
+              </div>
+
+              <div class="food-card orange">
+                <span class="pixel-icon large" data-emoji="🥕"></span>
+                <div>
+                  <h4>胡萝卜</h4>
+                  <span class="tag adult">可留给大人吃</span>
+                  <p>冷藏 · 剩余2天</p>
+                  <p>购买：05/08　冷藏保存</p>
+                </div>
+                <div class="chevron">›</div>
+              </div>
+
+              <div class="food-card red">
+                <span class="pixel-icon large" data-emoji="🫐"></span>
+                <div>
+                  <h4>蓝莓</h4>
+                  <span class="tag bad">不建议给宝宝食用</span>
+                  <p>冷藏 · 已超期1天</p>
+                  <p>购买：05/10　冷藏保存</p>
+                </div>
+                <div class="chevron">›</div>
+              </div>
+
+              <div style="margin:10px 0 0;text-align:center;color:#6a8b52;font-size:12px;font-weight:900;">查看全部食材（12） ›</div>
+            </div>
+
+            <div class="btn-row">
+              <div class="pixel-btn">＋ 添加食材</div>
+              <div class="pixel-btn secondary">📷 拍照识别</div>
+            </div>
+          </div>
+          <nav class="tabbar">
+            <div class="tab active"><b>🏠</b>首页</div>
+            <div class="tab"><b>🧺</b>食材</div>
+            <div class="tab"><b>🔔</b>提醒</div>
+            <div class="tab"><b>👤</b>我的</div>
+          </nav>
+        </div>
+      </article>
+
+      <article class="screen-wrap">
+        <div class="screen-label">02 添加 / 搜索</div>
+        <div class="phone plain-screen">
+          <div class="statusbar"><span>9:41</span><span>⌁ Wi-Fi ▰</span></div>
+          <div class="topbar light">
+            <span>‹</span>
+            <span class="wood-sign" style="font-size:15px;padding:4px 14px;border-width:2px;border-radius:999px;">添加食材</span>
+            <span class="wx-dot">••• ⦿</span>
+          </div>
+          <div class="screen-content">
+            <div class="searchbar">
+              <div class="input muted">🔍 搜索食材名称</div>
+              <div class="pixel-btn" style="padding:7px 0;font-size:12px;">搜索</div>
+            </div>
+
+            <div class="section-title">常见食材</div>
+            <div class="grid-foods">
+              <div class="food-tile"><span class="pixel-icon small" data-emoji="🥦"></span>西兰花</div>
+              <div class="food-tile"><span class="pixel-icon small" data-emoji="🎃"></span>南瓜</div>
+              <div class="food-tile"><span class="pixel-icon small" data-emoji="🍎"></span>苹果</div>
+              <div class="food-tile"><span class="pixel-icon small" data-emoji="🥚"></span>鸡蛋</div>
+              <div class="food-tile"><span class="pixel-icon small" data-emoji="🥑"></span>牛油果</div>
+              <div class="food-tile"><span class="pixel-icon small" data-emoji="🥕"></span>胡萝卜</div>
+            </div>
+
+            <div class="section-title" style="margin-top:14px;">最近添加</div>
+            <div class="panel" style="padding:6px;">
+              <div class="food-card compact">
+                <span class="pixel-icon small" data-emoji="🥦"></span>
+                <div><h4>西兰花</h4><p>05/12　冷藏</p></div>
+                <div class="chevron">›</div>
+              </div>
+              <div class="food-card compact">
+                <span class="pixel-icon small" data-emoji="🥕"></span>
+                <div><h4>胡萝卜</h4><p>05/08　冷藏</p></div>
+                <div class="chevron">›</div>
+              </div>
+              <div class="food-card compact">
+                <span class="pixel-icon small" data-emoji="🫐"></span>
+                <div><h4>蓝莓</h4><p>05/10　冷藏</p></div>
+                <div class="chevron">›</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label>食材名称</label>
+              <div class="input">西兰花</div>
+            </div>
+            <div class="form-row">
+              <label>保存方式</label>
+              <div class="segmented"><span>常温</span><span class="selected">冷藏</span><span>冷冻</span></div>
+            </div>
+            <div class="pixel-btn" style="margin-top:12px;">手动输入食材</div>
+          </div>
+          <nav class="tabbar">
+            <div class="tab"><b>🏠</b>首页</div>
+            <div class="tab active"><b>🧺</b>食材</div>
+            <div class="tab"><b>🔔</b>提醒</div>
+            <div class="tab"><b>👤</b>我的</div>
+          </nav>
+        </div>
+      </article>
+
+      <article class="screen-wrap">
+        <div class="screen-label">03 拍照识别</div>
+        <div class="phone deep-green">
+          <div class="statusbar"><span>9:41</span><span>⌁ Wi-Fi ▰</span></div>
+          <div class="topbar">
+            <span>‹</span>
+            <span>拍照识别</span>
+            <span class="wx-dot">••• ⦿</span>
+          </div>
+          <div class="screen-content">
+            <div class="camera-frame"></div>
+            <div style="margin:8px 0 4px;color:#fff8df;text-align:center;font-size:13px;font-weight:900;">
+              🐰 识别中...
+            </div>
+            <div class="panel recognize-card">
+              <div class="section-title" style="margin-top:0;">识别结果 <small>（可能是）</small></div>
+
+              <div class="food-card compact">
+                <span class="pixel-icon small" data-emoji="🥕"></span>
+                <div><h4>胡萝卜</h4><div class="bar"><i style="width:92%"></i></div></div>
+                <b>92%</b>
+              </div>
+              <div class="food-card compact">
+                <span class="pixel-icon small" data-emoji="🎃"></span>
+                <div><h4>南瓜</h4><div class="bar"><i style="width:64%;background:#f3b33e"></i></div></div>
+                <b>64%</b>
+              </div>
+              <div class="food-card compact">
+                <span class="pixel-icon small" data-emoji="🍠"></span>
+                <div><h4>红薯</h4><div class="bar"><i style="width:51%;background:#df7a40"></i></div></div>
+                <b>51%</b>
+              </div>
+            </div>
+            <div class="pixel-btn secondary" style="margin-top:12px;">🔍 手动搜索</div>
+            <p style="margin:14px 8px 0;color:rgba(255,255,255,.78);font-size:10px;text-align:center;font-weight:800;">
+              识别仅供参考，请以实际为准
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <article class="screen-wrap">
+        <div class="screen-label">04 食材详情</div>
+        <div class="phone green-screen">
+          <div class="statusbar"><span>9:41</span><span>⌁ Wi-Fi ▰</span></div>
+          <div class="topbar">
+            <span>‹</span>
+            <span>食材详情</span>
+            <span class="wx-dot">••• ⦿</span>
+          </div>
+          <div class="screen-content">
+            <div class="detail-hero">
+              <span class="pixel-icon large" data-emoji="🥦"></span>
+              <div>
+                <h3>西兰花 ✎</h3>
+                <span class="tag ok">状态：建议今天给宝宝吃</span>
+              </div>
+            </div>
+
+            <div class="table-like" style="margin-top:10px;">
+              <div><span>购买日期</span><span>2024-05-12</span></div>
+              <div><span>存储方式</span><span>冷藏保存（保鲜袋）</span></div>
+              <div><span>当前位置</span><span>冰箱冷藏室</span></div>
+              <div><span>备注</span><span>宝宝辅食专用</span></div>
+            </div>
+
+            <div class="section-title">时间建议</div>
+            <div class="table-like">
+              <div><span>室温</span><span>不超过4小时 · 当日食用完</span></div>
+              <div><span>冷藏</span><span>3-4天 · 成人5-7天</span></div>
+              <div><span>冷冻</span><span>1个月 · 成人2-3个月</span></div>
+            </div>
+
+            <div class="baby-advice">
+              宝宝建议<br />今天优先做熟食用 ❤
+              <p style="margin:5px 0 0;font-size:10px;color:#c35b4f;">超过宝宝建议期后，可留给大人判断食用</p>
+            </div>
+
+            <div class="section-title">变质提示</div>
+            <div class="sign-grid">
+              <div class="sign">🥬<br />发黄</div>
+              <div class="sign">🧂<br />发黏</div>
+              <div class="sign">🌫<br />有异味</div>
+            </div>
+
+            <div class="btn-row">
+              <div class="pixel-btn">✓ 记录食用</div>
+              <div class="pixel-btn secondary">✎ 编辑信息</div>
+            </div>
+          </div>
+          <nav class="tabbar">
+            <div class="tab active"><b>🏠</b>首页</div>
+            <div class="tab"><b>🧺</b>食材</div>
+            <div class="tab"><b>🔔</b>提醒</div>
+            <div class="tab"><b>👤</b>我的</div>
+          </nav>
+        </div>
+      </article>
+
+      <article class="screen-wrap">
+        <div class="screen-label">05 我的</div>
+        <div class="phone green-screen">
+          <div class="statusbar"><span>9:41</span><span>⌁ Wi-Fi ▰</span></div>
+          <div class="topbar">
+            <span></span>
+            <span>我的</span>
+            <span class="wx-dot">••• ⦿</span>
+          </div>
+          <div class="screen-content">
+            <div class="panel pixel" style="padding:12px;display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;">
+              <div class="baby-head" style="width:54px;height:54px;border-width:3px;border-radius:18px;"></div>
+              <div>
+                <h4 style="margin:0 0 4px;font-size:15px;">新手村村民 🐣</h4>
+                <p style="margin:0;color:#7a7059;font-size:11px;font-weight:800;">宝宝月龄：8个月12天</p>
+              </div>
+              <div class="chevron">›</div>
+            </div>
+
+            <div class="panel" style="padding:10px;margin-top:10px;">
+              <div class="section-title" style="margin-top:0;">提醒设置</div>
+              <div class="menu-list">
+                <div class="menu-item"><span>食材到期提醒</span><span>提前1天提醒 ›</span></div>
+                <div class="menu-item"><span>每日喂养建议</span><span>每天 08:00 ›</span></div>
+                <div class="menu-item"><span>冰箱整理提醒</span><span>每周日 10:00 ›</span></div>
+              </div>
+            </div>
+
+            <div class="panel" style="padding:10px;margin-top:10px;">
+              <div class="menu-item" style="border:0;background:transparent;padding:0;">
+                <span>宝宝模式<br /><small style="color:#807761;">开启后，优先展示宝宝饮食建议</small></span>
+                <span class="switch"></span>
+              </div>
+            </div>
+
+            <div class="panel" style="padding:10px;margin-top:10px;">
+              <div class="section-title" style="margin-top:0;">使用统计</div>
+              <div class="stats-grid">
+                <div class="stat"><b>12</b><small>记录食材</small></div>
+                <div class="stat"><b>8</b><small>今日建议</small></div>
+                <div class="stat"><b>3</b><small>即将过期</small></div>
+                <div class="stat"><b>98%</b><small>安心指数</small></div>
+              </div>
+            </div>
+
+            <div class="menu-list">
+              <div class="menu-item">💬 意见反馈 <span>›</span></div>
+              <div class="menu-item">ℹ️ 关于小程序 <span>版本 1.0.0</span></div>
+            </div>
+          </div>
+          <nav class="tabbar">
+            <div class="tab"><b>🏠</b>首页</div>
+            <div class="tab"><b>🧺</b>食材</div>
+            <div class="tab"><b>🔔</b>提醒</div>
+            <div class="tab active"><b>👤</b>我的</div>
+          </nav>
+        </div>
+      </article>
+
+      <article class="screen-wrap">
+        <div class="screen-label">06 提醒中心</div>
+        <div class="phone plain-screen">
+          <div class="statusbar"><span>9:41</span><span>⌁ Wi-Fi ▰</span></div>
+          <div class="topbar light">
+            <span>‹</span>
+            <span>提醒中心</span>
+            <span class="wx-dot">••• ⦿</span>
+          </div>
+          <div class="screen-content">
+            <div class="segmented"><span class="selected">今天建议处理</span><span>即将超过</span><span>已超过</span></div>
+
+            <div class="panel" style="padding:8px;margin-top:12px;">
+              <div class="food-card compact">
+                <span class="pixel-icon small" data-emoji="🥦"></span>
+                <div><h4>西兰花</h4><p><b style="color:#e08925">建议今天给宝宝吃</b><br />建议处理时间：今天</p></div>
+                <span class="tag ok">去处理</span>
+              </div>
+              <div class="food-card compact">
+                <span class="pixel-icon small" data-emoji="🥕"></span>
+                <div><h4>胡萝卜</h4><p><b style="color:#e08925">建议今天给宝宝吃</b><br />建议处理时间：今天</p></div>
+                <span class="tag ok">去处理</span>
+              </div>
+              <div class="food-card compact">
+                <span class="pixel-icon small" data-emoji="🫐"></span>
+                <div><h4>蓝莓</h4><p>即将超过宝宝建议期<br />建议处理时间：明天</p></div>
+                <span class="tag ok">去处理</span>
+              </div>
+              <div class="food-card compact">
+                <span class="pixel-icon small" data-emoji="🎃"></span>
+                <div><h4>南瓜</h4><p>可留给大人吃<br />建议处理时间：2天后</p></div>
+                <span class="tag ok">去处理</span>
+              </div>
+            </div>
+
+            <div class="panel" style="padding:10px;margin-top:12px;">
+              <div class="section-title" style="margin-top:0;">提醒设置</div>
+              <div class="setting-row"><span>临期前 1 天提醒</span><span class="switch"></span></div>
+              <div class="setting-row"><span>当天提醒</span><span class="switch"></span></div>
+              <div class="setting-row"><span>每日早上 8 点摘要</span><span class="switch"></span></div>
+            </div>
+          </div>
+          <nav class="tabbar">
+            <div class="tab"><b>🏠</b>首页</div>
+            <div class="tab"><b>🧺</b>食材</div>
+            <div class="tab active"><b>🔔</b>提醒</div>
+            <div class="tab"><b>👤</b>我的</div>
+          </nav>
+        </div>
+      </article>
+
+      <article class="screen-wrap">
+        <div class="screen-label">07 宝宝设置</div>
+        <div class="phone plain-screen">
+          <div class="statusbar"><span>9:41</span><span>⌁ Wi-Fi ▰</span></div>
+          <div class="topbar light">
+            <span>‹</span>
+            <span>宝宝模式设置</span>
+            <span class="wx-dot">••• ⦿</span>
+          </div>
+          <div class="screen-content">
+            <div class="panel" style="padding:0;margin-top:8px;overflow:hidden;">
+              <div class="setting-row"><span>宝宝昵称</span><span>小宝贝 ›</span></div>
+              <div class="setting-row"><span>宝宝出生日期</span><span>2025-10-01 ›</span></div>
+              <div class="setting-row"><span>宝宝月龄</span><span>8个月20天（自动计算）</span></div>
+              <div class="setting-row"><span>宝宝模式</span><span class="switch"></span></div>
+            </div>
+
+            <div class="panel" style="margin-top:14px;padding:12px;background:#fff4d4;border-color:#e5bb68;">
+              <div style="display:grid;grid-template-columns:1fr 54px;gap:8px;align-items:end;">
+                <div>
+                  <h4 style="margin:0 0 6px;color:#745022;">宝宝模式已开启</h4>
+                  <p style="margin:0;color:#806d4c;font-size:11px;font-weight:800;line-height:1.55;">
+                    我们会优先展示宝宝食用建议，文案采用更保守的表达。
+                  </p>
+                </div>
+                <div class="baby-head" style="width:50px;height:50px;border-width:3px;border-radius:17px;"></div>
+              </div>
+            </div>
+
+            <div class="panel" style="padding:10px;margin-top:14px;">
+              <div class="section-title" style="margin-top:0;">安全表达原则</div>
+              <p style="margin:0;color:#70664f;font-size:11px;font-weight:800;line-height:1.75;">
+                页面只使用“建议、参考、优先、请结合实际状态判断”等表达，避免高风险承诺式表达。
+              </p>
+            </div>
+          </div>
+          <nav class="tabbar">
+            <div class="tab"><b>🏠</b>首页</div>
+            <div class="tab"><b>🧺</b>食材</div>
+            <div class="tab"><b>🔔</b>提醒</div>
+            <div class="tab active"><b>👤</b>我的</div>
+          </nav>
+        </div>
+      </article>
+
+      <article class="screen-wrap">
+        <div class="screen-label">08 空状态</div>
+        <div class="phone plain-screen">
+          <div class="statusbar"><span>9:41</span><span>⌁ Wi-Fi ▰</span></div>
+          <div class="topbar light">
+            <span></span>
+            <span>宝宝食材</span>
+            <span class="wx-dot">••• ⦿</span>
+          </div>
+          <div class="screen-content">
+            <div class="empty-center">
+              <div>
+                <div class="fridge"></div>
+                <h3 style="margin:22px 0 8px;color:#463723;font-size:17px;">还没有记录宝宝食材</h3>
+                <p style="margin:0 auto 18px;max-width:178px;color:#746a56;font-size:12px;font-weight:800;line-height:1.55;">
+                  添加第一个食材，看看什么时候适合给宝宝吃吧～
+                </p>
+                <div class="pixel-btn">添加食材</div>
+                <div class="pixel-btn ghost" style="margin-top:10px;">拍照识别</div>
+              </div>
+            </div>
+          </div>
+          <nav class="tabbar">
+            <div class="tab active"><b>🏠</b>首页</div>
+            <div class="tab"><b>🧺</b>食材</div>
+            <div class="tab"><b>🔔</b>提醒</div>
+            <div class="tab"><b>👤</b>我的</div>
+          </nav>
+        </div>
+      </article>
+    </section>
+
+    <section class="footer-note">
+      <div class="baby-head"></div>
+      <div class="disclaimer">
+        温馨提示：
+        <small>食材新鲜，宝宝吃得香，妈妈更安心。所有建议仅供参考，请结合食材实际状态判断。</small>
+      </div>
+      <div class="legend">
+        <span class="tag ok">🥦 建议给宝宝吃</span>
+        <span class="tag adult">🍊 可留给大人吃</span>
+        <span class="tag bad">♡ 不建议给宝宝食用</span>
+        <span class="tag" style="color:#777;border-color:#aaa;background:#eee;">已处理</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
