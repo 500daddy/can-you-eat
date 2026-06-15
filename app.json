@@ -28,26 +28,26 @@
       {
         "pagePath": "pages/index/index",
         "text": "首页",
-        "iconPath": "assets/sprites/nav/nav_home_inactive.png",
-        "selectedIconPath": "assets/sprites/nav/nav_home_active.png"
+        "iconPath": "assets/sprites/nav/nav_pixel_home_inactive.png",
+        "selectedIconPath": "assets/sprites/nav/nav_pixel_home_active.png"
       },
       {
         "pagePath": "pages/food/search",
         "text": "食材",
-        "iconPath": "assets/sprites/nav/nav_food_inactive.png",
-        "selectedIconPath": "assets/sprites/nav/nav_food_active.png"
+        "iconPath": "assets/sprites/nav/nav_pixel_food_inactive.png",
+        "selectedIconPath": "assets/sprites/nav/nav_pixel_food_active.png"
       },
       {
         "pagePath": "pages/reminder/index",
         "text": "提醒",
-        "iconPath": "assets/sprites/nav/nav_reminder_inactive.png",
-        "selectedIconPath": "assets/sprites/nav/nav_reminder_active.png"
+        "iconPath": "assets/sprites/nav/nav_pixel_reminder_inactive.png",
+        "selectedIconPath": "assets/sprites/nav/nav_pixel_reminder_active.png"
       },
       {
         "pagePath": "pages/mine/index",
         "text": "我的",
-        "iconPath": "assets/sprites/nav/nav_mine_inactive.png",
-        "selectedIconPath": "assets/sprites/nav/nav_mine_active.png"
+        "iconPath": "assets/sprites/nav/nav_pixel_mine_inactive.png",
+        "selectedIconPath": "assets/sprites/nav/nav_pixel_mine_active.png"
       }
     ]
   },

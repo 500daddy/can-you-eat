@@ -82,7 +82,7 @@
   border-radius: 13rpx;
   font-size: 22rpx;
   font-weight: 900;
-  line-height: 44rpx;
+  line-height: 1.1;
 }
 
 .mini-action.finish {

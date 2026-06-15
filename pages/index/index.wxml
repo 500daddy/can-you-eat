@@ -1,4 +1,4 @@
-<view class="page with-tab">
+<view class="page with-tab home-page">
   <view class="village-hero">
     <image class="hero-bg" src="{{assets.ui.bannerVillage}}" mode="aspectFill" />
     <view class="hero-content">
@@ -18,7 +18,8 @@
 
   <view class="button-row">
     <button class="pixel-btn" bindtap="goAdd">
-      <image class="btn-icon" src="{{assets.actions.add}}" mode="aspectFit" />添加食材
+      <text class="btn-symbol">+</text>
+      <text>添加食材</text>
     </button>
     <button class="pixel-btn secondary" bindtap="goRecognize">
       <image class="btn-icon" src="{{assets.actions.camera}}" mode="aspectFit" />拍照识别

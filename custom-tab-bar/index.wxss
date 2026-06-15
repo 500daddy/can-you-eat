@@ -20,16 +20,19 @@
   justify-content: center;
   gap: 5rpx;
   min-width: 0;
+  border-radius: 22rpx;
   color: #8a806d;
 }
 
 .tab-item.active {
+  background: rgba(231, 244, 216, 0.72);
   color: #2f6c37;
 }
 
 .tab-icon {
-  width: 46rpx;
-  height: 46rpx;
+  width: 54rpx;
+  height: 54rpx;
+  image-rendering: pixelated;
 }
 
 .tab-text {
