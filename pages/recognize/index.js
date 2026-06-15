@@ -1,4 +1,12 @@
-const { assets, recognitionResults } = require('../../utils/mockData')
+const { getFoodRepository } = require('../../utils/foodRepository')
+
+const repo = getFoodRepository()
+const assets = repo.getAssets()
+const recognitionResults = [
+  { foodId: 'carrot', foodName: '胡萝卜', confidence: 0.92, percent: 92, icon: assets.food.carrot },
+  { foodId: 'pumpkin', foodName: '南瓜', confidence: 0.64, percent: 64, icon: assets.food.pumpkin },
+  { foodId: 'sweetPotato', foodName: '红薯', confidence: 0.51, percent: 51, icon: assets.food.sweetPotato }
+]
 
 Page({
   data: {

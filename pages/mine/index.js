@@ -1,20 +1,22 @@
-const { assets } = require('../../utils/mockData')
+const { getFoodRepository } = require('../../utils/foodRepository')
+
+const repo = getFoodRepository()
 
 Page({
   data: {
-    assets,
-    stats: [
-      { label: '已记录食材', value: 12 },
-      { label: '今日建议处理', value: 2 },
-      { label: '即将过期', value: 1 },
-      { label: '安心指数', value: '98%' }
-    ]
+    assets: repo.getAssets(),
+    settings: repo.getSettings(),
+    stats: repo.getStats()
   },
 
   onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 3 })
     }
+    this.setData({
+      settings: repo.getSettings(),
+      stats: repo.getStats()
+    })
   },
 
   goBaby() {

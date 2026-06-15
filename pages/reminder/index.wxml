@@ -9,13 +9,13 @@
   </view>
 
   <view wx:if="{{active === 0}}">
-    <food-card wx:for="{{today}}" wx:key="id" food="{{item}}" />
+    <food-card wx:for="{{today}}" wx:key="id" food="{{item}}" bindfinished="refreshReminders" />
   </view>
   <view wx:elif="{{active === 1}}">
-    <food-card wx:for="{{soon}}" wx:key="id" food="{{item}}" />
+    <food-card wx:for="{{soon}}" wx:key="id" food="{{item}}" bindfinished="refreshReminders" />
   </view>
   <view wx:else>
-    <food-card wx:for="{{overdue}}" wx:key="id" food="{{item}}" />
+    <food-card wx:for="{{overdue}}" wx:key="id" food="{{item}}" bindfinished="refreshReminders" />
   </view>
 
   <view class="paper-card">

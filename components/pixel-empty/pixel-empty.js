@@ -1,4 +1,6 @@
-const { assets } = require('../../utils/mockData')
+const { getFoodRepository } = require('../../utils/foodRepository')
+
+const repo = getFoodRepository()
 
 Component({
   properties: {
@@ -17,7 +19,7 @@ Component({
   },
 
   data: {
-    defaultImage: assets.mascot.emptyFridge
+    defaultImage: repo.getAssets().mascot.emptyFridge
   },
 
   methods: {

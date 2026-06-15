@@ -8,21 +8,21 @@
         <view class="setting-title">临期前提醒</view>
         <view class="subtitle">在宝宝建议期结束前提醒</view>
       </view>
-      <switch checked="{{reminderEnabled}}" color="#55a85a" />
+      <switch checked="{{reminderEnabled}}" color="#55a85a" bindchange="onReminderSwitch" />
     </view>
     <view class="setting-row">
       <view>
         <view class="setting-title">当天提醒</view>
         <view class="subtitle">当天仍未处理时提醒</view>
       </view>
-      <switch checked="{{todayEnabled}}" color="#55a85a" />
+      <switch checked="{{todayEnabled}}" color="#55a85a" bindchange="onTodaySwitch" />
     </view>
     <view class="setting-row">
       <view>
         <view class="setting-title">每日摘要</view>
         <view class="subtitle">每天 {{dailyTime}} 汇总食材情况</view>
       </view>
-      <switch checked="{{dailyEnabled}}" color="#55a85a" />
+      <switch checked="{{dailyEnabled}}" color="#55a85a" bindchange="onDailySwitch" />
     </view>
   </view>
 

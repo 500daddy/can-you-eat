@@ -13,7 +13,7 @@
   <view class="form-card">
     <view class="field">
       <text class="label">宝宝昵称</text>
-      <input class="input" value="{{nickname}}" placeholder="请输入宝宝昵称" />
+      <input class="input" value="{{nickname}}" bindinput="onNicknameInput" placeholder="请输入宝宝昵称" />
     </view>
     <view class="field">
       <text class="label">宝宝出生日期</text>

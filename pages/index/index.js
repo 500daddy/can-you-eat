@@ -1,10 +1,12 @@
-const { assets, records } = require('../../utils/mockData')
+const { getFoodRepository } = require('../../utils/foodRepository')
+
+const repo = getFoodRepository()
 
 Page({
   data: {
-    assets,
-    babyAgeText: '8个月12天',
-    records,
+    assets: repo.getAssets(),
+    babyAgeText: repo.getSettings().babyAgeText,
+    records: [],
     sections: []
   },
 
@@ -16,24 +18,20 @@ Page({
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 0 })
     }
-    this.buildSections()
+    this.refreshRecords()
+  },
+
+  refreshRecords() {
+    const records = repo.getFoodRecords()
+    this.setData({
+      babyAgeText: repo.getSettings().babyAgeText,
+      records,
+      sections: repo.getHomeSections()
+    })
   },
 
   buildSections() {
-    const groups = [
-      '今天建议处理',
-      '可留给大人吃',
-      '不建议继续食用',
-      '新鲜食材'
-    ]
-    this.setData({
-      sections: groups
-        .map((title) => ({
-          title,
-          items: records.filter((item) => item.group === title)
-        }))
-        .filter((section) => section.items.length)
-    })
+    this.refreshRecords()
   },
 
   goAdd() {

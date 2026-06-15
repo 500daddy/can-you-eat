@@ -1,3 +1,5 @@
+const { getFoodRepository } = require('../../utils/foodRepository')
+
 Component({
   properties: {
     food: {
@@ -19,10 +21,15 @@ Component({
     },
 
     markFinished() {
+      const id = this.properties.food.id
+      if (id) {
+        getFoodRepository().finishFoodRecord({ recordId: id, action: 'finished' })
+      }
       wx.showToast({
         title: '已标记处理',
         icon: 'success'
       })
+      this.triggerEvent('finished', { id })
     },
 
     noop() {

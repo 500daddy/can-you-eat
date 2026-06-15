@@ -1,17 +1,28 @@
-const { getRecord, getFoodBase, assets } = require('../../utils/mockData')
+const { getFoodRepository } = require('../../utils/foodRepository')
 const { getStatus } = require('../../utils/status')
+
+const repo = getFoodRepository()
 
 Page({
   data: {
-    assets,
+    assets: repo.getAssets(),
     record: {},
     base: {},
     statusInfo: {}
   },
 
   onLoad(query) {
-    const record = getRecord(query.id)
-    const base = getFoodBase(record.foodId)
+    this.loadDetail(query.id)
+  },
+
+  onShow() {
+    if (this.data.record.id) {
+      this.loadDetail(this.data.record.id)
+    }
+  },
+
+  loadDetail(id) {
+    const { record, base } = repo.getFoodDetail(id)
     this.setData({
       record,
       base,
@@ -24,11 +35,17 @@ Page({
   },
 
   finish() {
+    repo.finishFoodRecord({ recordId: this.data.record.id, action: 'finished' })
     wx.showToast({ title: '已标记处理', icon: 'success' })
+    setTimeout(() => {
+      wx.switchTab({ url: '/pages/index/index' })
+    }, 500)
   },
 
   keepAdult() {
+    repo.finishFoodRecord({ recordId: this.data.record.id, action: 'adult_only' })
     wx.showToast({ title: '已标记成人参考', icon: 'none' })
+    this.loadDetail(this.data.record.id)
   },
 
   remove() {
@@ -37,8 +54,9 @@ Page({
       content: '删除后不会再出现在提醒中。',
       confirmText: '删除',
       confirmColor: '#c94c43',
-      success(res) {
+      success: (res) => {
         if (res.confirm) {
+          repo.finishFoodRecord({ recordId: this.data.record.id, action: 'deleted' })
           wx.switchTab({ url: '/pages/index/index' })
         }
       }

@@ -1,12 +1,25 @@
-const { assets, foodBase } = require('../../utils/mockData')
+const { getFoodRepository } = require('../../utils/foodRepository')
+
+const repo = getFoodRepository()
 
 Page({
   data: {
-    assets,
+    assets: repo.getAssets(),
     keyword: '',
-    foodBase,
-    hotFoods: foodBase.slice(0, 8),
-    results: foodBase.slice(0, 5)
+    foodBase: [],
+    hotFoods: [],
+    results: []
+  },
+
+  onLoad(query) {
+    const keyword = query.keyword || ''
+    const foodBase = repo.getFoodBase()
+    this.setData({
+      keyword,
+      foodBase,
+      hotFoods: foodBase.slice(0, 8),
+      results: repo.searchFoods(keyword).slice(0, 5)
+    })
   },
 
   onShow() {
@@ -17,9 +30,7 @@ Page({
 
   onInput(e) {
     const keyword = e.detail.value.trim()
-    const results = keyword
-      ? foodBase.filter((item) => `${item.name}${item.aliases}`.includes(keyword))
-      : foodBase.slice(0, 5)
+    const results = repo.searchFoods(keyword).slice(0, 20)
     this.setData({ keyword, results })
   },
 
@@ -33,6 +44,7 @@ Page({
   },
 
   goAdd() {
-    wx.navigateTo({ url: '/pages/food/add' })
+    const keyword = this.data.keyword ? `?name=${encodeURIComponent(this.data.keyword)}` : ''
+    wx.navigateTo({ url: `/pages/food/add${keyword}` })
   }
 })

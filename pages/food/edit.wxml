@@ -29,7 +29,7 @@
 
     <view class="field">
       <text class="label">备注</text>
-      <textarea class="textarea" value="{{form.note}}" placeholder="补充食材状态或处理方式" />
+      <textarea class="textarea" value="{{form.note}}" bindinput="onNoteInput" placeholder="补充食材状态或处理方式" />
     </view>
   </view>
 

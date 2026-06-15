@@ -33,7 +33,7 @@
         <view class="section-more">{{item.items.length}} 个</view>
       </view>
       <block wx:for="{{item.items}}" wx:key="id" wx:for-item="food">
-        <food-card food="{{food}}" />
+        <food-card food="{{food}}" bindfinished="refreshRecords" />
       </block>
     </block>
   </block>

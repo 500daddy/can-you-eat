@@ -1,8 +1,10 @@
-const { assets, getRecord } = require('../../utils/mockData')
+const { getFoodRepository } = require('../../utils/foodRepository')
+
+const repo = getFoodRepository()
 
 Page({
   data: {
-    assets,
+    assets: repo.getAssets(),
     form: {},
     storageOptions: [
       { key: 'room', text: '常温' },
@@ -12,15 +14,19 @@ Page({
   },
 
   onLoad(query) {
-    const record = getRecord(query.id)
+    const { record } = repo.getFoodDetail(query.id)
     this.setData({
       form: {
         ...record,
-        quantity: '1',
-        unit: '份',
-        isBabyFood: true
+        quantity: record.quantity || '1',
+        unit: record.unit || '份',
+        isBabyFood: record.isBabyFood !== false
       }
     })
+  },
+
+  onNoteInput(e) {
+    this.setData({ 'form.note': e.detail.value })
   },
 
   onDateChange(e) {
@@ -37,6 +43,15 @@ Page({
   },
 
   save() {
+    repo.updateFoodRecord({
+      recordId: this.data.form.id,
+      purchaseDate: this.data.form.purchaseDate,
+      storageMethod: this.data.form.storageMethod,
+      quantity: this.data.form.quantity,
+      unit: this.data.form.unit,
+      isBabyFood: this.data.form.isBabyFood,
+      note: this.data.form.note
+    })
     wx.showToast({ title: '已保存修改', icon: 'success' })
     setTimeout(() => wx.navigateBack(), 600)
   }

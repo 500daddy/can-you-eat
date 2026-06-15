@@ -1,20 +1,33 @@
-const { records } = require('../../utils/mockData')
+const { getFoodRepository } = require('../../utils/foodRepository')
+
+const repo = getFoodRepository()
 
 Page({
   data: {
     tabs: ['今天建议处理', '即将超过建议期', '已超过建议期'],
     active: 0,
-    today: records.filter((item) => item.status === 'baby_today'),
-    soon: records.filter((item) => item.status === 'adult_only'),
-    overdue: records.filter((item) => ['not_recommended', 'expired'].includes(item.status)),
-    reminderEnabled: true,
-    dailyEnabled: true
+    today: [],
+    soon: [],
+    overdue: [],
+    reminderEnabled: repo.getSettings().reminderEnabled,
+    dailyEnabled: repo.getSettings().dailySummaryEnabled
   },
 
   onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 2 })
     }
+    this.refreshReminders()
+  },
+
+  refreshReminders() {
+    const reminders = repo.getReminders()
+    const settings = repo.getSettings()
+    this.setData({
+      ...reminders,
+      reminderEnabled: settings.reminderEnabled,
+      dailyEnabled: settings.dailySummaryEnabled
+    })
   },
 
   switchTab(e) {
