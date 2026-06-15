@@ -3,9 +3,9 @@
 }
 
 .home-page .village-hero {
-  min-height: 332rpx;
+  min-height: 456rpx;
   margin: 0 -24rpx 24rpx;
-  padding: 30rpx 34rpx 26rpx;
+  padding: 0 34rpx 26rpx;
   border: 0;
   border-radius: 0 0 34rpx 34rpx;
   background: #e7f4d8;
@@ -16,7 +16,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(235, 250, 218, 0.64), rgba(255, 249, 233, 0.04) 54%, rgba(251, 246, 223, 0.22));
+  background: linear-gradient(180deg, rgba(235, 250, 218, 0.18), rgba(255, 249, 233, 0.03) 56%, rgba(251, 246, 223, 0.24));
   pointer-events: none;
 }
 
@@ -28,10 +28,24 @@
 }
 
 .home-page .hero-content {
-  min-height: 276rpx;
+  min-height: 302rpx;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.home-nav {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 154rpx;
+  padding-bottom: 25rpx;
+  color: #fffdf2;
+  font-size: 27rpx;
+  font-weight: 900;
+  text-shadow: 0 3rpx 0 rgba(47, 108, 55, 0.5);
 }
 
 .baby-row {

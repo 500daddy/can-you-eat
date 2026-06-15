@@ -1,6 +1,9 @@
 <view class="page with-tab home-page">
   <view class="village-hero">
     <image class="hero-bg" src="{{assets.ui.bannerVillage}}" mode="aspectFill" />
+    <view class="home-nav">
+      <text>宝宝食材小管家</text>
+    </view>
     <view class="hero-content">
       <view class="baby-row">
         <image class="baby-avatar" src="{{assets.mascot.babyHappy}}" mode="aspectFit" />

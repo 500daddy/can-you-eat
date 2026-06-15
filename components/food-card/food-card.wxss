@@ -76,13 +76,19 @@
   align-items: center;
   justify-content: center;
   min-width: 118rpx;
-  height: 48rpx;
+  height: 50rpx;
   margin: 0;
   padding: 0 14rpx;
-  border-radius: 13rpx;
+  border-radius: 14rpx;
   font-size: 22rpx;
   font-weight: 900;
   line-height: 1.1;
+}
+
+.mini-action text {
+  display: block;
+  line-height: 1;
+  transform: translateY(-1rpx);
 }
 
 .mini-action.finish {

@@ -12,8 +12,12 @@
       <text>成人参考期：{{food.adultLeft}}</text>
     </view>
     <view wx:if="{{showActions}}" class="food-actions" catchtap="noop">
-      <button class="mini-action finish" size="mini" bindtap="markFinished">已吃掉</button>
-      <button class="mini-action detail" size="mini" bindtap="goDetail">看详情</button>
+      <view class="mini-action finish" bindtap="markFinished">
+        <text>已吃掉</text>
+      </view>
+      <view class="mini-action detail" bindtap="goDetail">
+        <text>看详情</text>
+      </view>
     </view>
   </view>
   <text class="arrow">›</text>
