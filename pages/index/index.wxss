@@ -1,10 +1,11 @@
 .home-page {
   padding-top: 0;
+  background: #c9efdd;
 }
 
 .home-page .village-hero {
   min-height: 450rpx;
-  margin: 0 -24rpx 20rpx;
+  margin: -6rpx -24rpx 20rpx;
   padding: 0 34rpx 26rpx;
   border: 0;
   border-radius: 0;
@@ -21,9 +22,9 @@
 }
 
 .home-page .hero-bg {
-  top: 0;
+  top: -10rpx;
   bottom: auto;
-  height: 100%;
+  height: calc(100% + 16rpx);
   opacity: 1;
 }
 
@@ -73,6 +74,18 @@
 
 .button-row .pixel-btn {
   flex: 1;
+}
+
+.home-page .button-row,
+.home-page .section-head,
+.home-page food-card,
+.home-page .disclaimer {
+  position: relative;
+  z-index: 1;
+}
+
+.home-page .button-row {
+  margin-top: 0;
 }
 
 .btn-symbol {

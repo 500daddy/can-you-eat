@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "宝宝食材小管家",
   "navigationStyle": "custom",
+  "backgroundColor": "#c9efdd",
   "usingComponents": {
     "food-card": "/components/food-card/food-card",
     "pixel-empty": "/components/pixel-empty/pixel-empty"
