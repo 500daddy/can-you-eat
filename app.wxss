@@ -152,8 +152,6 @@ button::after {
 }
 
 .pixel-btn {
-  position: relative;
-  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -169,45 +167,28 @@ button::after {
   line-height: 1;
   white-space: nowrap;
   word-break: keep-all;
-  box-shadow: inset 0 5rpx 0 rgba(255, 255, 255, 0.24), 0 7rpx 0 #276130, 0 10rpx 14rpx rgba(81, 53, 31, 0.16);
-}
-
-.pixel-btn::before {
-  content: "";
-  position: absolute;
-  left: 10rpx;
-  right: 10rpx;
-  top: 8rpx;
-  height: 3rpx;
-  border-radius: 3rpx;
-  background: rgba(255, 253, 242, 0.42);
-}
-
-.pixel-btn text,
-.pixel-btn image {
-  position: relative;
-  z-index: 1;
+  box-shadow: 0 6rpx 0 #276130;
 }
 
 .pixel-btn.secondary {
   border-color: #b87835;
   background: linear-gradient(180deg, #fff0b8, #f7c858);
   color: var(--brown-900);
-  box-shadow: inset 0 5rpx 0 rgba(255, 255, 255, 0.34), 0 7rpx 0 #b87835, 0 10rpx 14rpx rgba(81, 53, 31, 0.14);
+  box-shadow: 0 6rpx 0 #b87835;
 }
 
 .pixel-btn.ghost {
   border-color: #8bb774;
   background: #fffdf2;
   color: var(--green-800);
-  box-shadow: inset 0 4rpx 0 rgba(255, 255, 255, 0.62), 0 5rpx 0 rgba(84, 143, 75, 0.35);
+  box-shadow: 0 5rpx 0 rgba(84, 143, 75, 0.35);
 }
 
 .pixel-btn.danger {
   border-color: #b84b43;
   background: linear-gradient(180deg, #f58579, #df5f55);
   color: #fff;
-  box-shadow: inset 0 5rpx 0 rgba(255, 255, 255, 0.22), 0 7rpx 0 #b84b43, 0 10rpx 14rpx rgba(81, 53, 31, 0.16);
+  box-shadow: 0 6rpx 0 #b84b43;
 }
 
 .btn-icon {

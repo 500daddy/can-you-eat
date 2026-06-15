@@ -20,13 +20,13 @@
   </view>
 
   <view class="button-row">
-    <view class="pixel-btn" bindtap="goAdd">
+    <button class="pixel-btn" bindtap="goAdd">
       <text class="btn-symbol">+</text>
       <text>添加食材</text>
-    </view>
-    <view class="pixel-btn secondary" bindtap="goRecognize">
+    </button>
+    <button class="pixel-btn secondary" bindtap="goRecognize">
       <image class="btn-icon" src="{{assets.actions.camera}}" mode="aspectFit" />拍照识别
-    </view>
+    </button>
   </view>
 
   <block wx:if="{{records.length}}">

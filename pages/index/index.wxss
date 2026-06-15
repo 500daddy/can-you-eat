@@ -75,18 +75,6 @@
   flex: 1;
 }
 
-.home-page .button-row,
-.home-page .section-head,
-.home-page food-card,
-.home-page .disclaimer {
-  position: relative;
-  z-index: 1;
-}
-
-.home-page .button-row {
-  margin-top: 0;
-}
-
 .btn-symbol {
   display: inline-flex;
   align-items: center;
