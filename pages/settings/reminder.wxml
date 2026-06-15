@@ -29,8 +29,8 @@
   <view class="paper-card yellow">
     <view class="section-title">微信提醒预留</view>
     <view class="subtitle">TEMPLATE_ID_FOOD_EXPIRE = 请替换为实际订阅消息模板ID</view>
-    <button class="pixel-btn ghost" bindtap="requestSubscribe">开启微信提醒</button>
+    <view class="pixel-btn ghost" bindtap="requestSubscribe">开启微信提醒</view>
   </view>
 
-  <button class="pixel-btn save-btn" bindtap="save">保存设置</button>
+  <view class="pixel-btn save-btn" bindtap="save">保存设置</view>
 </view>

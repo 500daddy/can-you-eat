@@ -8,7 +8,7 @@
       <view class="selected-name">{{form.name}}</view>
       <view class="subtitle">默认推荐保存方式已带入</view>
     </view>
-    <button class="change-btn" size="mini" bindtap="goSearch">更换</button>
+    <view class="change-btn" bindtap="goSearch">更换</view>
   </view>
 
   <view class="form-card">
@@ -60,6 +60,6 @@
     <view class="remind-box">{{form.remindText}}</view>
   </view>
 
-  <button class="pixel-btn save-btn" bindtap="save">保存</button>
+  <view class="pixel-btn save-btn" bindtap="save">保存</view>
   <view class="disclaimer">保存后仍需结合食材实际外观、气味和宝宝身体情况判断。</view>
 </view>

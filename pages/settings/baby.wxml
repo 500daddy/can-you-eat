@@ -30,5 +30,5 @@
     </view>
   </view>
 
-  <button class="pixel-btn save-btn" bindtap="save">保存</button>
+  <view class="pixel-btn save-btn" bindtap="save">保存</view>
 </view>

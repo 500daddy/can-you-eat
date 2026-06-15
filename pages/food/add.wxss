@@ -25,6 +25,8 @@
 }
 
 .change-btn {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,6 +40,7 @@
   font-size: 23rpx;
   font-weight: 900;
   line-height: 1.1;
+  box-shadow: inset 0 4rpx 0 rgba(255, 255, 255, 0.45), 0 4rpx 0 rgba(184, 120, 53, 0.36);
 }
 
 .field-grid {

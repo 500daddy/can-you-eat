@@ -32,6 +32,6 @@
     </view>
   </view>
 
-  <button class="pixel-btn secondary manual-btn" bindtap="manualSearch">手动搜索</button>
+  <view class="pixel-btn secondary manual-btn" bindtap="manualSearch">手动搜索</view>
   <view class="disclaimer">不要把识别结果视为准确判断，添加前请确认食材名称。</view>
 </view>

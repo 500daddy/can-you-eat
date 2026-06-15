@@ -54,10 +54,10 @@
   </view>
 
   <view class="detail-actions">
-    <button class="pixel-btn" bindtap="finish">已吃掉</button>
-    <button class="pixel-btn secondary" bindtap="keepAdult">留给大人吃</button>
-    <button class="pixel-btn ghost" bindtap="edit">编辑记录</button>
-    <button class="pixel-btn danger" bindtap="remove">删除</button>
+    <view class="pixel-btn" bindtap="finish">已吃掉</view>
+    <view class="pixel-btn secondary" bindtap="keepAdult">留给大人吃</view>
+    <view class="pixel-btn ghost" bindtap="edit">编辑记录</view>
+    <view class="pixel-btn danger" bindtap="remove">删除</view>
   </view>
 
   <view class="disclaimer">

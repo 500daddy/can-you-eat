@@ -5,7 +5,7 @@
   <view class="search-box">
     <image class="search-icon" src="{{assets.actions.search}}" mode="aspectFit" />
     <input class="search-input" placeholder="搜索食材名称，如：西兰花" value="{{keyword}}" bindinput="onInput" confirm-type="search" bindconfirm="search" />
-    <button class="search-btn" bindtap="search">搜索</button>
+    <view class="search-btn" bindtap="search">搜索</view>
   </view>
 
   <view class="section-head">
@@ -31,7 +31,7 @@
         <view class="result-meta">{{item.category}}｜别名：{{item.aliases}}</view>
         <view class="result-meta">推荐保存：{{item.defaultStorage === 'room' ? '常温' : item.defaultStorage === 'freezer' ? '冷冻' : '冷藏'}}｜宝宝建议期：{{item.babyDays}}</view>
       </view>
-      <button class="choose-btn" size="mini">选择</button>
+      <view class="choose-btn">选择</view>
     </view>
   </block>
 
@@ -39,6 +39,6 @@
     <image class="not-found" src="{{assets.mascot.emptyNotFound}}" mode="aspectFit" />
     <view class="section-title">没找到这个食材</view>
     <view class="subtitle">可以按分类添加，或先创建一个自定义食材。</view>
-    <button class="pixel-btn ghost" bindtap="goAdd">创建新食材</button>
+    <view class="pixel-btn ghost" bindtap="goAdd">创建新食材</view>
   </view>
 </view>
