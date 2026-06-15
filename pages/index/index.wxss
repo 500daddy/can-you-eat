@@ -8,7 +8,7 @@
   padding: 0 34rpx 26rpx;
   border: 0;
   border-radius: 0 0 34rpx 34rpx;
-  background: #e7f4d8;
+  background: #f5dca9;
   box-shadow: 0 8rpx 0 rgba(81, 53, 31, 0.12);
 }
 
@@ -16,7 +16,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(235, 250, 218, 0.18), rgba(255, 249, 233, 0.03) 56%, rgba(251, 246, 223, 0.24));
+  background: linear-gradient(180deg, rgba(255, 245, 214, 0.1), rgba(255, 249, 233, 0.02) 56%, rgba(251, 246, 223, 0.28));
   pointer-events: none;
 }
 
@@ -45,7 +45,7 @@
   color: #fffdf2;
   font-size: 27rpx;
   font-weight: 900;
-  text-shadow: 0 3rpx 0 rgba(47, 108, 55, 0.5);
+  text-shadow: 0 3rpx 0 rgba(81, 53, 31, 0.45);
 }
 
 .baby-row {
