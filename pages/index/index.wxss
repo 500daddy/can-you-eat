@@ -28,30 +28,24 @@
 }
 
 .home-page .hero-content {
-  min-height: 302rpx;
+  min-height: 430rpx;
+  padding-top: 132rpx;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-.home-nav {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  height: 154rpx;
-  padding-bottom: 25rpx;
-  color: #fffdf2;
-  font-size: 27rpx;
-  font-weight: 900;
-  text-shadow: 0 3rpx 0 rgba(81, 53, 31, 0.45);
-}
-
 .baby-row {
+  align-self: flex-start;
   display: flex;
   align-items: center;
   gap: 18rpx;
+  max-width: 560rpx;
+  padding: 12rpx 20rpx 12rpx 12rpx;
+  border: 3rpx solid rgba(81, 53, 31, 0.28);
+  border-radius: 28rpx;
+  background: rgba(255, 253, 242, 0.84);
+  box-shadow: 0 6rpx 0 rgba(81, 53, 31, 0.12);
 }
 
 .baby-avatar {
@@ -60,6 +54,20 @@
   border: 3rpx solid #51351f;
   border-radius: 22rpx;
   background: #fff9e9;
+}
+
+.baby-info {
+  min-width: 0;
+}
+
+.home-page .pixel-title {
+  color: #214d28;
+  text-shadow: 0 3rpx 0 #fff4c7, 0 0 8rpx rgba(255, 253, 242, 0.8);
+}
+
+.baby-row .subtitle {
+  color: #6b5735;
+  font-weight: 700;
 }
 
 .hero-card {
