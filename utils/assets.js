@@ -4,8 +4,6 @@ module.exports = {
   sprite,
   ui: {
     bannerVillage: `${sprite}ui/ui_banner_village.png`,
-    bannerVillageHome: `${sprite}ui/ui_banner_village_home.png`,
-    bannerFoodStorageHome: `${sprite}ui/ui_banner_food_storage_home.png`,
     signBoard: `${sprite}ui/ui_sign_board.png`,
     heart: `${sprite}ui/ui_decoration_heart.png`,
     fence: `${sprite}ui/ui_decoration_fence.png`

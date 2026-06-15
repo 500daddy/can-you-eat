@@ -1,30 +1,29 @@
 .home-page {
   padding-top: 0;
-  background: linear-gradient(180deg, #aee2ee 0, #c7eadb 410rpx, #fbf6df 456rpx, #fbf6df 100%);
 }
 
 .home-page .village-hero {
-  min-height: 450rpx;
-  margin: -6rpx -24rpx 20rpx;
+  min-height: 456rpx;
+  margin: 0 -24rpx 24rpx;
   padding: 0 34rpx 26rpx;
   border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
+  border-radius: 0 0 34rpx 34rpx;
+  background: #e7f4d8;
+  box-shadow: 0 8rpx 0 rgba(81, 53, 31, 0.12);
 }
 
 .home-page .village-hero::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 249, 233, 0) 72%);
+  background: linear-gradient(180deg, rgba(235, 250, 218, 0.18), rgba(255, 249, 233, 0.03) 56%, rgba(251, 246, 223, 0.24));
   pointer-events: none;
 }
 
 .home-page .hero-bg {
-  top: -10rpx;
+  top: 0;
   bottom: auto;
-  height: calc(100% + 16rpx);
+  height: 100%;
   opacity: 1;
 }
 
@@ -69,7 +68,7 @@
   border: 3rpx solid rgba(81, 53, 31, 0.2);
   border-radius: 22rpx;
   background: rgba(255, 253, 242, 0.9);
-  box-shadow: 0 5rpx 0 rgba(81, 53, 31, 0.12);
+  backdrop-filter: blur(2px);
 }
 
 .button-row .pixel-btn {
