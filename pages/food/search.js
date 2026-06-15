@@ -9,6 +9,12 @@ Page({
     results: foodBase.slice(0, 5)
   },
 
+  onShow() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 1 })
+    }
+  },
+
   onInput(e) {
     const keyword = e.detail.value.trim()
     const results = keyword

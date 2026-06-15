@@ -3,6 +3,7 @@
   align-items: center;
   gap: 12rpx;
   margin-top: 24rpx;
+  min-height: 82rpx;
   padding: 10rpx 12rpx 10rpx 18rpx;
   border: 3rpx solid #d8c99d;
   border-radius: 22rpx;
@@ -16,21 +17,25 @@
 
 .search-input {
   flex: 1;
-  height: 64rpx;
+  min-width: 0;
+  height: 60rpx;
+  line-height: 60rpx;
   font-size: 27rpx;
 }
 
 .search-btn {
-  width: 112rpx;
-  height: 58rpx;
+  flex: 0 0 126rpx;
+  width: 126rpx;
+  height: 60rpx;
   margin: 0;
+  padding: 0;
   border: 2rpx solid #2f6c37;
   border-radius: 16rpx;
   background: #55a85a;
   color: #fff;
   font-size: 25rpx;
   font-weight: 900;
-  line-height: 54rpx;
+  line-height: 1.1;
 }
 
 .food-grid {
@@ -40,6 +45,10 @@
 }
 
 .food-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   min-height: 150rpx;
   padding: 12rpx 8rpx;
   border: 3rpx solid #8ebf7b;
@@ -93,16 +102,18 @@
 }
 
 .choose-btn {
+  flex: 0 0 102rpx;
   width: 96rpx;
   height: 54rpx;
   margin: 0;
+  padding: 0;
   border: 2rpx solid #68aa63;
   border-radius: 16rpx;
   background: #e7f4d8;
   color: #2f6c37;
   font-size: 23rpx;
   font-weight: 900;
-  line-height: 50rpx;
+  line-height: 1.1;
 }
 
 .not-found {

@@ -72,6 +72,9 @@
 }
 
 .mini-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-width: 118rpx;
   height: 48rpx;
   margin: 0;

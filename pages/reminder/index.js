@@ -11,6 +11,12 @@ Page({
     dailyEnabled: true
   },
 
+  onShow() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 2 })
+    }
+  },
+
   switchTab(e) {
     this.setData({ active: Number(e.currentTarget.dataset.index) })
   },

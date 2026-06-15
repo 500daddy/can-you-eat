@@ -25,6 +25,9 @@
 }
 
 .change-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100rpx;
   height: 54rpx;
   margin: 0;
@@ -34,7 +37,7 @@
   color: #51351f;
   font-size: 23rpx;
   font-weight: 900;
-  line-height: 50rpx;
+  line-height: 1.1;
 }
 
 .field-grid {
