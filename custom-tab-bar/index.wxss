@@ -40,6 +40,8 @@
   font-size: 24rpx;
   font-weight: 800;
   line-height: 1.15;
+  white-space: nowrap;
+  word-break: keep-all;
 }
 
 .tab-item.active .tab-text {

@@ -11,6 +11,8 @@
   font-size: 22rpx;
   font-weight: 900;
   line-height: 1.2;
+  white-space: nowrap;
+  word-break: keep-all;
 }
 
 .status-tag.baby_today {

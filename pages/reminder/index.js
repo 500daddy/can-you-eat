@@ -2,7 +2,7 @@ const { records } = require('../../utils/mockData')
 
 Page({
   data: {
-    tabs: ['今天建议处理', '即将超过宝宝建议期', '已超过宝宝建议期'],
+    tabs: ['今天建议处理', '即将超过建议期', '已超过建议期'],
     active: 0,
     today: records.filter((item) => item.status === 'baby_today'),
     soon: records.filter((item) => item.status === 'adult_only'),

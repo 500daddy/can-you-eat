@@ -41,6 +41,8 @@
   font-size: 25rpx;
   font-weight: 900;
   line-height: 1.1;
+  white-space: nowrap;
+  word-break: keep-all;
   box-shadow: inset 0 4rpx 0 rgba(255, 255, 255, 0.24), 0 4rpx 0 #2f6c37;
 }
 
@@ -64,6 +66,8 @@
   color: #51351f;
   font-size: 23rpx;
   font-weight: 900;
+  white-space: nowrap;
+  word-break: keep-all;
 }
 
 .tile-icon {
@@ -98,6 +102,8 @@
   color: #2d261c;
   font-size: 30rpx;
   font-weight: 900;
+  white-space: nowrap;
+  word-break: keep-all;
 }
 
 .result-meta {
@@ -125,6 +131,8 @@
   font-size: 25rpx;
   font-weight: 900;
   line-height: 1.1;
+  white-space: nowrap;
+  word-break: keep-all;
   box-shadow: inset 0 4rpx 0 rgba(255, 255, 255, 0.58), 0 4rpx 0 rgba(84, 143, 75, 0.3);
 }
 

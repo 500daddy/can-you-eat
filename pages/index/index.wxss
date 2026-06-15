@@ -1,6 +1,6 @@
 .home-page {
   padding-top: 0;
-  background: #c9efdd;
+  background: linear-gradient(180deg, #aee2ee 0, #c7eadb 410rpx, #fbf6df 456rpx, #fbf6df 100%);
 }
 
 .home-page .village-hero {
