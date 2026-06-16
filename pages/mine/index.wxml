@@ -26,12 +26,12 @@
     </view>
     <view class="list-cell" bindtap="toast">
       <text>识别记录</text>
-      <text class="cell-note">24 次 ›</text>
+      <text class="cell-note">{{recognitionCount || 0}} 次 ›</text>
     </view>
   </view>
 
   <view class="paper-card">
-    <view class="list-cell" bindtap="toast">
+    <view class="list-cell" bindtap="goFeedback">
       <text>意见反馈</text>
       <text class="cell-note">帮助我们做得更好 ›</text>
     </view>

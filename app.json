@@ -8,6 +8,7 @@
     "pages/food/edit",
     "pages/reminder/index",
     "pages/mine/index",
+    "pages/feedback/index",
     "pages/settings/baby",
     "pages/settings/reminder"
   ],

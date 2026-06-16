@@ -1,15 +1,15 @@
-const { getFoodRepository } = require('../../utils/foodRepository')
+const { getFoodService } = require('../../utils/foodService')
 const { todayString } = require('../../utils/foodRules')
 
-const repo = getFoodRepository()
+const foodService = getFoodService()
 
 Page({
   data: {
-    assets: repo.getAssets(),
+    assets: foodService.getAssets(),
     form: {
       foodId: 'broccoli',
       name: '西兰花',
-      icon: repo.getAssets().food.broccoli,
+      icon: foodService.getAssets().food.broccoli,
       purchaseDate: todayString(),
       storageMethod: 'fridge',
       quantity: '1',
@@ -25,9 +25,9 @@ Page({
     ]
   },
 
-  onLoad(query) {
+  async onLoad(query) {
     if (query.foodId) {
-      const food = repo.getFoodBaseById(query.foodId)
+      const food = await foodService.getFoodBaseById(query.foodId)
       this.setData({
         form: {
           ...this.data.form,
@@ -79,13 +79,13 @@ Page({
     this.setData({ 'form.note': e.detail.value })
   },
 
-  save() {
+  async save() {
     const form = this.data.form
     if (!form.name.trim()) {
       wx.showToast({ title: '请填写食材名称', icon: 'none' })
       return
     }
-    repo.addFoodRecord({
+    await foodService.addFoodRecord({
       foodBaseId: form.foodId,
       foodName: form.name,
       purchaseDate: form.purchaseDate,

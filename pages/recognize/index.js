@@ -1,12 +1,9 @@
-const { getFoodRepository } = require('../../utils/foodRepository')
+const { getFoodService } = require('../../utils/foodService')
+const { getRecognitionService } = require('../../utils/recognitionService')
 
-const repo = getFoodRepository()
-const assets = repo.getAssets()
-const recognitionResults = [
-  { foodId: 'carrot', foodName: '胡萝卜', confidence: 0.92, percent: 92, icon: assets.food.carrot },
-  { foodId: 'pumpkin', foodName: '南瓜', confidence: 0.64, percent: 64, icon: assets.food.pumpkin },
-  { foodId: 'sweetPotato', foodName: '红薯', confidence: 0.51, percent: 51, icon: assets.food.sweetPotato }
-]
+const foodService = getFoodService()
+const recognitionService = getRecognitionService()
+const assets = foodService.getAssets()
 
 Page({
   data: {
@@ -22,12 +19,15 @@ Page({
       count: 1,
       mediaType: ['image'],
       sourceType: ['album', 'camera'],
-      success: (res) => {
+      success: async (res) => {
         const imagePath = res.tempFiles && res.tempFiles[0] ? res.tempFiles[0].tempFilePath : ''
         this.setData({ hasImage: true, imagePath, recognizing: true, results: [] })
-        setTimeout(() => {
-          this.setData({ recognizing: false, results: recognitionResults })
-        }, 700)
+        const recognized = await recognitionService.recognizeImage(imagePath)
+        this.setData({
+          recognizing: false,
+          imagePath: recognized.imageUrl || imagePath,
+          results: recognized.results
+        })
       },
       fail: () => {
         this.mockRecognize()
@@ -35,17 +35,26 @@ Page({
     })
   },
 
-  mockRecognize() {
+  async mockRecognize() {
+    const recognized = await recognitionService.recognizeImage(assets.food.carrot)
     this.setData({
       hasImage: true,
       recognizing: false,
-      imagePath: assets.food.carrot,
-      results: recognitionResults
+      imagePath: recognized.imageUrl || assets.food.carrot,
+      results: recognized.results
     })
   },
 
-  chooseResult(e) {
+  async chooseResult(e) {
     const { id } = e.currentTarget.dataset
+    const selected = this.data.results.find((item) => item.foodId === id) || {}
+    await recognitionService.logSelection({
+      imageUrl: this.data.imagePath,
+      mockResult: this.data.results,
+      selectedFoodName: selected.foodName || '',
+      selectedFoodBaseId: id,
+      confidence: selected.confidence || 0
+    })
     wx.navigateTo({ url: `/pages/food/add?foodId=${id}` })
   },
 

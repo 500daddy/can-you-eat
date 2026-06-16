@@ -1,4 +1,4 @@
-const { getFoodRepository } = require('../../utils/foodRepository')
+const { getFoodService } = require('../../utils/foodService')
 
 Component({
   properties: {
@@ -20,10 +20,10 @@ Component({
       })
     },
 
-    markFinished() {
+    async markFinished() {
       const id = this.properties.food.id
       if (id) {
-        getFoodRepository().finishFoodRecord({ recordId: id, action: 'finished' })
+        await getFoodService().finishFoodRecord({ recordId: id, action: 'finished' })
       }
       wx.showToast({
         title: '已标记处理',

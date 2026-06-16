@@ -2,7 +2,8 @@ App({
   globalData: {
     babyName: '小芽贝',
     babyAgeText: '8个月12天',
-    babyMode: true
+    babyMode: true,
+    useCloudFoodApi: false
   },
 
   onLaunch() {

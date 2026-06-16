@@ -1,6 +1,6 @@
-const { getFoodRepository } = require('../../utils/foodRepository')
+const { getFoodService } = require('../../utils/foodService')
 
-const repo = getFoodRepository()
+const foodService = getFoodService()
 
 Page({
   data: {
@@ -9,8 +9,8 @@ Page({
     today: [],
     soon: [],
     overdue: [],
-    reminderEnabled: repo.getSettings().reminderEnabled,
-    dailyEnabled: repo.getSettings().dailySummaryEnabled
+    reminderEnabled: true,
+    dailyEnabled: true
   },
 
   onShow() {
@@ -20,9 +20,9 @@ Page({
     this.refreshReminders()
   },
 
-  refreshReminders() {
-    const reminders = repo.getReminders()
-    const settings = repo.getSettings()
+  async refreshReminders() {
+    const reminders = await foodService.getReminders()
+    const settings = await foodService.getSettings()
     this.setData({
       ...reminders,
       reminderEnabled: settings.reminderEnabled,

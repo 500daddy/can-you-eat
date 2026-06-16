@@ -1,15 +1,25 @@
-const { getFoodRepository } = require('../../utils/foodRepository')
+const { getFoodService } = require('../../utils/foodService')
 
-const repo = getFoodRepository()
-const settings = repo.getSettings()
+const foodService = getFoodService()
 
 Page({
   data: {
-    reminderEnabled: settings.reminderEnabled,
-    beforeDays: `${settings.remindBeforeDays}天前`,
-    todayEnabled: settings.todayReminderEnabled,
-    dailyEnabled: settings.dailySummaryEnabled,
-    dailyTime: settings.dailySummaryTime
+    reminderEnabled: true,
+    beforeDays: '1天前',
+    todayEnabled: true,
+    dailyEnabled: true,
+    dailyTime: '08:00'
+  },
+
+  async onLoad() {
+    const settings = await foodService.getSettings()
+    this.setData({
+      reminderEnabled: settings.reminderEnabled,
+      beforeDays: `${settings.remindBeforeDays}天前`,
+      todayEnabled: settings.todayReminderEnabled,
+      dailyEnabled: settings.dailySummaryEnabled,
+      dailyTime: settings.dailySummaryTime
+    })
   },
 
   onReminderSwitch(e) {
@@ -24,8 +34,8 @@ Page({
     this.setData({ dailyEnabled: e.detail.value })
   },
 
-  save() {
-    repo.updateSettings({
+  async save() {
+    await foodService.updateSettings({
       reminderEnabled: this.data.reminderEnabled,
       todayReminderEnabled: this.data.todayEnabled,
       dailySummaryEnabled: this.data.dailyEnabled,

@@ -1,0 +1,57 @@
+const cloud = require('wx-server-sdk')
+const { compactObject, createFoodApi } = require('./core')
+
+cloud.init({
+  env: cloud.DYNAMIC_CURRENT_ENV
+})
+
+function createCloudStore(db) {
+  return {
+    async list(collection, predicate) {
+      if (predicate) {
+        const all = []
+        let skip = 0
+        const limit = 100
+        while (true) {
+          const res = await db.collection(collection).skip(skip).limit(limit).get()
+          all.push(...res.data)
+          if (res.data.length < limit) break
+          skip += limit
+        }
+        return all.filter(predicate)
+      }
+      const res = await db.collection(collection).limit(100).get()
+      return res.data
+    },
+
+    async get(collection, predicate) {
+      const list = await this.list(collection, predicate)
+      return list[0] || null
+    },
+
+    async add(collection, doc) {
+      await db.collection(collection).add({ data: doc })
+      return doc
+    },
+
+    async update(collection, predicate, patch) {
+      const found = await this.get(collection, predicate)
+      if (!found) return null
+      const id = found._id
+      const next = compactObject({ ...found, ...patch })
+      delete next._id
+      await db.collection(collection).doc(id).update({ data: next })
+      return { ...next, _id: id }
+    }
+  }
+}
+
+exports.main = async (event = {}) => {
+  const wxContext = cloud.getWXContext()
+  const api = createFoodApi({
+    store: createCloudStore(cloud.database()),
+    userId: wxContext.OPENID,
+    today: event.today
+  })
+  return api.handle(event)
+}

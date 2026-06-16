@@ -1,6 +1,6 @@
-const { getFoodRepository } = require('../../utils/foodRepository')
+const { getFoodService } = require('../../utils/foodService')
 
-const repo = getFoodRepository()
+const foodService = getFoodService()
 
 Component({
   properties: {
@@ -19,7 +19,7 @@ Component({
   },
 
   data: {
-    defaultImage: repo.getAssets().mascot.emptyFridge
+    defaultImage: foodService.getAssets().mascot.emptyFridge
   },
 
   methods: {

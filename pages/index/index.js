@@ -1,11 +1,11 @@
-const { getFoodRepository } = require('../../utils/foodRepository')
+const { getFoodService } = require('../../utils/foodService')
 
-const repo = getFoodRepository()
+const foodService = getFoodService()
 
 Page({
   data: {
-    assets: repo.getAssets(),
-    babyAgeText: repo.getSettings().babyAgeText,
+    assets: foodService.getAssets(),
+    babyAgeText: '8个月12天',
     records: [],
     sections: []
   },
@@ -21,12 +21,13 @@ Page({
     this.refreshRecords()
   },
 
-  refreshRecords() {
-    const records = repo.getFoodRecords()
+  async refreshRecords() {
+    const settings = await foodService.getSettings()
+    const records = await foodService.getFoodRecords()
     this.setData({
-      babyAgeText: repo.getSettings().babyAgeText,
+      babyAgeText: settings.babyAgeText,
       records,
-      sections: repo.getHomeSections()
+      sections: await foodService.getHomeSections()
     })
   },
 

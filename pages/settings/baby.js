@@ -1,14 +1,22 @@
-const { getFoodRepository } = require('../../utils/foodRepository')
+const { getFoodService } = require('../../utils/foodService')
 
-const repo = getFoodRepository()
-const settings = repo.getSettings()
+const foodService = getFoodService()
 
 Page({
   data: {
-    assets: repo.getAssets(),
-    nickname: settings.babyName,
-    birthday: settings.babyBirthday,
-    babyMode: settings.babyMode
+    assets: foodService.getAssets(),
+    nickname: '小芽贝',
+    birthday: '2025-10-01',
+    babyMode: true
+  },
+
+  async onLoad() {
+    const settings = await foodService.getSettings()
+    this.setData({
+      nickname: settings.babyName,
+      birthday: settings.babyBirthday,
+      babyMode: settings.babyMode
+    })
   },
 
   onBirthdayChange(e) {
@@ -23,8 +31,8 @@ Page({
     this.setData({ babyMode: e.detail.value })
   },
 
-  save() {
-    repo.updateSettings({
+  async save() {
+    await foodService.updateSettings({
       babyName: this.data.nickname,
       babyBirthday: this.data.birthday,
       babyMode: this.data.babyMode

@@ -1,10 +1,10 @@
-const { getFoodRepository } = require('../../utils/foodRepository')
+const { getFoodService } = require('../../utils/foodService')
 
-const repo = getFoodRepository()
+const foodService = getFoodService()
 
 Page({
   data: {
-    assets: repo.getAssets(),
+    assets: foodService.getAssets(),
     form: {},
     storageOptions: [
       { key: 'room', text: '常温' },
@@ -13,8 +13,8 @@ Page({
     ]
   },
 
-  onLoad(query) {
-    const { record } = repo.getFoodDetail(query.id)
+  async onLoad(query) {
+    const { record } = await foodService.getFoodDetail(query.id)
     this.setData({
       form: {
         ...record,
@@ -42,8 +42,8 @@ Page({
     })
   },
 
-  save() {
-    repo.updateFoodRecord({
+  async save() {
+    await foodService.updateFoodRecord({
       recordId: this.data.form.id,
       purchaseDate: this.data.form.purchaseDate,
       storageMethod: this.data.form.storageMethod,

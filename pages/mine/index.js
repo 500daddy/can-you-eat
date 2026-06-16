@@ -1,21 +1,24 @@
-const { getFoodRepository } = require('../../utils/foodRepository')
+const { getFoodService } = require('../../utils/foodService')
+const { getRecognitionService } = require('../../utils/recognitionService')
 
-const repo = getFoodRepository()
+const foodService = getFoodService()
+const recognitionService = getRecognitionService()
 
 Page({
   data: {
-    assets: repo.getAssets(),
-    settings: repo.getSettings(),
-    stats: repo.getStats()
+    assets: foodService.getAssets(),
+    settings: {},
+    stats: []
   },
 
-  onShow() {
+  async onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 3 })
     }
     this.setData({
-      settings: repo.getSettings(),
-      stats: repo.getStats()
+      settings: await foodService.getSettings(),
+      stats: await foodService.getStats(),
+      recognitionCount: await recognitionService.getRecognitionCount()
     })
   },
 
@@ -25,6 +28,10 @@ Page({
 
   goReminder() {
     wx.navigateTo({ url: '/pages/settings/reminder' })
+  },
+
+  goFeedback() {
+    wx.navigateTo({ url: '/pages/feedback/index' })
   },
 
   toast() {

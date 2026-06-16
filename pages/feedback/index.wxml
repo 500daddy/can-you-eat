@@ -1,0 +1,34 @@
+<view class="page feedback-page">
+  <view class="page-title">意见反馈</view>
+  <view class="subtitle">告诉我们哪个食材没找到、哪条保存建议不够准，后续会继续补齐食材库。</view>
+
+  <view class="form-card">
+    <view class="field">
+      <text class="label">反馈类型</text>
+      <view class="chip-row">
+        <view wx:for="{{typeOptions}}" wx:key="key" class="feedback-chip {{form.type === item.key ? 'active' : ''}}" data-key="{{item.key}}" bindtap="chooseType">
+          {{item.text}}
+        </view>
+      </view>
+    </view>
+
+    <view class="field">
+      <text class="label">相关食材</text>
+      <input class="input" value="{{form.foodName}}" bindinput="onFoodNameInput" placeholder="例如：山药、莲藕、草莓" />
+    </view>
+
+    <view class="field">
+      <text class="label">反馈内容 <text class="required">*</text></text>
+      <textarea class="textarea" value="{{form.content}}" bindinput="onContentInput" maxlength="300" placeholder="请描述你遇到的问题，或希望补充的食材信息" />
+      <view class="counter">{{form.content.length}} / 300</view>
+    </view>
+  </view>
+
+  <button class="pixel-btn save-btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submit">
+    提交反馈
+  </button>
+
+  <view class="disclaimer">
+    反馈只用于改进食材库和识别体验，请不要填写手机号、地址等个人敏感信息。
+  </view>
+</view>

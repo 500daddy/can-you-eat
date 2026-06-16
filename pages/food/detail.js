@@ -1,11 +1,11 @@
-const { getFoodRepository } = require('../../utils/foodRepository')
+const { getFoodService } = require('../../utils/foodService')
 const { getStatus } = require('../../utils/status')
 
-const repo = getFoodRepository()
+const foodService = getFoodService()
 
 Page({
   data: {
-    assets: repo.getAssets(),
+    assets: foodService.getAssets(),
     record: {},
     base: {},
     statusInfo: {}
@@ -21,8 +21,8 @@ Page({
     }
   },
 
-  loadDetail(id) {
-    const { record, base } = repo.getFoodDetail(id)
+  async loadDetail(id) {
+    const { record, base } = await foodService.getFoodDetail(id)
     this.setData({
       record,
       base,
@@ -34,16 +34,16 @@ Page({
     wx.navigateTo({ url: `/pages/food/edit?id=${this.data.record.id}` })
   },
 
-  finish() {
-    repo.finishFoodRecord({ recordId: this.data.record.id, action: 'finished' })
+  async finish() {
+    await foodService.finishFoodRecord({ recordId: this.data.record.id, action: 'finished' })
     wx.showToast({ title: '已标记处理', icon: 'success' })
     setTimeout(() => {
       wx.switchTab({ url: '/pages/index/index' })
     }, 500)
   },
 
-  keepAdult() {
-    repo.finishFoodRecord({ recordId: this.data.record.id, action: 'adult_only' })
+  async keepAdult() {
+    await foodService.finishFoodRecord({ recordId: this.data.record.id, action: 'adult_only' })
     wx.showToast({ title: '已标记成人参考', icon: 'none' })
     this.loadDetail(this.data.record.id)
   },
@@ -56,7 +56,7 @@ Page({
       confirmColor: '#c94c43',
       success: (res) => {
         if (res.confirm) {
-          repo.finishFoodRecord({ recordId: this.data.record.id, action: 'deleted' })
+          foodService.finishFoodRecord({ recordId: this.data.record.id, action: 'deleted' })
           wx.switchTab({ url: '/pages/index/index' })
         }
       }

@@ -1,24 +1,24 @@
-const { getFoodRepository } = require('../../utils/foodRepository')
+const { getFoodService } = require('../../utils/foodService')
 
-const repo = getFoodRepository()
+const foodService = getFoodService()
 
 Page({
   data: {
-    assets: repo.getAssets(),
+    assets: foodService.getAssets(),
     keyword: '',
     foodBase: [],
     hotFoods: [],
     results: []
   },
 
-  onLoad(query) {
+  async onLoad(query) {
     const keyword = query.keyword || ''
-    const foodBase = repo.getFoodBase()
+    const foodBase = await foodService.getFoodBase()
     this.setData({
       keyword,
       foodBase,
       hotFoods: foodBase.slice(0, 8),
-      results: repo.searchFoods(keyword).slice(0, 5)
+      results: (await foodService.searchFoods(keyword)).slice(0, 5)
     })
   },
 
@@ -28,9 +28,9 @@ Page({
     }
   },
 
-  onInput(e) {
+  async onInput(e) {
     const keyword = e.detail.value.trim()
-    const results = repo.searchFoods(keyword).slice(0, 20)
+    const results = (await foodService.searchFoods(keyword)).slice(0, 20)
     this.setData({ keyword, results })
   },
 
