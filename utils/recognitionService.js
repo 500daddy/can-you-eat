@@ -125,18 +125,22 @@ function createRecognitionService(options = {}) {
       return log
     },
 
-    async getRecognitionCount() {
+    async getRecognitionLogs() {
       if (resolveUseCloud(options.useCloud)) {
         try {
           const logs = await callFoodApi({ action: 'getRecognitionLogs' })
-          return Array.isArray(logs) ? logs.length : 0
+          return Array.isArray(logs) ? logs : []
         } catch (error) {
           if (options.warnOnCloudFallback !== false && typeof console !== 'undefined' && console.warn) {
             console.warn('getRecognitionLogs failed, fallback to local log', error)
           }
         }
       }
-      return localLogs.length
+      return [...localLogs]
+    },
+
+    async getRecognitionCount() {
+      return (await this.getRecognitionLogs()).length
     }
   }
 }

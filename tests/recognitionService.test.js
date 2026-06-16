@@ -68,6 +68,7 @@ test('logs recognition selections locally', async () => {
   })
 
   assert.equal(await service.getRecognitionCount(), 1)
+  assert.equal((await service.getRecognitionLogs())[0].selectedFoodName, '胡萝卜')
 })
 
 test('logs recognition selections through foodApi when cloud is enabled', async () => {
@@ -89,4 +90,5 @@ test('logs recognition selections through foodApi when cloud is enabled', async 
 
   assert.equal(calls[0].action, 'logRecognition')
   assert.equal(await service.getRecognitionCount(), 1)
+  assert.deepEqual(await service.getRecognitionLogs(), [{ id: 'log-1' }])
 })

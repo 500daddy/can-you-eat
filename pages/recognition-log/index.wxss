@@ -1,0 +1,39 @@
+.log-card {
+  padding: 22rpx;
+}
+
+.log-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.mini-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 112rpx;
+  height: 56rpx;
+  border: 2rpx solid #55a85a;
+  border-radius: 16rpx;
+  background: #e7f4d8;
+  color: #214d28;
+  font-size: 24rpx;
+  font-weight: 900;
+  box-shadow: 0 4rpx 0 rgba(85, 168, 90, 0.28);
+}
+
+.empty-log {
+  text-align: center;
+}
+
+.empty-img {
+  width: 176rpx;
+  height: 176rpx;
+  margin: 8rpx auto 12rpx;
+}
+
+.save-btn {
+  margin-top: 24rpx;
+}

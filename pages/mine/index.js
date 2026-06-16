@@ -34,6 +34,10 @@ Page({
     wx.navigateTo({ url: '/pages/feedback/index' })
   },
 
+  goRecognitionLog() {
+    wx.navigateTo({ url: '/pages/recognition-log/index' })
+  },
+
   toast() {
     wx.showToast({ title: '后续迭代接入', icon: 'none' })
   }

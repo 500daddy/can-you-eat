@@ -9,6 +9,7 @@
     "pages/reminder/index",
     "pages/mine/index",
     "pages/feedback/index",
+    "pages/recognition-log/index",
     "pages/settings/baby",
     "pages/settings/reminder"
   ],
