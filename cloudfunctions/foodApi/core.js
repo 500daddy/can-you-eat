@@ -64,8 +64,34 @@ function addDays(value, days) {
   return formatDate(date)
 }
 
+function addMonths(date, months) {
+  const next = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  const targetMonth = next.getMonth() + months
+  next.setMonth(targetMonth)
+  if (next.getMonth() !== ((targetMonth % 12) + 12) % 12) {
+    next.setDate(0)
+  }
+  return next
+}
+
 function daysBetween(from, to) {
   return Math.round((parseDate(to).getTime() - parseDate(from).getTime()) / DAY_MS)
+}
+
+function calculateBabyAgeText(birthday, currentDay) {
+  if (!birthday) return ''
+  const birth = parseDate(birthday)
+  const current = parseDate(currentDay)
+  if (current < birth) return '0天'
+  let months = (current.getFullYear() - birth.getFullYear()) * 12 + current.getMonth() - birth.getMonth()
+  let anchor = addMonths(birth, months)
+  if (anchor > current) {
+    months -= 1
+    anchor = addMonths(birth, months)
+  }
+  const days = Math.max(0, Math.round((current.getTime() - anchor.getTime()) / DAY_MS))
+  if (months <= 0) return `${daysBetween(birthday, currentDay)}天`
+  return `${months}个月${days}天`
 }
 
 function makeId(prefix) {
@@ -302,13 +328,17 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
 
       if (action === 'updateUserSettings') {
         const settings = await getSettings()
-        const data = await store.update('user_settings', (item) => item.userId === userId, compactObject({
+        const nextSettings = compactObject({
           ...settings,
           ...event,
           action: undefined,
           userId,
           updatedAt: today
-        }))
+        })
+        if (nextSettings.babyBirthday) {
+          nextSettings.babyAgeText = calculateBabyAgeText(nextSettings.babyBirthday, today)
+        }
+        const data = await store.update('user_settings', (item) => item.userId === userId, nextSettings)
         return { ok: true, data }
       }
 

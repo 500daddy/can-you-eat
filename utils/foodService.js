@@ -1,4 +1,6 @@
 const { getFoodRepository } = require('./foodRepository')
+const { calculateBabyAgeText } = require('./babyAge')
+const { todayString } = require('./foodRules')
 
 function unwrapCloudResult(result) {
   const payload = result && result.result !== undefined ? result.result : result
@@ -30,6 +32,19 @@ function resolveUseCloud(value) {
 function createFoodService(options = {}) {
   const repo = options.repo || getFoodRepository()
   const callCloud = options.callCloud || defaultCallCloud
+  const today = options.today || todayString
+
+  function currentToday() {
+    return typeof today === 'function' ? today() : today
+  }
+
+  function withComputedBabyAge(settings) {
+    if (!settings || !settings.babyBirthday) return settings
+    return {
+      ...settings,
+      babyAgeText: calculateBabyAgeText(settings.babyBirthday, currentToday())
+    }
+  }
 
   async function cloudOrLocal(action, data, localHandler) {
     if (resolveUseCloud(options.useCloud)) {
@@ -139,11 +154,16 @@ function createFoodService(options = {}) {
     },
 
     async getSettings() {
-      return repo.getSettings()
+      return withComputedBabyAge(repo.getSettings())
     },
 
     async updateSettings(input) {
-      return cloudOrLocal('updateUserSettings', input, () => repo.updateSettings(input))
+      const nextInput = {
+        ...input,
+        babyAgeText: input.babyBirthday ? calculateBabyAgeText(input.babyBirthday, currentToday()) : input.babyAgeText
+      }
+      const settings = await cloudOrLocal('updateUserSettings', nextInput, () => repo.updateSettings(nextInput))
+      return withComputedBabyAge(settings)
     },
 
     async submitFeedback(input) {

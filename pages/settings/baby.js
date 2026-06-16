@@ -15,7 +15,8 @@ Page({
     this.setData({
       nickname: settings.babyName,
       birthday: settings.babyBirthday,
-      babyMode: settings.babyMode
+      babyMode: settings.babyMode,
+      babyAgeText: settings.babyAgeText
     })
   },
 
@@ -37,6 +38,8 @@ Page({
       babyBirthday: this.data.birthday,
       babyMode: this.data.babyMode
     })
+    const settings = await foodService.getSettings()
+    this.setData({ babyAgeText: settings.babyAgeText })
     wx.showToast({ title: '已保存设置', icon: 'success' })
   }
 })

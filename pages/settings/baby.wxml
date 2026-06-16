@@ -6,7 +6,7 @@
     <image class="baby-img" src="{{assets.mascot.babyBasket}}" mode="aspectFit" />
     <view>
       <view class="section-title">当前宝宝：{{nickname}}</view>
-      <view class="subtitle">宝宝月龄：8个月12天（自动计算）</view>
+      <view class="subtitle">宝宝月龄：{{babyAgeText || '0天'}}（自动计算）</view>
     </view>
   </view>
 

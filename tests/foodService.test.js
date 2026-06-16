@@ -116,3 +116,21 @@ test('calculates stats from cloud records when cloud is enabled', async () => {
     { label: '安心指数', value: '0%' }
   ])
 })
+
+test('computes baby age text from birthday in settings', async () => {
+  const service = createFoodService({
+    today: '2026-06-16',
+    repo: createMemoryFoodRepository({
+      today: '2026-06-16',
+      seedRecords: [],
+      settings: {
+        babyBirthday: '2025-10-01',
+        babyAgeText: '旧月龄'
+      }
+    })
+  })
+
+  const settings = await service.getSettings()
+
+  assert.equal(settings.babyAgeText, '8个月15天')
+})

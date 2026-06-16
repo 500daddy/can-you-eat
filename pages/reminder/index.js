@@ -1,6 +1,8 @@
 const { getFoodService } = require('../../utils/foodService')
+const { getSubscribeService } = require('../../utils/subscribeService')
 
 const foodService = getFoodService()
+const subscribeService = getSubscribeService()
 
 Page({
   data: {
@@ -38,7 +40,18 @@ Page({
     wx.navigateTo({ url: '/pages/settings/reminder' })
   },
 
-  requestSubscribe() {
-    wx.showToast({ title: '模板 ID 后续配置', icon: 'none' })
+  async requestSubscribe() {
+    const result = await subscribeService.requestFoodExpireSubscribe()
+    if (result.status === 'not_configured') {
+      wx.showToast({ title: '请先配置订阅模板ID', icon: 'none' })
+      return
+    }
+    await foodService.updateSettings({
+      subscribeMessageAccepted: result.accepted
+    })
+    wx.showToast({
+      title: result.accepted ? '已开启微信提醒' : '未开启订阅',
+      icon: result.accepted ? 'success' : 'none'
+    })
   }
 })

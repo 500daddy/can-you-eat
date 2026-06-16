@@ -15,6 +15,8 @@
 - 识别访问层：`utils/recognitionService.js` 默认本地模拟，云模式上传图片并调用 `mockRecognize`
 - 反馈页：`pages/feedback/index`，通过 `foodService.submitFeedback` 写入本地/云端反馈
 - 识别记录：选择识别结果时记录日志，“我的”页展示识别次数
+- 宝宝月龄：根据宝宝生日自动计算，本地和 `foodApi` 云端设置保持一致
+- 提醒订阅：`utils/subscribeService.js` 封装微信订阅消息请求，未配置模板 ID 时给出明确提示
 
 ## 开发者工具打开方式
 
@@ -55,10 +57,18 @@ wx.cloud.callFunction({
 页面会优先调用云函数，失败时自动回退本地数据；拍照识别会优先上传到云存储并调用 `mockRecognize`，失败时回退本地模拟识别。
 反馈和识别日志也会在云模式下写入 `feedback`、`recognition_logs` 集合。
 
+订阅消息模板 ID 目前仍是占位值：
+
+```js
+const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
+```
+
+在微信公众平台配置好模板后，替换 `utils/subscribeService.js` 里的模板 ID，即可在提醒中心和提醒设置页请求订阅授权。
+
 ## 本地验证
 
 ```bash
-node --test tests/recognitionService.test.js tests/foodService.test.js tests/foodApiCore.test.js tests/foodRepository.test.js tests/foodRules.test.js
+node --test tests/babyAge.test.js tests/subscribeService.test.js tests/recognitionService.test.js tests/foodService.test.js tests/foodApiCore.test.js tests/foodRepository.test.js tests/foodRules.test.js
 find app.js utils components pages cloudfunctions custom-tab-bar tests -name '*.js' -print0 | xargs -0 -n1 node --check
 ```
 
