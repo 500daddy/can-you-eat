@@ -13,6 +13,22 @@ const localResults = [
 ]
 
 const localLogs = []
+const STORAGE_KEY = 'baby_food_recognition_logs_v1'
+
+function createDefaultStorage() {
+  if (typeof wx !== 'undefined' && wx.getStorageSync && wx.setStorageSync) {
+    return {
+      get: (key) => wx.getStorageSync(key),
+      set: (key, value) => wx.setStorageSync(key, value)
+    }
+  }
+  return {
+    get: () => localLogs,
+    set: (key, value) => {
+      localLogs.splice(0, localLogs.length, ...(value || []))
+    }
+  }
+}
 
 function resolveUseCloud(value) {
   if (typeof value === 'boolean') return value
@@ -77,6 +93,16 @@ function createRecognitionService(options = {}) {
   const uploadFile = options.uploadFile || defaultUploadFile
   const callRecognize = options.callRecognize || defaultCallRecognize
   const callFoodApi = options.callFoodApi || defaultCallFoodApi
+  const storage = options.storage || createDefaultStorage()
+
+  function readLocalLogs() {
+    const logs = storage.get(STORAGE_KEY)
+    return Array.isArray(logs) ? logs : []
+  }
+
+  function writeLocalLogs(logs) {
+    storage.set(STORAGE_KEY, logs)
+  }
 
   async function recognizeImage(imagePath) {
     if (resolveUseCloud(options.useCloud)) {
@@ -119,9 +145,9 @@ function createRecognitionService(options = {}) {
       }
       const log = {
         ...input,
-        id: `local-recognition-${Date.now()}-${localLogs.length + 1}`
+        id: `local-recognition-${Date.now()}-${readLocalLogs().length + 1}`
       }
-      localLogs.push(log)
+      writeLocalLogs([log, ...readLocalLogs()])
       return log
     },
 
@@ -136,7 +162,7 @@ function createRecognitionService(options = {}) {
           }
         }
       }
-      return [...localLogs]
+      return readLocalLogs()
     },
 
     async getRecognitionCount() {

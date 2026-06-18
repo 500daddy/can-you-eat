@@ -71,6 +71,34 @@ test('logs recognition selections locally', async () => {
   assert.equal((await service.getRecognitionLogs())[0].selectedFoodName, '胡萝卜')
 })
 
+test('persists local recognition logs through storage adapter', async () => {
+  const storage = {}
+  const storageAdapter = {
+    get: (key) => storage[key],
+    set: (key, value) => {
+      storage[key] = value
+    }
+  }
+  const firstService = createRecognitionService({
+    useCloud: false,
+    storage: storageAdapter
+  })
+
+  await firstService.logSelection({
+    selectedFoodName: '南瓜',
+    selectedFoodBaseId: 'pumpkin',
+    confidence: 0.64
+  })
+
+  const secondService = createRecognitionService({
+    useCloud: false,
+    storage: storageAdapter
+  })
+
+  assert.equal(await secondService.getRecognitionCount(), 1)
+  assert.equal((await secondService.getRecognitionLogs())[0].selectedFoodBaseId, 'pumpkin')
+})
+
 test('logs recognition selections through foodApi when cloud is enabled', async () => {
   const calls = []
   const service = createRecognitionService({
