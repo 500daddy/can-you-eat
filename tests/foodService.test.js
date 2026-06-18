@@ -167,3 +167,19 @@ test('gets settings from cloud foodApi when enabled', async () => {
   assert.equal(settings.babyName, '云端宝宝')
   assert.equal(settings.babyAgeText, '8个月15天')
 })
+
+test('submits feedback to local repository by default', async () => {
+  const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
+  const service = createFoodService({ repo })
+
+  const feedback = await service.submitFeedback({
+    type: 'idea',
+    content: '希望增加常用食材快捷入口',
+    contact: ''
+  })
+
+  assert.equal(feedback.status, 'pending')
+  assert.equal(feedback.type, 'idea')
+  assert.equal(repo.getFeedbackList().length, 1)
+  assert.equal(repo.getFeedbackList()[0].content, '希望增加常用食材快捷入口')
+})

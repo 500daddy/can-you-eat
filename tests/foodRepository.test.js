@@ -92,3 +92,20 @@ test('returns empty detail when a record is not found', () => {
   assert.equal(detail.record, null)
   assert.equal(detail.base, null)
 })
+
+test('stores local feedback with pending status', () => {
+  const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
+
+  const feedback = repo.submitFeedback({
+    type: 'bug',
+    content: '按钮文字没有居中',
+    contact: 'tester'
+  })
+
+  assert.equal(feedback.status, 'pending')
+  assert.equal(feedback.type, 'bug')
+  assert.equal(feedback.content, '按钮文字没有居中')
+  assert.equal(feedback.createdAt, '2026-06-12')
+  assert.equal(repo.getFeedbackList().length, 1)
+  assert.equal(repo.getFeedbackList()[0].id, feedback.id)
+})

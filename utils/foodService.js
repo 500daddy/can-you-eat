@@ -168,10 +168,7 @@ function createFoodService(options = {}) {
     },
 
     async submitFeedback(input) {
-      return cloudOrLocal('submitFeedback', input, () => ({
-        ...input,
-        status: 'pending'
-      }))
+      return cloudOrLocal('submitFeedback', input, () => repo.submitFeedback(input))
     }
   }
 }

@@ -9,6 +9,7 @@ const {
 
 const STORAGE_KEY = 'baby_food_records_v1'
 const SETTINGS_KEY = 'baby_food_settings_v1'
+const FEEDBACK_KEY = 'baby_food_feedback_v1'
 
 const defaultSettings = {
   babyName: '小芽贝',
@@ -90,7 +91,9 @@ function decorateFood(food) {
 function createMemoryFoodRepository(options = {}) {
   const today = options.today || todayString
   let counter = 0
+  let feedbackCounter = 0
   let records = clone(options.seedRecords === undefined ? defaultSeedRecords : options.seedRecords)
+  let feedbackList = clone(options.feedbackList || [])
   let settings = { ...defaultSettings, ...(options.settings || {}) }
 
   function currentToday() {
@@ -103,6 +106,14 @@ function createMemoryFoodRepository(options = {}) {
 
   function writeRecords(nextRecords) {
     records = clone(nextRecords)
+  }
+
+  function readFeedbackList() {
+    return feedbackList
+  }
+
+  function writeFeedbackList(nextList) {
+    feedbackList = clone(nextList)
   }
 
   function normalizeRecord(raw) {
@@ -280,6 +291,23 @@ function createMemoryFoodRepository(options = {}) {
     updateSettings(nextSettings) {
       settings = { ...settings, ...nextSettings }
       return this.getSettings()
+    },
+
+    submitFeedback(input) {
+      const feedback = {
+        id: input.id || `feedback-${Date.now()}-${feedbackCounter += 1}`,
+        type: input.type || 'idea',
+        content: input.content || '',
+        contact: input.contact || '',
+        status: input.status || 'pending',
+        createdAt: input.createdAt || currentToday()
+      }
+      writeFeedbackList([feedback, ...readFeedbackList()])
+      return clone(feedback)
+    },
+
+    getFeedbackList() {
+      return clone(readFeedbackList())
     }
   }
 }
@@ -289,12 +317,14 @@ let singleton
 function createWxRepository() {
   const repo = createMemoryFoodRepository({
     seedRecords: hasWxStorage() ? (wx.getStorageSync(STORAGE_KEY) || defaultSeedRecords) : defaultSeedRecords,
+    feedbackList: hasWxStorage() ? (wx.getStorageSync(FEEDBACK_KEY) || []) : [],
     settings: hasWxStorage() ? (wx.getStorageSync(SETTINGS_KEY) || defaultSettings) : defaultSettings
   })
   const originalAdd = repo.addFoodRecord.bind(repo)
   const originalUpdate = repo.updateFoodRecord.bind(repo)
   const originalFinish = repo.finishFoodRecord.bind(repo)
   const originalUpdateSettings = repo.updateSettings.bind(repo)
+  const originalSubmitFeedback = repo.submitFeedback.bind(repo)
 
   repo.addFoodRecord = function addFoodRecord(input) {
     const result = originalAdd(input)
@@ -317,6 +347,12 @@ function createWxRepository() {
   repo.updateSettings = function updateSettings(input) {
     const result = originalUpdateSettings(input)
     if (hasWxStorage()) wx.setStorageSync(SETTINGS_KEY, result)
+    return result
+  }
+
+  repo.submitFeedback = function submitFeedback(input) {
+    const result = originalSubmitFeedback(input)
+    if (hasWxStorage()) wx.setStorageSync(FEEDBACK_KEY, repo.getFeedbackList())
     return result
   }
 
