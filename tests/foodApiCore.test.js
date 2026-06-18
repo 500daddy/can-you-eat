@@ -41,6 +41,17 @@ test('adds and lists calculated user food records', async () => {
   assert.equal(detail.data.base.name, '西兰花')
 })
 
+test('gets cloud food base by id', async () => {
+  const api = createFoodApi({ store: createMemoryStore(), userId: 'user-a', today: '2026-06-12' })
+  await api.handle({ action: 'initFoodBase' })
+
+  const result = await api.handle({ action: 'getFoodBaseById', foodBaseId: 'broccoli' })
+
+  assert.equal(result.ok, true)
+  assert.equal(result.data.id, 'broccoli')
+  assert.equal(result.data.name, '西兰花')
+})
+
 test('adds custom cloud food records without falling back to broccoli', async () => {
   const api = createFoodApi({ store: createMemoryStore(), userId: 'user-a', today: '2026-06-12' })
 

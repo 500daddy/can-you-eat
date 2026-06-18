@@ -274,6 +274,11 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
         return { ok: true, data: source.filter((food) => matchFood(food, event.keyword)).slice(0, 20) }
       }
 
+      if (action === 'getFoodBaseById') {
+        const food = await getFood(event.foodBaseId || event.id || event.name)
+        return { ok: true, data: food }
+      }
+
       if (action === 'getUserSettings') {
         const settings = await getSettings()
         const data = settings.babyBirthday

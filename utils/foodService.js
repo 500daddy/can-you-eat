@@ -94,8 +94,8 @@ function createFoodService(options = {}) {
     },
 
     async getFoodBaseById(id) {
-      return cloudOrLocal('searchFoods', { keyword: id }, () => repo.getFoodBaseById(id))
-        .then((result) => Array.isArray(result) ? (result.find((item) => item.id === id) || repo.getFoodBaseById(id)) : result)
+      return cloudOrLocal('getFoodBaseById', { foodBaseId: id }, () => repo.getFoodBaseById(id))
+        .then((result) => result || repo.getFoodBaseById(id))
     },
 
     async searchFoods(keyword = '') {

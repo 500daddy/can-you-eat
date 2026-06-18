@@ -168,6 +168,24 @@ test('gets settings from cloud foodApi when enabled', async () => {
   assert.equal(settings.babyAgeText, '8个月15天')
 })
 
+test('gets food base by id through cloud foodApi when enabled', async () => {
+  const calls = []
+  const service = createFoodService({
+    useCloud: true,
+    repo: createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] }),
+    callCloud: async (data) => {
+      calls.push(data)
+      return { id: data.foodBaseId, name: '云端西兰花', defaultStorage: 'fridge' }
+    }
+  })
+
+  const food = await service.getFoodBaseById('broccoli')
+
+  assert.equal(calls[0].action, 'getFoodBaseById')
+  assert.equal(calls[0].foodBaseId, 'broccoli')
+  assert.equal(food.name, '云端西兰花')
+})
+
 test('submits feedback to local repository by default', async () => {
   const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
   const service = createFoodService({ repo })
