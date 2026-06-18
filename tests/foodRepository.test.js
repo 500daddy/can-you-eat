@@ -84,6 +84,23 @@ test('updates a food record and recalculates status dates', () => {
   assert.equal(repo.getFoodDetail(created.id).record.note, '切开冷藏')
 })
 
+test('returns null when updating a missing record', () => {
+  const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
+  repo.addFoodRecord({
+    foodBaseId: 'pumpkin',
+    purchaseDate: '2026-06-11',
+    storageMethod: 'room'
+  })
+
+  const updated = repo.updateFoodRecord({
+    recordId: 'missing-record',
+    note: '不应该更新'
+  })
+
+  assert.equal(updated, null)
+  assert.equal(repo.getFoodRecords()[0].note, '当前仍在宝宝建议期内')
+})
+
 test('returns empty detail when a record is not found', () => {
   const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
 

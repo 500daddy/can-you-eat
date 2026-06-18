@@ -246,7 +246,7 @@ function createMemoryFoodRepository(options = {}) {
         return updatedRecord
       })
       writeRecords(nextRecords)
-      return normalizeRecord(updatedRecord || readRecords()[0])
+      return updatedRecord ? normalizeRecord(updatedRecord) : null
     },
 
     finishFoodRecord({ recordId, action = 'finished' }) {
