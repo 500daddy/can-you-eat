@@ -40,9 +40,5 @@ Page({
 
   goAbout() {
     wx.navigateTo({ url: '/pages/about/index' })
-  },
-
-  toast() {
-    wx.showToast({ title: '后续迭代接入', icon: 'none' })
   }
 })
