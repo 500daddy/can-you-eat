@@ -1,6 +1,7 @@
 const assets = require('./assets')
 
 const foodNameMap = {
+  西兰花: { foodId: 'broccoli', icon: assets.food.broccoli },
   胡萝卜: { foodId: 'carrot', icon: assets.food.carrot },
   南瓜: { foodId: 'pumpkin', icon: assets.food.pumpkin },
   红薯: { foodId: 'sweetPotato', icon: assets.food.sweetPotato }
@@ -76,15 +77,16 @@ function defaultCallFoodApi(data) {
 function normalizeResults(results) {
   return (results || []).map((item) => {
     const mapped = foodNameMap[item.foodName] || {
-      foodId: item.foodId || 'custom',
+      foodId: item.foodId || item.foodBaseId || 'custom',
       icon: assets.food.babyPuree
     }
     const confidence = Number(item.confidence || 0)
+    const foodId = item.foodId || item.foodBaseId || mapped.foodId
     return {
       ...item,
-      foodId: item.foodId || mapped.foodId,
+      foodId,
       percent: item.percent || Math.round(confidence * 100),
-      icon: item.icon || mapped.icon
+      icon: item.icon || assets.food[foodId] || mapped.icon
     }
   })
 }

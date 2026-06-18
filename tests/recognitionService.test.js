@@ -40,6 +40,21 @@ test('uploads image and normalizes mockRecognize cloud results when cloud is ena
   assert.deepEqual(result.results.map((item) => item.foodId), ['carrot', 'pumpkin'])
 })
 
+test('normalizes cloud foodBaseId recognition results', async () => {
+  const service = createRecognitionService({
+    useCloud: true,
+    uploadFile: async () => ({ fileID: 'cloud://broccoli-image' }),
+    callRecognize: async () => [
+      { foodName: '西兰花', foodBaseId: 'broccoli', confidence: 0.91 }
+    ]
+  })
+
+  const result = await service.recognizeImage('/tmp/broccoli.png')
+
+  assert.equal(result.results[0].foodId, 'broccoli')
+  assert.equal(result.results[0].percent, 91)
+})
+
 test('falls back to local recognition if cloud upload fails', async () => {
   const service = createRecognitionService({
     useCloud: true,
