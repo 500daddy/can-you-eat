@@ -1,0 +1,13 @@
+.DS_Store
+project.private.config.json
+
+# Local design/source assets kept outside the committed mini program bundle.
+/1.png
+/*_sprite_assets/
+/*_sprite素材包_给Codex.zip
+/*_sprite切图说明_给Codex.md
+/*_清像素风_sprite_sheet_original.png
+/*_像素厨房首页底图.png
+
+# Local project briefs supplied to Codex; keep the repository focused on app code.
+/*_Codex开发说明.md
