@@ -10,7 +10,8 @@ Page({
     beforeDays: '1天前',
     todayEnabled: true,
     dailyEnabled: true,
-    dailyTime: '08:00'
+    dailyTime: '08:00',
+    initFoodBaseText: '本地食材库已内置'
   },
 
   async onLoad() {
@@ -58,6 +59,18 @@ Page({
     wx.showToast({
       title: result.accepted ? '已开启微信提醒' : '未开启订阅',
       icon: result.accepted ? 'success' : 'none'
+    })
+  },
+
+  async initFoodBase() {
+    const result = await foodService.initFoodBase()
+    const text = result.localOnly
+      ? '本地食材库已内置'
+      : `云端食材库：新增 ${result.inserted || 0} 条`
+    this.setData({ initFoodBaseText: text })
+    wx.showToast({
+      title: result.localOnly ? '本地已可用' : '云端初始化完成',
+      icon: 'none'
     })
   }
 })

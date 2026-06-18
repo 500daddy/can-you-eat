@@ -154,7 +154,8 @@ function createFoodService(options = {}) {
     },
 
     async getSettings() {
-      return withComputedBabyAge(repo.getSettings())
+      const settings = await cloudOrLocal('getUserSettings', {}, () => repo.getSettings())
+      return withComputedBabyAge(settings)
     },
 
     async updateSettings(input) {

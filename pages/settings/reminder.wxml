@@ -32,5 +32,11 @@
     <view class="pixel-btn ghost" bindtap="requestSubscribe">开启微信提醒</view>
   </view>
 
+  <view class="paper-card green">
+    <view class="section-title">开发联调</view>
+    <view class="subtitle">{{initFoodBaseText}}</view>
+    <view class="pixel-btn ghost" bindtap="initFoodBase">初始化食材库</view>
+  </view>
+
   <view class="pixel-btn save-btn" bindtap="save">保存设置</view>
 </view>

@@ -134,3 +134,36 @@ test('computes baby age text from birthday in settings', async () => {
 
   assert.equal(settings.babyAgeText, '8个月15天')
 })
+
+test('gets settings from cloud foodApi when enabled', async () => {
+  const calls = []
+  const service = createFoodService({
+    useCloud: true,
+    today: '2026-06-16',
+    repo: createMemoryFoodRepository({
+      today: '2026-06-16',
+      seedRecords: [],
+      settings: {
+        babyName: '本地宝宝',
+        babyBirthday: '2026-01-01'
+      }
+    }),
+    callCloud: async (data) => {
+      calls.push(data)
+      if (data.action === 'getUserSettings') {
+        return {
+          babyName: '云端宝宝',
+          babyBirthday: '2025-10-01',
+          babyAgeText: '旧月龄'
+        }
+      }
+      return {}
+    }
+  })
+
+  const settings = await service.getSettings()
+
+  assert.equal(calls[0].action, 'getUserSettings')
+  assert.equal(settings.babyName, '云端宝宝')
+  assert.equal(settings.babyAgeText, '8个月15天')
+})

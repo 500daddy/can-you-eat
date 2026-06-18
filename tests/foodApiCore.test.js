@@ -93,6 +93,20 @@ test('computes baby age text when updating cloud settings', async () => {
   assert.equal(settings.data.babyAgeText, '8个月15天')
 })
 
+test('gets cloud user settings with computed baby age text', async () => {
+  const api = createFoodApi({ store: createMemoryStore(), userId: 'user-a', today: '2026-06-16' })
+  await api.handle({
+    action: 'updateUserSettings',
+    babyName: '小米粒',
+    babyBirthday: '2025-10-01'
+  })
+
+  const settings = await api.handle({ action: 'getUserSettings' })
+
+  assert.equal(settings.data.babyName, '小米粒')
+  assert.equal(settings.data.babyAgeText, '8个月15天')
+})
+
 test('logs recognition selections by user', async () => {
   const store = createMemoryStore()
   const userA = createFoodApi({ store, userId: 'user-a', today: '2026-06-12' })
