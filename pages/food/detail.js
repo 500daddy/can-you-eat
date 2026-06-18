@@ -23,6 +23,11 @@ Page({
 
   async loadDetail(id) {
     const { record, base } = await foodService.getFoodDetail(id)
+    if (!record) {
+      wx.showToast({ title: '记录不存在', icon: 'none' })
+      setTimeout(() => wx.navigateBack(), 500)
+      return
+    }
     this.setData({
       record,
       base,

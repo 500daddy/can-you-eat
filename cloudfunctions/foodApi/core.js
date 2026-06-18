@@ -293,6 +293,9 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
       if (action === 'getFoodDetail') {
         const records = await listCalculatedRecords(true)
         const record = records.find((item) => item.id === event.recordId || item._id === event.recordId)
+        if (!record) {
+          return { ok: true, data: { record: null, base: null } }
+        }
         const base = record ? await getFood(record.foodBaseId) : null
         return { ok: true, data: { record, base } }
       }

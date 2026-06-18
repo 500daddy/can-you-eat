@@ -83,3 +83,12 @@ test('updates a food record and recalculates status dates', () => {
   assert.equal(updated.status, 'adult_only')
   assert.equal(repo.getFoodDetail(created.id).record.note, '切开冷藏')
 })
+
+test('returns empty detail when a record is not found', () => {
+  const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
+
+  const detail = repo.getFoodDetail('missing-record')
+
+  assert.equal(detail.record, null)
+  assert.equal(detail.base, null)
+})

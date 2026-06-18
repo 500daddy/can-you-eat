@@ -209,6 +209,9 @@ function createMemoryFoodRepository(options = {}) {
 
     getFoodDetail(recordId) {
       const raw = readRecords().find((item) => item.id === recordId) || readRecords()[0]
+      if (!raw) {
+        return { record: null, base: null }
+      }
       const record = normalizeRecord(raw)
       const base = this.getFoodBaseById(record.foodBaseId)
       return { record, base }

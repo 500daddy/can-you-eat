@@ -41,6 +41,15 @@ test('adds and lists calculated user food records', async () => {
   assert.equal(detail.data.base.name, '西兰花')
 })
 
+test('returns empty cloud detail when a record is not found', async () => {
+  const api = createFoodApi({ store: createMemoryStore(), userId: 'user-a', today: '2026-06-12' })
+
+  const detail = await api.handle({ action: 'getFoodDetail', recordId: 'missing-record' })
+
+  assert.equal(detail.data.record, null)
+  assert.equal(detail.data.base, null)
+})
+
 test('keeps user records isolated and handles finish action', async () => {
   const store = createMemoryStore()
   const userA = createFoodApi({ store, userId: 'user-a', today: '2026-06-12' })
