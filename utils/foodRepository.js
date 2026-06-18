@@ -166,8 +166,8 @@ function createMemoryFoodRepository(options = {}) {
     },
 
     getFoodBaseById(id) {
-      const food = findFood(id) || foodBase[0]
-      return decorateFood(food)
+      const food = findFood(id)
+      return food ? decorateFood(food) : null
     },
 
     searchFoods(keyword = '') {
@@ -224,7 +224,7 @@ function createMemoryFoodRepository(options = {}) {
         return { record: null, base: null }
       }
       const record = normalizeRecord(raw)
-      const base = this.getFoodBaseById(record.foodBaseId)
+      const base = record.foodBaseId === 'custom' ? null : this.getFoodBaseById(record.foodBaseId)
       return { record, base }
     },
 

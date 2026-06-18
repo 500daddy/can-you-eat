@@ -28,6 +28,9 @@ Page({
   async onLoad(query) {
     if (query.foodId) {
       const food = await foodService.getFoodBaseById(query.foodId)
+      if (!food) {
+        return
+      }
       this.setData({
         form: {
           ...this.data.form,

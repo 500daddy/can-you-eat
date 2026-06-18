@@ -186,6 +186,16 @@ test('gets food base by id through cloud foodApi when enabled', async () => {
   assert.equal(food.name, '云端西兰花')
 })
 
+test('returns null for missing local food base id', async () => {
+  const service = createFoodService({
+    repo: createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
+  })
+
+  const food = await service.getFoodBaseById('not-exists')
+
+  assert.equal(food, null)
+})
+
 test('submits feedback to local repository by default', async () => {
   const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
   const service = createFoodService({ repo })

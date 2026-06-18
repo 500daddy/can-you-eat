@@ -93,6 +93,27 @@ test('returns empty detail when a record is not found', () => {
   assert.equal(detail.base, null)
 })
 
+test('keeps custom food detail base empty instead of falling back to broccoli', () => {
+  const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
+  const created = repo.addFoodRecord({
+    foodName: '山药',
+    purchaseDate: '2026-06-12',
+    storageMethod: 'fridge'
+  })
+
+  const detail = repo.getFoodDetail(created.id)
+
+  assert.equal(detail.record.foodBaseId, 'custom')
+  assert.equal(detail.record.name, '山药')
+  assert.equal(detail.base, null)
+})
+
+test('returns null when local food base id is missing', () => {
+  const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
+
+  assert.equal(repo.getFoodBaseById('not-exists'), null)
+})
+
 test('stores local feedback with pending status', () => {
   const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
 
