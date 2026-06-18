@@ -24,7 +24,7 @@
 
 1. 用微信开发者工具打开本目录。
 2. AppID 可先使用测试号或游客模式。
-3. 如果要启用云开发，将 `app.js` 中的 `cloud1-please-replace` 替换为你的云环境 ID。
+3. 如果要启用云开发，将 `app.js` 中的 `globalData.cloudEnvId` 替换为你的云环境 ID，并把 `globalData.useCloudFoodApi` 改为 `true`。
 
 ## 云函数 foodApi
 
