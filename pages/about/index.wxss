@@ -1,0 +1,30 @@
+.about-hero {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
+
+.about-baby {
+  width: 120rpx;
+  height: 120rpx;
+}
+
+.about-item {
+  margin-top: 14rpx;
+  padding-left: 22rpx;
+  color: #51351f;
+  font-size: 25rpx;
+  line-height: 1.5;
+  position: relative;
+}
+
+.about-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 16rpx;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 3rpx;
+  background: #55a85a;
+}

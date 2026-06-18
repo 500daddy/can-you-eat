@@ -10,6 +10,7 @@
     "pages/mine/index",
     "pages/feedback/index",
     "pages/recognition-log/index",
+    "pages/about/index",
     "pages/settings/baby",
     "pages/settings/reminder"
   ],

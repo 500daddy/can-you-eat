@@ -1,0 +1,39 @@
+<view class="page about-page">
+  <view class="page-title">宝宝食材小管家</view>
+  <view class="subtitle">面向新手爸妈的宝宝食材安心判断工具。</view>
+
+  <view class="paper-card green about-hero">
+    <image class="about-baby" src="{{assets.mascot.babyBasket}}" mode="aspectFit" />
+    <view>
+      <view class="section-title">{{version}}</view>
+      <view class="subtitle">像素风 MVP，当前重点是记录、判断、提醒和模拟识别闭环。</view>
+    </view>
+  </view>
+
+  <view class="paper-card">
+    <view class="section-title">当前能力</view>
+    <view class="about-item">记录食材购买日期、保存方式和备注</view>
+    <view class="about-item">按宝宝建议期、成人参考期计算状态</view>
+    <view class="about-item">拍照识别模拟结果，并保存识别记录</view>
+    <view class="about-item">提醒中心、宝宝模式、意见反馈和云函数预留</view>
+  </view>
+
+  <view class="paper-card yellow">
+    <view class="section-title">联调状态</view>
+    <view class="info-row">
+      <text>云数据模式</text>
+      <text class="info-value">{{useCloudFoodApi ? '已开启' : '本地模式'}}</text>
+    </view>
+    <view class="info-row">
+      <text>订阅模板</text>
+      <text class="info-value">{{templateConfigured ? '已配置' : '待配置'}}</text>
+    </view>
+  </view>
+
+  <view class="paper-card">
+    <view class="section-title">安全说明</view>
+    <view class="subtitle">
+      本工具提供食材保存和宝宝食用建议参考，不能替代专业医疗或食品安全判断。请结合食材实际状态、宝宝身体情况和医生建议综合判断。
+    </view>
+  </view>
+</view>

@@ -35,7 +35,7 @@
       <text>意见反馈</text>
       <text class="cell-note">帮助我们做得更好 ›</text>
     </view>
-    <view class="list-cell" bindtap="toast">
+    <view class="list-cell" bindtap="goAbout">
       <text>关于小程序</text>
       <text class="cell-note">MVP 0.1 ›</text>
     </view>

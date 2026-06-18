@@ -16,6 +16,7 @@
 - 反馈页：`pages/feedback/index`，通过 `foodService.submitFeedback` 写入本地/云端反馈
 - 识别记录：选择识别结果时记录日志，“我的”页展示识别次数
 - 识别记录页：`pages/recognition-log/index`，可查看历史识别选择并继续添加食材
+- 关于页：`pages/about/index`，展示版本、能力说明、云模式和订阅模板状态
 - 宝宝月龄：根据宝宝生日自动计算，本地和 `foodApi` 云端设置保持一致
 - 提醒订阅：`utils/subscribeService.js` 封装微信订阅消息请求，未配置模板 ID 时给出明确提示
 
