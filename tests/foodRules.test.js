@@ -69,6 +69,32 @@ test('keeps finished records out of active recommendation groups', () => {
   assert.equal(record.group, '已处理')
 })
 
+test('preserves manual not_recommended status', () => {
+  const record = calculateRecordState({
+    food: broccoli,
+    purchaseDate: '2026-06-12',
+    storageMethod: 'fridge',
+    status: 'not_recommended',
+    today: '2026-06-12'
+  })
+
+  assert.equal(record.status, 'not_recommended')
+  assert.equal(record.group, '不建议继续食用')
+})
+
+test('preserves manual adult_only status', () => {
+  const record = calculateRecordState({
+    food: broccoli,
+    purchaseDate: '2026-06-12',
+    storageMethod: 'fridge',
+    status: 'adult_only',
+    today: '2026-06-12'
+  })
+
+  assert.equal(record.status, 'adult_only')
+  assert.equal(record.group, '可留给大人吃')
+})
+
 test('sorts records by homepage priority then nearest baby expiry', () => {
   const records = [
     { id: 'fresh', status: 'baby_ok', babyExpireDate: '2026-06-20' },

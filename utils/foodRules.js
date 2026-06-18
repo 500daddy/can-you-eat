@@ -28,6 +28,8 @@ const statusPriority = {
   deleted: 6
 }
 
+const manualStatusSet = new Set(['adult_only', 'not_recommended', 'finished', 'deleted'])
+
 function parseLocalDate(value) {
   if (value instanceof Date) {
     return new Date(value.getFullYear(), value.getMonth(), value.getDate())
@@ -100,7 +102,7 @@ function calculateRecordState(options) {
   const daysToAdult = daysBetween(today, adultExpireDate)
   let nextStatus = status
 
-  if (!['finished', 'deleted'].includes(nextStatus)) {
+  if (!manualStatusSet.has(nextStatus)) {
     if (daysToBaby >= 2) {
       nextStatus = 'baby_ok'
     } else if (daysToBaby >= 0) {

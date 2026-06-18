@@ -98,6 +98,24 @@ test('keeps user records isolated and handles finish action', async () => {
   assert.equal((await userA.handle({ action: 'getFoodDetail', recordId: added.data.id })).data.record.status, 'finished')
 })
 
+test('preserves manual cloud adult_only status', async () => {
+  const api = createFoodApi({ store: createMemoryStore(), userId: 'user-a', today: '2026-06-12' })
+  await api.handle({ action: 'initFoodBase' })
+  const added = await api.handle({
+    action: 'addFoodRecord',
+    foodBaseId: 'broccoli',
+    purchaseDate: '2026-06-12',
+    storageMethod: 'fridge'
+  })
+
+  await api.handle({ action: 'finishFoodRecord', recordId: added.data.id, finishAction: 'adult_only' })
+
+  const detail = await api.handle({ action: 'getFoodDetail', recordId: added.data.id })
+
+  assert.equal(detail.data.record.status, 'adult_only')
+  assert.equal(detail.data.record.group, '可留给大人吃')
+})
+
 test('updates settings and submits feedback', async () => {
   const api = createFoodApi({ store: createMemoryStore(), userId: 'user-a', today: '2026-06-12' })
 
