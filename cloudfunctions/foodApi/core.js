@@ -117,6 +117,20 @@ function storageText(storageMethod) {
   }[storageMethod] || '冷藏保存'
 }
 
+function createCustomFood(name, storageMethod = 'fridge') {
+  return {
+    id: 'custom',
+    name: name || '自定义食材',
+    defaultStorage: storageMethod,
+    icon: '/assets/sprites/food/food_baby_puree.png',
+    room: { babyDaysMax: 1, adultDaysMax: 2, text: '自定义食材请尽量短期保存。' },
+    fridge: { babyDaysMax: 2, adultDaysMax: 3, text: '自定义食材按保守冷藏建议计算。' },
+    freezer: { babyDaysMax: 15, adultDaysMax: 30, text: '自定义食材冷冻后仍建议尽快处理。' },
+    storageTips: ['自定义食材请结合实际状态判断。'],
+    spoilageSigns: ['异味', '发黏', '发霉', '明显出水']
+  }
+}
+
 function calculateRecord({ record, food, settings, today }) {
   const storageMethod = record.storageMethod || food.defaultStorage || 'fridge'
   const range = food[storageMethod] || food[food.defaultStorage] || { babyDaysMax: 1, adultDaysMax: 2 }
@@ -221,7 +235,7 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
 
   async function getFood(foodBaseId) {
     const food = await store.get('food_base', (item) => item.id === foodBaseId || item.name === foodBaseId)
-    return food || seedFoodBase.find((item) => item.id === foodBaseId || item.name === foodBaseId) || seedFoodBase[0]
+    return food || seedFoodBase.find((item) => item.id === foodBaseId || item.name === foodBaseId) || null
   }
 
   async function listCalculatedRecords(includeHandled = false) {
@@ -229,7 +243,8 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
     const records = await store.list('user_food_records', (item) => item.userId === userId)
     const calculated = []
     for (const record of records) {
-      const food = await getFood(record.foodBaseId || record.foodName)
+      const food = await getFood(record.foodBaseId || record.foodName) ||
+        createCustomFood(record.customFoodName || record.foodName, record.storageMethod)
       calculated.push(calculateRecord({ record, food, settings, today }))
     }
     return sortRecords(calculated.filter((item) => includeHandled || !['finished', 'deleted'].includes(item.status)))
@@ -268,12 +283,13 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
       }
 
       if (action === 'addFoodRecord') {
-        const food = await getFood(event.foodBaseId || event.foodName)
+        const foundFood = await getFood(event.foodBaseId || event.foodName)
+        const food = foundFood || createCustomFood(event.foodName, event.storageMethod)
         const record = await store.add('user_food_records', {
           id: makeId('record'),
           userId,
-          foodBaseId: food.id,
-          customFoodName: '',
+          foodBaseId: foundFood ? food.id : 'custom',
+          customFoodName: foundFood ? '' : event.foodName || '自定义食材',
           purchaseDate: event.purchaseDate || today,
           storageMethod: event.storageMethod || food.defaultStorage || 'fridge',
           quantity: event.quantity || '',
@@ -296,7 +312,7 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
         if (!record) {
           return { ok: true, data: { record: null, base: null } }
         }
-        const base = record ? await getFood(record.foodBaseId) : null
+        const base = record && record.foodBaseId !== 'custom' ? await getFood(record.foodBaseId) : null
         return { ok: true, data: { record, base } }
       }
 
