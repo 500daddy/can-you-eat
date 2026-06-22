@@ -53,6 +53,10 @@ Page({
       wx.showToast({ title: '请配置订阅模板ID', icon: 'none' })
       return
     }
+    if (result.status === 'failed') {
+      wx.showToast({ title: '订阅请求失败', icon: 'none' })
+      return
+    }
     await foodService.updateSettings({
       subscribeMessageAccepted: result.accepted
     })
