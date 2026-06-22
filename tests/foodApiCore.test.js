@@ -134,6 +134,27 @@ test('expires manual cloud adult_only status after adult reference period', asyn
   assert.equal(detail.data.record.group, '不建议继续食用')
 })
 
+test('clears manual cloud status when a record is edited', async () => {
+  const api = createFoodApi({ store: createMemoryStore(), userId: 'user-a', today: '2026-06-12' })
+  await api.handle({ action: 'initFoodBase' })
+  const added = await api.handle({
+    action: 'addFoodRecord',
+    foodBaseId: 'broccoli',
+    purchaseDate: '2026-06-12',
+    storageMethod: 'fridge'
+  })
+  await api.handle({ action: 'finishFoodRecord', recordId: added.data.id, finishAction: 'adult_only' })
+
+  const updated = await api.handle({
+    action: 'updateFoodRecord',
+    recordId: added.data.id,
+    note: '重新检查'
+  })
+
+  assert.equal(updated.data.status, 'baby_ok')
+  assert.equal(updated.data.note, '重新检查')
+})
+
 test('updates settings and submits feedback', async () => {
   const api = createFoodApi({ store: createMemoryStore(), userId: 'user-a', today: '2026-06-12' })
 

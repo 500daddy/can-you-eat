@@ -219,7 +219,7 @@ function createMemoryFoodRepository(options = {}) {
     },
 
     getFoodDetail(recordId) {
-      const raw = readRecords().find((item) => item.id === recordId) || readRecords()[0]
+      const raw = readRecords().find((item) => item.id === recordId)
       if (!raw) {
         return { record: null, base: null }
       }

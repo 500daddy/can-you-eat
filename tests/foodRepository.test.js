@@ -110,6 +110,34 @@ test('returns empty detail when a record is not found', () => {
   assert.equal(detail.base, null)
 })
 
+test('returns empty detail for missing id even when records exist', () => {
+  const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
+  repo.addFoodRecord({
+    foodBaseId: 'carrot',
+    purchaseDate: '2026-06-07',
+    storageMethod: 'fridge'
+  })
+
+  const detail = repo.getFoodDetail('missing-record')
+
+  assert.equal(detail.record, null)
+  assert.equal(detail.base, null)
+})
+
+test('returns null when finishing a missing record', () => {
+  const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
+  repo.addFoodRecord({
+    foodBaseId: 'carrot',
+    purchaseDate: '2026-06-07',
+    storageMethod: 'fridge'
+  })
+
+  const result = repo.finishFoodRecord({ recordId: 'missing-record', action: 'finished' })
+
+  assert.equal(result, null)
+  assert.equal(repo.getFoodRecords().length, 1)
+})
+
 test('keeps custom food detail base empty instead of falling back to broccoli', () => {
   const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
   const created = repo.addFoodRecord({

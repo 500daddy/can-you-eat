@@ -49,6 +49,18 @@ function compactObject(value) {
   }, {})
 }
 
+function mergeWithUndefinedRemoval(target, patch) {
+  const next = { ...target }
+  for (const key of Object.keys(patch)) {
+    if (patch[key] === undefined) {
+      delete next[key]
+    } else {
+      next[key] = patch[key]
+    }
+  }
+  return next
+}
+
 function parseDate(value) {
   const [year, month, day] = String(value).split('-').map(Number)
   return new Date(year, month - 1, day)
@@ -222,7 +234,7 @@ function createMemoryStore() {
       let updated = null
       data[collection] = data[collection].map((doc) => {
         if (!predicate(doc)) return doc
-        updated = { ...doc, ...clone(patch) }
+        updated = mergeWithUndefinedRemoval(doc, patch)
         return updated
       })
       return clone(updated)
@@ -326,16 +338,17 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
       }
 
       if (action === 'updateFoodRecord') {
-        await store.update('user_food_records', (item) => item.userId === userId && (item.id === event.recordId || item._id === event.recordId), compactObject({
+        const patch = compactObject({
           purchaseDate: event.purchaseDate,
           storageMethod: event.storageMethod,
           quantity: event.quantity,
           unit: event.unit,
           isBabyFood: event.isBabyFood,
           note: event.note,
-          status: undefined,
           updatedAt: today
-        }))
+        })
+        patch.status = undefined
+        await store.update('user_food_records', (item) => item.userId === userId && (item.id === event.recordId || item._id === event.recordId), patch)
         const detail = await this.handle({ action: 'getFoodDetail', recordId: event.recordId })
         return { ok: true, data: detail.data.record }
       }
