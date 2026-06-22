@@ -31,6 +31,7 @@ Page({
   },
 
   async submit() {
+    if (this.data.submitting) return
     const form = this.data.form
     if (!form.content.trim()) {
       wx.showToast({ title: '请写一点反馈内容', icon: 'none' })
@@ -42,6 +43,8 @@ Page({
       await foodService.submitFeedback(form)
       wx.showToast({ title: '已收到反馈', icon: 'success' })
       setTimeout(() => wx.navigateBack(), 600)
+    } catch (error) {
+      wx.showToast({ title: '反馈提交失败', icon: 'none' })
     } finally {
       this.setData({ submitting: false })
     }
