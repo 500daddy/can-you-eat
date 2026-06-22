@@ -36,7 +36,7 @@ Page({
   },
 
   goAdd() {
-    wx.navigateTo({ url: '/pages/food/search' })
+    wx.switchTab({ url: '/pages/food/search' })
   },
 
   goRecognize() {

@@ -44,10 +44,13 @@ function createPageInstance(definition) {
   }
 }
 
-test('home add button opens food search instead of default broccoli add page', () => {
-  const navigations = []
+test('home add button switches to food search tab instead of default broccoli add page', () => {
+  const tabSwitches = []
   global.wx = {
-    navigateTo: (input) => navigations.push(input)
+    navigateTo: () => {
+      throw new Error('should use switchTab for tabBar pages')
+    },
+    switchTab: (input) => tabSwitches.push(input)
   }
   const page = createPageInstance(loadHomePage({
     getAssets: () => ({})
@@ -56,7 +59,7 @@ test('home add button opens food search instead of default broccoli add page', (
   page.goAdd()
 
   delete global.wx
-  assert.deepEqual(navigations, [{ url: '/pages/food/search' }])
+  assert.deepEqual(tabSwitches, [{ url: '/pages/food/search' }])
 })
 
 test('home empty state hides duplicate action buttons', () => {
