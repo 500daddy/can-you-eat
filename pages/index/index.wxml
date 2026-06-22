@@ -38,7 +38,7 @@
     </block>
   </block>
 
-  <pixel-empty wx:else />
+  <pixel-empty wx:else show-actions="{{false}}" />
 
   <view class="disclaimer">
     本工具提供食材保存和宝宝食用建议参考，不能替代专业医疗或食品安全判断。请结合食材实际状态、宝宝身体情况和医生建议综合判断。

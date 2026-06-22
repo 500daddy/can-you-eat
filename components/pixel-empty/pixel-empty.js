@@ -15,6 +15,10 @@ Component({
     image: {
       type: String,
       value: ''
+    },
+    showActions: {
+      type: Boolean,
+      value: true
     }
   },
 

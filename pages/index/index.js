@@ -36,7 +36,7 @@ Page({
   },
 
   goAdd() {
-    wx.navigateTo({ url: '/pages/food/add' })
+    wx.navigateTo({ url: '/pages/food/search' })
   },
 
   goRecognize() {
