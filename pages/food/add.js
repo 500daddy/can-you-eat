@@ -18,6 +18,7 @@ Page({
       note: '',
       remindText: '宝宝建议期结束前 1 天提醒'
     },
+    saving: false,
     storageOptions: [
       { key: 'room', text: '常温' },
       { key: 'fridge', text: '冷藏' },
@@ -83,25 +84,33 @@ Page({
   },
 
   async save() {
+    if (this.data.saving) return
     const form = this.data.form
     if (!form.name.trim()) {
       wx.showToast({ title: '请填写食材名称', icon: 'none' })
       return
     }
-    await foodService.addFoodRecord({
-      foodBaseId: form.foodId,
-      foodName: form.name,
-      purchaseDate: form.purchaseDate,
-      storageMethod: form.storageMethod,
-      quantity: form.quantity,
-      unit: form.unit,
-      isBabyFood: form.isBabyFood,
-      note: form.note
-    })
-    wx.showToast({ title: '已添加，可开启提醒', icon: 'success' })
-    setTimeout(() => {
-      wx.switchTab({ url: '/pages/index/index' })
-    }, 600)
+    this.setData({ saving: true })
+    try {
+      await foodService.addFoodRecord({
+        foodBaseId: form.foodId,
+        foodName: form.name,
+        purchaseDate: form.purchaseDate,
+        storageMethod: form.storageMethod,
+        quantity: form.quantity,
+        unit: form.unit,
+        isBabyFood: form.isBabyFood,
+        note: form.note
+      })
+      wx.showToast({ title: '已添加，可开启提醒', icon: 'success' })
+      setTimeout(() => {
+        wx.switchTab({ url: '/pages/index/index' })
+      }, 600)
+    } catch (error) {
+      wx.showToast({ title: '保存失败，请重试', icon: 'none' })
+    } finally {
+      this.setData({ saving: false })
+    }
   },
 
   goSearch() {

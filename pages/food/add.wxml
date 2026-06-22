@@ -60,6 +60,6 @@
     <view class="remind-box">{{form.remindText}}</view>
   </view>
 
-  <view class="pixel-btn save-btn" bindtap="save">保存</view>
+  <view class="pixel-btn save-btn {{saving ? 'disabled' : ''}}" bindtap="save">{{saving ? '保存中...' : '保存'}}</view>
   <view class="disclaimer">保存后仍需结合食材实际外观、气味和宝宝身体情况判断。</view>
 </view>

@@ -76,3 +76,8 @@
 .save-btn {
   margin-top: 28rpx;
 }
+
+.save-btn.disabled {
+  opacity: 0.72;
+  box-shadow: inset 0 3rpx 0 rgba(255, 255, 255, 0.35), 0 3rpx 0 rgba(36, 96, 44, 0.28);
+}
