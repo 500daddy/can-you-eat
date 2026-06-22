@@ -17,18 +17,18 @@
 
 1. 在微信开发者工具导入本项目。
 2. 后端服务选择“微信云开发”。
-3. 进入云开发控制台，新建或选择一个环境。
-4. 复制云环境 ID，替换 [app.js](/Users/a500/Documents/宝宝食材小管家/app.js:5) 里的 `cloudEnvId`。
-5. 将 [app.js](/Users/a500/Documents/宝宝食材小管家/app.js:6) 里的 `useCloudFoodApi` 改成 `true`。
+3. 进入云开发控制台，选择当前开发环境 `cloud1`。
+4. 当前 [app.js](/Users/a500/Documents/宝宝食材小管家/app.js:6) 已配置环境 ID `cloud1-d2g659tkmf84d1d07`。
+5. 当前 [app.js](/Users/a500/Documents/宝宝食材小管家/app.js:7) 已将 `useCloudFoodApi` 设置为 `true`。
 
 ```js
 globalData: {
-  cloudEnvId: '你的云环境ID',
+  cloudEnvId: 'cloud1-d2g659tkmf84d1d07',
   useCloudFoodApi: true
 }
 ```
 
-如果 `cloudEnvId` 仍然是 `cloud1-please-replace`，小程序会跳过 `wx.cloud.init`，这是为了避免开发者工具一直提示云环境占位错误。
+如果后续要临时回到本地模式，可以把 `useCloudFoodApi` 改成 `false`。如果 `cloudEnvId` 被改回 `cloud1-please-replace`，小程序会跳过 `wx.cloud.init`，这是为了避免开发者工具一直提示云环境占位错误。
 
 ## 需要创建的数据库集合
 
@@ -114,7 +114,7 @@ const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
 
 先看控制台错误文本：
 
-- `cloud1-please-replace` 或云环境不存在：说明还没替换真实 `cloudEnvId`。
+- 云环境不存在：确认 [app.js](/Users/a500/Documents/宝宝食材小管家/app.js:6) 中的 `cloudEnvId` 是否仍是 `cloud1-d2g659tkmf84d1d07`，并确认开发者工具登录的是同一个 AppID。
 - `collection not exists`：说明数据库集合还没创建。
 - `function not found`：说明对应云函数还没上传部署。
 - `permission denied`：说明集合权限或云函数调用权限需要调整。

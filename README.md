@@ -24,8 +24,8 @@
 
 1. 用微信开发者工具打开本目录。
 2. AppID 可先使用测试号或游客模式。
-3. 如果只是查看 UI 或本地试流程，可以先选择“不使用云服务”。
-4. 如果要启用云开发，将 `app.js` 中的 `globalData.cloudEnvId` 替换为你的云环境 ID，并把 `globalData.useCloudFoodApi` 改为 `true`。
+3. 当前已配置开发环境 `cloud1-d2g659tkmf84d1d07`，导入时可以选择“微信云开发”继续联调。
+4. 如果只是查看 UI 或本地试流程，也可以临时把 `app.js` 中的 `globalData.useCloudFoodApi` 改回 `false`。
 
 完整云开发联调步骤见 [docs/cloud-setup.md](/Users/a500/Documents/宝宝食材小管家/docs/cloud-setup.md)。
 
@@ -57,9 +57,8 @@ wx.cloud.callFunction({
 })
 ```
 
-当前页面通过 `utils/foodService.js` 访问数据，默认仍使用本地 repository，方便无云环境时继续调 UI 和流程。
-如果你已经在开发者工具里开通云开发、替换了 `app.js` 的云环境 ID，并部署了 `foodApi` 和 `mockRecognize`，可以把 `app.js` 中的 `globalData.useCloudFoodApi` 改为 `true`。
-页面会优先调用云函数，失败时自动回退本地数据；拍照识别会优先上传到云存储并调用 `mockRecognize`，失败时回退本地模拟识别。
+当前页面通过 `utils/foodService.js` 访问数据，已切到微信云开发环境 `cloud1-d2g659tkmf84d1d07`。
+部署 `foodApi` 和 `mockRecognize` 后，页面会优先调用云函数；如果云函数失败，会自动回退本地数据，方便调试不中断。拍照识别会优先上传到云存储并调用 `mockRecognize`，失败时回退本地模拟识别。
 反馈和识别日志也会在云模式下写入 `feedback`、`recognition_logs` 集合。
 数据库集合、初始化入口、红色叹号排查和订阅模板配置都整理在 [docs/cloud-setup.md](/Users/a500/Documents/宝宝食材小管家/docs/cloud-setup.md)。
 
@@ -81,5 +80,5 @@ find app.js utils components pages cloudfunctions custom-tab-bar tests -name '*.
 ## 下一步
 
 - 在开发者工具里创建并验证 `food_base`、`user_food_records`、`user_settings`、`feedback` 集合权限。
-- 部署 `foodApi` 并打开 `globalData.useCloudFoodApi`，做真机/模拟器云数据联调。
+- 部署 `foodApi` 和 `mockRecognize`，做真机/模拟器云数据联调。
 - 将 `mockRecognize` 替换为真实识别服务，保留当前结果归一化结构。

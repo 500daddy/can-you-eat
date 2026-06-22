@@ -3,8 +3,8 @@ App({
     babyName: '小芽贝',
     babyAgeText: '8个月12天',
     babyMode: true,
-    cloudEnvId: 'cloud1-please-replace',
-    useCloudFoodApi: false
+    cloudEnvId: 'cloud1-d2g659tkmf84d1d07',
+    useCloudFoodApi: true
   },
 
   onLaunch() {

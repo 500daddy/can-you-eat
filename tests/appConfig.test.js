@@ -88,3 +88,11 @@ test('literal page navigation targets are declared in app.json', () => {
     assert.ok(pages.has(url), `${url} should be declared in app.json pages`)
   }
 })
+
+test('app.js uses the configured cloud development environment', () => {
+  const appJs = readText('app.js')
+
+  assert.match(appJs, /cloudEnvId:\s*'cloud1-d2g659tkmf84d1d07'/)
+  assert.match(appJs, /useCloudFoodApi:\s*true/)
+  assert.doesNotMatch(appJs, /cloudEnvId:\s*'cloud1-please-replace'/)
+})
