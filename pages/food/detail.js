@@ -11,7 +11,7 @@ Page({
     statusInfo: {}
   },
 
-  onLoad(query) {
+  onLoad(query = {}) {
     this.loadDetail(query.id)
   },
 

@@ -25,7 +25,7 @@ Page({
     ]
   },
 
-  async onLoad(query) {
+  async onLoad(query = {}) {
     if (query.foodId) {
       const food = await foodService.getFoodBaseById(query.foodId)
       if (!food) {

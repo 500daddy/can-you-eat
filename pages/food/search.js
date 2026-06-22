@@ -11,7 +11,7 @@ Page({
     results: []
   },
 
-  async onLoad(query) {
+  async onLoad(query = {}) {
     const keyword = query.keyword || ''
     const foodBase = await foodService.getFoodBase()
     this.setData({
