@@ -81,3 +81,75 @@ test('edit page shows a message and goes back when record is missing', async () 
   assert.equal(navigatedBack, true)
   assert.deepEqual(page.data.form, {})
 })
+
+test('edit page ignores duplicate save while a request is pending', async () => {
+  let calls = 0
+  let resolveUpdate
+  const pendingUpdate = new Promise((resolve) => {
+    resolveUpdate = resolve
+  })
+  const page = createPageInstance(loadEditPage({
+    getAssets: () => ({}),
+    updateFoodRecord: async () => {
+      calls += 1
+      return pendingUpdate
+    }
+  }))
+  page.setData({
+    form: {
+      id: 'record-carrot',
+      purchaseDate: '2026-06-22',
+      storageMethod: 'fridge',
+      quantity: '1',
+      unit: '份',
+      isBabyFood: true,
+      note: ''
+    }
+  })
+  global.wx = {
+    showToast: () => {},
+    navigateBack: () => {}
+  }
+  const originalSetTimeout = global.setTimeout
+  global.setTimeout = (fn) => fn()
+
+  const firstSave = page.save()
+  const secondSave = page.save()
+
+  assert.equal(calls, 1)
+  resolveUpdate()
+  await Promise.all([firstSave, secondSave])
+
+  global.setTimeout = originalSetTimeout
+  delete global.wx
+})
+
+test('edit page shows a failure toast and resets saving state', async () => {
+  const toasts = []
+  const page = createPageInstance(loadEditPage({
+    getAssets: () => ({}),
+    updateFoodRecord: async () => {
+      throw new Error('storage failed')
+    }
+  }))
+  page.setData({
+    form: {
+      id: 'record-carrot',
+      purchaseDate: '2026-06-22',
+      storageMethod: 'fridge',
+      quantity: '1',
+      unit: '份',
+      isBabyFood: true,
+      note: ''
+    }
+  })
+  global.wx = {
+    showToast: (input) => toasts.push(input)
+  }
+
+  await page.save()
+
+  delete global.wx
+  assert.equal(page.data.saving, false)
+  assert.deepEqual(toasts, [{ title: '保存失败，请重试', icon: 'none' }])
+})
