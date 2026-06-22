@@ -34,7 +34,7 @@ const statusPriority = {
   deleted: 6
 }
 
-const manualStatusSet = new Set(['adult_only', 'not_recommended', 'finished', 'deleted'])
+const manualStatusSet = new Set(['not_recommended', 'finished', 'deleted'])
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value))
@@ -143,7 +143,9 @@ function calculateRecord({ record, food, settings, today }) {
   const daysToAdult = daysBetween(today, adultExpireDate)
   let status = record.status
 
-  if (!manualStatusSet.has(status)) {
+  if (status === 'adult_only') {
+    status = daysToAdult >= 0 ? 'adult_only' : 'expired'
+  } else if (!manualStatusSet.has(status)) {
     if (daysToBaby >= 2) status = 'baby_ok'
     else if (daysToBaby >= 0) status = 'baby_today'
     else if (daysToAdult >= 0) status = 'adult_only'

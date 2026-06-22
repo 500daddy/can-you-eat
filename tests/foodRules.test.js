@@ -95,6 +95,19 @@ test('preserves manual adult_only status', () => {
   assert.equal(record.group, '可留给大人吃')
 })
 
+test('expires manual adult_only status after adult reference period', () => {
+  const record = calculateRecordState({
+    food: broccoli,
+    purchaseDate: '2026-06-01',
+    storageMethod: 'fridge',
+    status: 'adult_only',
+    today: '2026-06-12'
+  })
+
+  assert.equal(record.status, 'expired')
+  assert.equal(record.group, '不建议继续食用')
+})
+
 test('sorts records by homepage priority then nearest baby expiry', () => {
   const records = [
     { id: 'fresh', status: 'baby_ok', babyExpireDate: '2026-06-20' },

@@ -116,6 +116,24 @@ test('preserves manual cloud adult_only status', async () => {
   assert.equal(detail.data.record.group, '可留给大人吃')
 })
 
+test('expires manual cloud adult_only status after adult reference period', async () => {
+  const api = createFoodApi({ store: createMemoryStore(), userId: 'user-a', today: '2026-06-12' })
+  await api.handle({ action: 'initFoodBase' })
+  const added = await api.handle({
+    action: 'addFoodRecord',
+    foodBaseId: 'broccoli',
+    purchaseDate: '2026-06-01',
+    storageMethod: 'fridge'
+  })
+
+  await api.handle({ action: 'finishFoodRecord', recordId: added.data.id, finishAction: 'adult_only' })
+
+  const detail = await api.handle({ action: 'getFoodDetail', recordId: added.data.id })
+
+  assert.equal(detail.data.record.status, 'expired')
+  assert.equal(detail.data.record.group, '不建议继续食用')
+})
+
 test('updates settings and submits feedback', async () => {
   const api = createFoodApi({ store: createMemoryStore(), userId: 'user-a', today: '2026-06-12' })
 
