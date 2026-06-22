@@ -22,12 +22,17 @@ Page({
       success: async (res) => {
         const imagePath = res.tempFiles && res.tempFiles[0] ? res.tempFiles[0].tempFilePath : ''
         this.setData({ hasImage: true, imagePath, recognizing: true, results: [] })
-        const recognized = await recognitionService.recognizeImage(imagePath)
-        this.setData({
-          recognizing: false,
-          imagePath: recognized.imageUrl || imagePath,
-          results: recognized.results
-        })
+        try {
+          const recognized = await recognitionService.recognizeImage(imagePath)
+          this.setData({
+            recognizing: false,
+            imagePath: recognized.imageUrl || imagePath,
+            results: recognized.results
+          })
+        } catch (error) {
+          this.setData({ recognizing: false, results: [] })
+          wx.showToast({ title: '识别失败，请重试', icon: 'none' })
+        }
       },
       fail: () => {
         this.mockRecognize()

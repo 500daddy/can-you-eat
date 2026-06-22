@@ -74,7 +74,7 @@ const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
 ## 本地验证
 
 ```bash
-node --test tests/appConfig.test.js tests/assetPaths.test.js tests/babyAge.test.js tests/subscribeService.test.js tests/recognitionService.test.js tests/foodCardComponent.test.js tests/foodEditPage.test.js tests/feedbackPage.test.js tests/pageQuery.test.js tests/foodService.test.js tests/cloudStore.test.js tests/foodApiCore.test.js tests/foodRepository.test.js tests/foodRules.test.js
+node --test tests/appConfig.test.js tests/assetPaths.test.js tests/babyAge.test.js tests/subscribeService.test.js tests/recognitionService.test.js tests/foodCardComponent.test.js tests/foodEditPage.test.js tests/feedbackPage.test.js tests/recognizePage.test.js tests/pageQuery.test.js tests/foodService.test.js tests/cloudStore.test.js tests/foodApiCore.test.js tests/foodRepository.test.js tests/foodRules.test.js
 find app.js utils components pages cloudfunctions custom-tab-bar tests -name '*.js' -print0 | xargs -0 -n1 node --check
 ```
 
