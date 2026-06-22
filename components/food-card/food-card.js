@@ -14,7 +14,8 @@ Component({
 
   methods: {
     goDetail() {
-      const id = this.properties.food.id || 'record-broccoli'
+      const id = this.properties.food.id
+      if (!id) return
       wx.navigateTo({
         url: `/pages/food/detail?id=${id}`
       })
