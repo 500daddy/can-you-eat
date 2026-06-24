@@ -46,6 +46,17 @@
   box-shadow: inset 0 4rpx 0 rgba(255, 255, 255, 0.24), 0 4rpx 0 #2f6c37;
 }
 
+.category-toggle {
+  padding: 8rpx 10rpx;
+  border-radius: 12rpx;
+  color: #3f8a43;
+  font-weight: 900;
+}
+
+.category-toggle:active {
+  background: #e7f4d8;
+}
+
 .food-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

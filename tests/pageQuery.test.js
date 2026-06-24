@@ -75,7 +75,36 @@ test('search page treats missing query object as empty keyword', async () => {
 
   assert.deepEqual(calls, [''])
   assert.equal(page.data.keyword, '')
+  assert.equal(page.data.resultTitle, '推荐食材')
   assert.deepEqual(page.data.hotFoods, foods)
+})
+
+test('search page labels typed results and toggles more categories', async () => {
+  const foods = Array.from({ length: 10 }, (_, index) => ({
+    id: `food-${index + 1}`,
+    name: `食材${index + 1}`
+  }))
+  const page = createPageInstance(loadPage('pages/food/search', {
+    getAssets: () => assets,
+    getFoodBase: async () => foods,
+    searchFoods: async (keyword) => keyword ? foods.slice(0, 2) : foods
+  }))
+
+  await page.onLoad()
+
+  assert.equal(page.data.hotFoods.length, 8)
+  assert.equal(page.data.categoryToggleText, '更多分类 ›')
+
+  page.toggleCategories()
+
+  assert.equal(page.data.hotFoods.length, 10)
+  assert.equal(page.data.categoryToggleText, '收起分类')
+
+  await page.onInput({ detail: { value: '胡萝卜' } })
+
+  assert.equal(page.data.keyword, '胡萝卜')
+  assert.equal(page.data.resultTitle, '搜索结果')
+  assert.equal(page.data.results.length, 2)
 })
 
 test('detail page treats missing query object as missing record', async () => {

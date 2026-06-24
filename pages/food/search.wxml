@@ -10,7 +10,7 @@
 
   <view class="section-head">
     <view class="section-title">常见食材</view>
-    <view class="section-more">更多分类 ›</view>
+    <view class="section-more category-toggle" bindtap="toggleCategories">{{categoryToggleText}}</view>
   </view>
   <view class="food-grid">
     <view class="food-tile" wx:for="{{hotFoods}}" wx:key="id" data-id="{{item.id}}" bindtap="chooseFood">
@@ -20,7 +20,7 @@
   </view>
 
   <view class="section-head">
-    <view class="section-title">搜索结果</view>
+    <view class="section-title">{{resultTitle}}</view>
     <view class="section-more">{{results.length}} 个</view>
   </view>
   <block wx:if="{{results.length}}">
