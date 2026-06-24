@@ -3,9 +3,24 @@ const { todayString } = require('../../utils/foodRules')
 
 const foodService = getFoodService()
 
+const customRemindTextMap = {
+  room: '自定义食材按保守规则提醒：常温约 1 天内优先处理。',
+  fridge: '自定义食材按保守规则提醒：冷藏约 2 天内优先处理。',
+  freezer: '自定义食材按保守规则提醒：冷冻约 15 天内优先处理。'
+}
+
+function buildRemindText(isCustomFood, storageMethod) {
+  if (isCustomFood) {
+    return customRemindTextMap[storageMethod] || customRemindTextMap.fridge
+  }
+  return '宝宝建议期结束前 1 天提醒'
+}
+
 Page({
   data: {
     assets: foodService.getAssets(),
+    isCustomFood: false,
+    selectedFoodHint: '默认推荐保存方式已带入',
     form: {
       foodId: 'broccoli',
       name: '西兰花',
@@ -16,7 +31,7 @@ Page({
       unit: '颗',
       isBabyFood: true,
       note: '',
-      remindText: '宝宝建议期结束前 1 天提醒'
+      remindText: buildRemindText(false, 'fridge')
     },
     saving: false,
     storageOptions: [
@@ -38,8 +53,11 @@ Page({
           foodId: food.id,
           name: food.name,
           icon: food.icon,
-          storageMethod: food.defaultStorage
-        }
+          storageMethod: food.defaultStorage,
+          remindText: buildRemindText(false, food.defaultStorage)
+        },
+        isCustomFood: false,
+        selectedFoodHint: '默认推荐保存方式已带入'
       })
     } else if (query.name) {
       const name = decodeURIComponent(query.name)
@@ -49,8 +67,13 @@ Page({
           foodId: 'custom',
           name,
           icon: this.data.assets.food.babyPuree,
-          storageMethod: 'fridge'
-        }
+          storageMethod: 'fridge',
+          quantity: '',
+          unit: '',
+          remindText: buildRemindText(true, 'fridge')
+        },
+        isCustomFood: true,
+        selectedFoodHint: '自定义食材会按更保守的保存期提醒'
       })
     }
   },
@@ -64,7 +87,11 @@ Page({
   },
 
   chooseStorage(e) {
-    this.setData({ 'form.storageMethod': e.currentTarget.dataset.key })
+    const storageMethod = e.currentTarget.dataset.key
+    this.setData({
+      'form.storageMethod': storageMethod,
+      'form.remindText': buildRemindText(this.data.isCustomFood, storageMethod)
+    })
   },
 
   onQuantityInput(e) {

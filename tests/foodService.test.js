@@ -3,6 +3,7 @@ const assert = require('node:assert/strict')
 
 const { createMemoryFoodRepository } = require('../utils/foodRepository')
 const { createFoodService } = require('../utils/foodService')
+const { foodBase } = require('../utils/foodBase')
 
 test('uses local repository by default', async () => {
   const service = createFoodService({
@@ -65,7 +66,7 @@ test('initializing food base is a no-op for local repository', async () => {
 
   const result = await service.initFoodBase()
 
-  assert.deepEqual(result, { inserted: 0, total: 20, localOnly: true })
+  assert.deepEqual(result, { inserted: 0, total: foodBase.length, localOnly: true })
 })
 
 test('falls back to local repository when cloud call fails', async () => {

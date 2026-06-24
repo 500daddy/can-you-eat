@@ -3,7 +3,8 @@ const assert = require('node:assert/strict')
 
 const {
   createFoodApi,
-  createMemoryStore
+  createMemoryStore,
+  seedFoodBase
 } = require('../cloudfunctions/foodApi/core')
 
 test('initializes food base once and searches by alias', async () => {
@@ -12,11 +13,13 @@ test('initializes food base once and searches by alias', async () => {
   const init = await api.handle({ action: 'initFoodBase' })
   const initAgain = await api.handle({ action: 'initFoodBase' })
   const search = await api.handle({ action: 'searchFoods', keyword: '西红柿' })
+  const mushroom = await api.handle({ action: 'searchFoods', keyword: '菌菇' })
 
-  assert.equal(init.inserted, 20)
+  assert.equal(init.inserted, seedFoodBase.length)
   assert.equal(initAgain.inserted, 0)
   assert.equal(search.data[0].id, 'tomato')
   assert.equal(search.data[0].name, '番茄')
+  assert.equal(mushroom.data[0].id, 'mushroom')
 })
 
 test('initFoodBase refreshes category metadata for existing foods', async () => {

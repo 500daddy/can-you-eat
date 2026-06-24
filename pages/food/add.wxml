@@ -6,9 +6,14 @@
     <image class="selected-icon" src="{{form.icon}}" mode="aspectFit" />
     <view class="selected-main">
       <view class="selected-name">{{form.name}}</view>
-      <view class="subtitle">默认推荐保存方式已带入</view>
+      <view class="subtitle">{{selectedFoodHint}}</view>
     </view>
     <view class="change-btn" bindtap="goSearch">更换</view>
+  </view>
+
+  <view wx:if="{{isCustomFood}}" class="custom-tip">
+    <view class="custom-tip-title">自定义食材</view>
+    <view class="subtitle">先记录名称、保存方式和购买日期，小程序会按保守周期提醒处理。</view>
   </view>
 
   <view class="form-card">

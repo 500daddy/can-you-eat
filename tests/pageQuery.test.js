@@ -1,5 +1,7 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
+const fs = require('node:fs')
+const path = require('node:path')
 
 function loadPage(pagePath, foodService) {
   const servicePath = require.resolve('../utils/foodService')
@@ -39,7 +41,8 @@ function createPageInstance(definition) {
 const assets = {
   food: {
     broccoli: '/assets/sprites/food/food_broccoli.png',
-    babyPuree: '/assets/sprites/food/food_baby_puree.png'
+    babyPuree: '/assets/sprites/food/food_baby_puree.png',
+    mushroom: '/assets/sprites/food/food_mushroom.png'
   },
   actions: {},
   mascot: {}
@@ -61,7 +64,13 @@ test('add page tolerates missing query object', async () => {
 
 test('search page treats missing query object as empty keyword', async () => {
   const calls = []
-  const foods = [{ id: 'broccoli', name: '西兰花', category: '蔬菜', subCategory: '花菜类' }]
+  const foods = [{
+    id: 'broccoli',
+    name: '西兰花',
+    category: '蔬菜',
+    subCategory: '花菜类',
+    icon: '/assets/sprites/food/food_broccoli.png'
+  }]
   const page = createPageInstance(loadPage('pages/food/search', {
     getAssets: () => assets,
     getFoodBase: async () => foods,
@@ -76,15 +85,20 @@ test('search page treats missing query object as empty keyword', async () => {
   assert.deepEqual(calls, [''])
   assert.equal(page.data.keyword, '')
   assert.equal(page.data.resultTitle, '推荐食材')
-  assert.deepEqual(page.data.categoryGroups, [{ name: '蔬菜', count: 1, subCategories: [{ name: '花菜类', count: 1 }] }])
+  assert.deepEqual(page.data.categoryGroups, [{
+    name: '蔬菜',
+    count: 1,
+    icon: '/assets/sprites/food/food_broccoli.png',
+    subCategories: [{ name: '花菜类', count: 1 }]
+  }])
 })
 
 test('search page filters foods by first and second level categories', async () => {
   const foods = [
-    { id: 'carrot', name: '胡萝卜', category: '蔬菜', subCategory: '根茎类' },
-    { id: 'pumpkin', name: '南瓜', category: '蔬菜', subCategory: '瓜类' },
-    { id: 'chicken', name: '鸡胸肉', category: '肉类', subCategory: '禽类' },
-    { id: 'beef', name: '牛肉', category: '肉类', subCategory: '畜类' }
+    { id: 'carrot', name: '胡萝卜', category: '蔬菜', subCategory: '根茎类', icon: '/assets/sprites/food/food_carrot.png' },
+    { id: 'pumpkin', name: '南瓜', category: '蔬菜', subCategory: '瓜类', icon: '/assets/sprites/food/food_pumpkin.png' },
+    { id: 'chicken', name: '鸡胸肉', category: '肉类', subCategory: '禽类', icon: '/assets/sprites/food/food_chicken.png' },
+    { id: 'beef', name: '牛肉', category: '肉类', subCategory: '畜类', icon: '/assets/sprites/food/food_beef.png' }
   ]
   const page = createPageInstance(loadPage('pages/food/search', {
     getAssets: () => assets,
@@ -113,6 +127,38 @@ test('search page filters foods by first and second level categories', async () 
   assert.equal(page.data.resultTitle, '搜索结果')
   assert.equal(page.data.activeCategory, '')
   assert.equal(page.data.results.length, 2)
+})
+
+test('search page opens custom add flow with the missing keyword', async () => {
+  const navigations = []
+  global.wx = {
+    navigateTo: (input) => navigations.push(input)
+  }
+  const page = createPageInstance(loadPage('pages/food/search', {
+    getAssets: () => assets,
+    getFoodBase: async () => [],
+    searchFoods: async () => []
+  }))
+  page.setData({ keyword: '莲藕' })
+
+  page.goAdd()
+
+  delete global.wx
+  assert.deepEqual(navigations, [{
+    url: '/pages/food/add?name=%E8%8E%B2%E8%97%95&custom=1'
+  }])
+})
+
+test('search page category section uses icon cards', () => {
+  const markup = fs.readFileSync(path.resolve(__dirname, '../pages/food/search.wxml'), 'utf8')
+  const stylesheet = fs.readFileSync(path.resolve(__dirname, '../pages/food/search.wxss'), 'utf8')
+
+  assert.match(markup, /class="category-grid"/)
+  assert.match(markup, /class="category-icon"/)
+  assert.doesNotMatch(markup, /class="category-scroll"/)
+  assert.match(stylesheet, /\.category-tile/)
+  assert.match(stylesheet, /\.category-icon/)
+  assert.doesNotMatch(stylesheet, /\.category-scroll/)
 })
 
 test('detail page treats missing query object as missing record', async () => {

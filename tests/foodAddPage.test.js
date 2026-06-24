@@ -41,7 +41,19 @@ function createPageInstance(definition) {
   return {
     data: JSON.parse(JSON.stringify(definition.data)),
     setData(patch) {
-      this.data = { ...this.data, ...patch }
+      Object.keys(patch).forEach((key) => {
+        if (!key.includes('.')) {
+          this.data[key] = patch[key]
+          return
+        }
+        const path = key.split('.')
+        let target = this.data
+        path.slice(0, -1).forEach((part) => {
+          target[part] = { ...(target[part] || {}) }
+          target = target[part]
+        })
+        target[path[path.length - 1]] = patch[key]
+      })
     },
     ...definition
   }
@@ -55,6 +67,7 @@ function createFoodService(addFoodRecord) {
         babyPuree: '/assets/sprites/food/food_baby_puree.png'
       }
     }),
+    getFoodBaseById: async () => null,
     addFoodRecord
   }
 }
@@ -101,4 +114,23 @@ test('add page shows a failure toast and resets saving state', async () => {
   delete global.wx
   assert.equal(page.data.saving, false)
   assert.deepEqual(toasts, [{ title: '保存失败，请重试', icon: 'none' }])
+})
+
+test('add page enters custom food mode from a missing search keyword', async () => {
+  const page = createPageInstance(loadAddPage(createFoodService(async () => {})))
+
+  await page.onLoad({ name: encodeURIComponent('莲藕'), custom: '1' })
+
+  assert.equal(page.data.isCustomFood, true)
+  assert.equal(page.data.form.foodId, 'custom')
+  assert.equal(page.data.form.name, '莲藕')
+  assert.equal(page.data.form.quantity, '')
+  assert.equal(page.data.form.unit, '')
+  assert.match(page.data.selectedFoodHint, /自定义食材/)
+  assert.match(page.data.form.remindText, /冷藏.*2 天/)
+
+  page.chooseStorage({ currentTarget: { dataset: { key: 'freezer' } } })
+
+  assert.equal(page.data.form.storageMethod, 'freezer')
+  assert.match(page.data.form.remindText, /冷冻.*15 天/)
 })

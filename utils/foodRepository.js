@@ -88,6 +88,19 @@ function decorateFood(food) {
   }
 }
 
+function createCustomFood(name, storageMethod = 'fridge') {
+  return {
+    id: 'custom',
+    name: name || '自定义食材',
+    defaultStorage: storageMethod,
+    icon: assets.food.babyPuree,
+    room: { babyDaysMax: 1, adultDaysMax: 2 },
+    fridge: { babyDaysMax: 2, adultDaysMax: 3 },
+    freezer: { babyDaysMax: 15, adultDaysMax: 30 },
+    storageTips: ['自定义食材请结合实际状态判断。']
+  }
+}
+
 function createMemoryFoodRepository(options = {}) {
   const today = options.today || todayString
   let counter = 0
@@ -121,7 +134,7 @@ function createMemoryFoodRepository(options = {}) {
     const fallbackName = raw.customFoodName || raw.foodName || raw.name || '自定义食材'
     const storageMethod = raw.storageMethod || (food && food.defaultStorage) || 'fridge'
     const calculated = calculateRecordState({
-      food: food || { id: 'custom', name: fallbackName, defaultStorage: storageMethod },
+      food: food || createCustomFood(fallbackName, storageMethod),
       purchaseDate: raw.purchaseDate,
       storageMethod,
       status: raw.status,

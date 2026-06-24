@@ -16,11 +16,14 @@ test('food base uses broad categories with second-level categories', () => {
   const repo = createMemoryFoodRepository({ today: '2026-06-12' })
   const carrot = repo.getFoodBaseById('carrot')
   const chicken = repo.getFoodBaseById('chicken')
+  const mushroom = repo.getFoodBaseById('mushroom')
 
   assert.equal(carrot.category, '蔬菜')
   assert.equal(carrot.subCategory, '根茎类')
   assert.equal(chicken.category, '肉类')
   assert.equal(chicken.subCategory, '禽类')
+  assert.equal(mushroom.category, '蔬菜')
+  assert.equal(mushroom.subCategory, '菌菇类')
 })
 
 test('adds a food record and recalculates it for list/detail/reminders', () => {
@@ -162,6 +165,21 @@ test('keeps custom food detail base empty instead of falling back to broccoli', 
   assert.equal(detail.record.foodBaseId, 'custom')
   assert.equal(detail.record.name, '山药')
   assert.equal(detail.base, null)
+})
+
+test('calculates custom food reminders from the selected storage method', () => {
+  const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
+  const created = repo.addFoodRecord({
+    foodName: '自制肉泥',
+    purchaseDate: '2026-06-12',
+    storageMethod: 'freezer'
+  })
+
+  assert.equal(created.foodBaseId, 'custom')
+  assert.equal(created.babyExpireDate, '2026-06-27')
+  assert.equal(created.adultExpireDate, '2026-07-12')
+  assert.equal(created.status, 'baby_ok')
+  assert.equal(repo.getReminders().today.length, 0)
 })
 
 test('returns null when local food base id is missing', () => {

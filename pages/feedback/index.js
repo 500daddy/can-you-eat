@@ -18,6 +18,14 @@ Page({
     submitting: false
   },
 
+  onLoad(query = {}) {
+    const nextForm = { ...this.data.form }
+    if (query.type) nextForm.type = query.type
+    if (query.foodName) nextForm.foodName = decodeURIComponent(query.foodName)
+    if (query.content) nextForm.content = decodeURIComponent(query.content)
+    this.setData({ form: nextForm })
+  },
+
   chooseType(e) {
     this.setData({ 'form.type': e.currentTarget.dataset.key })
   },

@@ -36,6 +36,22 @@ function createPageInstance(definition) {
   }
 }
 
+test('feedback page can prefill missing food feedback from query', async () => {
+  const page = createPageInstance(loadFeedbackPage({
+    submitFeedback: async () => {}
+  }))
+
+  await page.onLoad({
+    type: 'food_not_found',
+    foodName: encodeURIComponent('莲藕'),
+    content: encodeURIComponent('希望补充「莲藕」的保存建议')
+  })
+
+  assert.equal(page.data.form.type, 'food_not_found')
+  assert.equal(page.data.form.foodName, '莲藕')
+  assert.equal(page.data.form.content, '希望补充「莲藕」的保存建议')
+})
+
 test('feedback page does not submit empty content', async () => {
   const toasts = []
   let submitted = false

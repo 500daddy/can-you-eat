@@ -13,14 +13,18 @@
     <view class="section-more">{{categoryGroups.length}} 类</view>
   </view>
   <view class="category-card">
-    <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="{{false}}">
-      <view class="category-chip {{!activeCategory ? 'active' : ''}}" bindtap="clearCategory">
-        全部
+    <view class="category-grid">
+      <view class="category-tile {{!activeCategory ? 'active' : ''}}" bindtap="clearCategory">
+        <image class="category-icon" src="{{assets.food.babyPuree}}" mode="aspectFit" />
+        <view class="category-name">全部</view>
+        <view class="category-count">{{foodBase.length}} 个</view>
       </view>
-      <view class="category-chip {{activeCategory === item.name ? 'active' : ''}}" wx:for="{{categoryGroups}}" wx:key="name" data-name="{{item.name}}" bindtap="selectCategory">
-        {{item.name}} <text>{{item.count}}</text>
+      <view class="category-tile {{activeCategory === item.name ? 'active' : ''}}" wx:for="{{categoryGroups}}" wx:key="name" data-name="{{item.name}}" bindtap="selectCategory">
+        <image class="category-icon" src="{{item.icon}}" mode="aspectFit" />
+        <view class="category-name">{{item.name}}</view>
+        <view class="category-count">{{item.count}} 个</view>
       </view>
-    </scroll-view>
+    </view>
     <view wx:if="{{subCategories.length}}" class="subcategory-grid">
       <view class="subcategory-chip {{activeSubCategory === item.name ? 'active' : ''}}" wx:for="{{subCategories}}" wx:key="name" data-name="{{item.name}}" bindtap="selectSubCategory">
         {{item.name}} <text>{{item.count}}</text>
@@ -47,7 +51,10 @@
   <view wx:else class="paper-card">
     <image class="not-found" src="{{assets.mascot.emptyNotFound}}" mode="aspectFit" />
     <view class="section-title">没找到这个食材</view>
-    <view class="subtitle">可以按分类添加，或先创建一个自定义食材。</view>
-    <view class="pixel-btn ghost" bindtap="goAdd">创建新食材</view>
+    <view class="subtitle">可以创建自定义食材，保存后会进入首页提醒；也可以告诉我们补充食材库。</view>
+    <view class="empty-actions">
+      <view class="pixel-btn ghost" bindtap="goAdd">创建并加入提醒</view>
+      <view class="text-action" bindtap="goFeedback">反馈缺少食材</view>
+    </view>
   </view>
 </view>

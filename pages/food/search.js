@@ -12,6 +12,7 @@ function buildCategoryGroups(foods) {
       groupMap[category] = {
         name: category,
         count: 0,
+        icon: food.icon || '',
         subMap: {},
         subCategories: []
       }
@@ -28,6 +29,7 @@ function buildCategoryGroups(foods) {
   return groups.map((group) => ({
     name: group.name,
     count: group.count,
+    icon: group.icon,
     subCategories: group.subCategories
   }))
 }
@@ -132,7 +134,15 @@ Page({
   },
 
   goAdd() {
-    const keyword = this.data.keyword ? `?name=${encodeURIComponent(this.data.keyword)}` : ''
+    const keyword = this.data.keyword ? `?name=${encodeURIComponent(this.data.keyword)}&custom=1` : ''
     wx.navigateTo({ url: `/pages/food/add${keyword}` })
+  },
+
+  goFeedback() {
+    const keyword = this.data.keyword ? encodeURIComponent(this.data.keyword) : ''
+    const query = keyword
+      ? `?type=food_not_found&foodName=${keyword}&content=${encodeURIComponent(`希望补充「${this.data.keyword}」的保存建议`)}`
+      : '?type=food_not_found'
+    wx.navigateTo({ url: `/pages/feedback/index${query}` })
   }
 })
