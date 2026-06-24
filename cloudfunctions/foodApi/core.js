@@ -275,13 +275,19 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
         const existingIds = new Set(existing.map((item) => item.id))
         const now = today
         let inserted = 0
+        let updated = 0
         for (const food of seedFoodBase) {
           if (!existingIds.has(food.id)) {
             await store.add('food_base', { ...food, createdAt: now, updatedAt: now })
             inserted += 1
+          } else {
+            const patch = { ...food, updatedAt: now }
+            delete patch.createdAt
+            await store.update('food_base', (item) => item.id === food.id, patch)
+            updated += 1
           }
         }
-        return { ok: true, inserted, total: seedFoodBase.length }
+        return { ok: true, inserted, updated, total: seedFoodBase.length }
       }
 
       if (action === 'searchFoods') {

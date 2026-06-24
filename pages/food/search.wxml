@@ -9,13 +9,22 @@
   </view>
 
   <view class="section-head">
-    <view class="section-title">常见食材</view>
-    <view class="section-more category-toggle" bindtap="toggleCategories">{{categoryToggleText}}</view>
+    <view class="section-title">食材分类</view>
+    <view class="section-more">{{categoryGroups.length}} 类</view>
   </view>
-  <view class="food-grid">
-    <view class="food-tile" wx:for="{{hotFoods}}" wx:key="id" data-id="{{item.id}}" bindtap="chooseFood">
-      <image class="tile-icon" src="{{item.icon}}" mode="aspectFit" />
-      <text>{{item.name}}</text>
+  <view class="category-card">
+    <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="category-chip {{!activeCategory ? 'active' : ''}}" bindtap="clearCategory">
+        全部
+      </view>
+      <view class="category-chip {{activeCategory === item.name ? 'active' : ''}}" wx:for="{{categoryGroups}}" wx:key="name" data-name="{{item.name}}" bindtap="selectCategory">
+        {{item.name}} <text>{{item.count}}</text>
+      </view>
+    </scroll-view>
+    <view wx:if="{{subCategories.length}}" class="subcategory-grid">
+      <view class="subcategory-chip {{activeSubCategory === item.name ? 'active' : ''}}" wx:for="{{subCategories}}" wx:key="name" data-name="{{item.name}}" bindtap="selectSubCategory">
+        {{item.name}} <text>{{item.count}}</text>
+      </view>
     </view>
   </view>
 

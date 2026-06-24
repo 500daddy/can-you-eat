@@ -61,7 +61,7 @@ test('add page tolerates missing query object', async () => {
 
 test('search page treats missing query object as empty keyword', async () => {
   const calls = []
-  const foods = [{ id: 'broccoli', name: '西兰花' }]
+  const foods = [{ id: 'broccoli', name: '西兰花', category: '蔬菜', subCategory: '花菜类' }]
   const page = createPageInstance(loadPage('pages/food/search', {
     getAssets: () => assets,
     getFoodBase: async () => foods,
@@ -76,14 +76,16 @@ test('search page treats missing query object as empty keyword', async () => {
   assert.deepEqual(calls, [''])
   assert.equal(page.data.keyword, '')
   assert.equal(page.data.resultTitle, '推荐食材')
-  assert.deepEqual(page.data.hotFoods, foods)
+  assert.deepEqual(page.data.categoryGroups, [{ name: '蔬菜', count: 1, subCategories: [{ name: '花菜类', count: 1 }] }])
 })
 
-test('search page labels typed results and toggles more categories', async () => {
-  const foods = Array.from({ length: 10 }, (_, index) => ({
-    id: `food-${index + 1}`,
-    name: `食材${index + 1}`
-  }))
+test('search page filters foods by first and second level categories', async () => {
+  const foods = [
+    { id: 'carrot', name: '胡萝卜', category: '蔬菜', subCategory: '根茎类' },
+    { id: 'pumpkin', name: '南瓜', category: '蔬菜', subCategory: '瓜类' },
+    { id: 'chicken', name: '鸡胸肉', category: '肉类', subCategory: '禽类' },
+    { id: 'beef', name: '牛肉', category: '肉类', subCategory: '畜类' }
+  ]
   const page = createPageInstance(loadPage('pages/food/search', {
     getAssets: () => assets,
     getFoodBase: async () => foods,
@@ -92,18 +94,24 @@ test('search page labels typed results and toggles more categories', async () =>
 
   await page.onLoad()
 
-  assert.equal(page.data.hotFoods.length, 8)
-  assert.equal(page.data.categoryToggleText, '更多分类 ›')
+  assert.deepEqual(page.data.categoryGroups.map((item) => item.name), ['蔬菜', '肉类'])
 
-  page.toggleCategories()
+  page.selectCategory({ currentTarget: { dataset: { name: '蔬菜' } } })
 
-  assert.equal(page.data.hotFoods.length, 10)
-  assert.equal(page.data.categoryToggleText, '收起分类')
+  assert.equal(page.data.activeCategory, '蔬菜')
+  assert.deepEqual(page.data.results.map((item) => item.id), ['carrot', 'pumpkin'])
+  assert.deepEqual(page.data.subCategories.map((item) => item.name), ['根茎类', '瓜类'])
+
+  page.selectSubCategory({ currentTarget: { dataset: { name: '根茎类' } } })
+
+  assert.equal(page.data.activeSubCategory, '根茎类')
+  assert.equal(page.data.resultTitle, '蔬菜 / 根茎类')
+  assert.deepEqual(page.data.results.map((item) => item.id), ['carrot'])
 
   await page.onInput({ detail: { value: '胡萝卜' } })
-
   assert.equal(page.data.keyword, '胡萝卜')
   assert.equal(page.data.resultTitle, '搜索结果')
+  assert.equal(page.data.activeCategory, '')
   assert.equal(page.data.results.length, 2)
 })
 

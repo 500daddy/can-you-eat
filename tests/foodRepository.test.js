@@ -12,6 +12,17 @@ test('searches food by alias and returns normalized food metadata', () => {
   assert.equal(results[0].defaultStorage, 'fridge')
 })
 
+test('food base uses broad categories with second-level categories', () => {
+  const repo = createMemoryFoodRepository({ today: '2026-06-12' })
+  const carrot = repo.getFoodBaseById('carrot')
+  const chicken = repo.getFoodBaseById('chicken')
+
+  assert.equal(carrot.category, '蔬菜')
+  assert.equal(carrot.subCategory, '根茎类')
+  assert.equal(chicken.category, '肉类')
+  assert.equal(chicken.subCategory, '禽类')
+})
+
 test('adds a food record and recalculates it for list/detail/reminders', () => {
   const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
   const created = repo.addFoodRecord({

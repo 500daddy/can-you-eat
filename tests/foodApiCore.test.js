@@ -19,6 +19,24 @@ test('initializes food base once and searches by alias', async () => {
   assert.equal(search.data[0].name, '番茄')
 })
 
+test('initFoodBase refreshes category metadata for existing foods', async () => {
+  const store = createMemoryStore()
+  await store.add('food_base', {
+    id: 'carrot',
+    name: '胡萝卜',
+    category: '根茎',
+    subCategory: '旧分类'
+  })
+  const api = createFoodApi({ store, userId: 'user-a', today: '2026-06-12' })
+
+  const init = await api.handle({ action: 'initFoodBase' })
+  const carrot = await api.handle({ action: 'getFoodBaseById', foodBaseId: 'carrot' })
+
+  assert.equal(init.updated, 1)
+  assert.equal(carrot.data.category, '蔬菜')
+  assert.equal(carrot.data.subCategory, '根茎类')
+})
+
 test('adds and lists calculated user food records', async () => {
   const api = createFoodApi({ store: createMemoryStore(), userId: 'user-a', today: '2026-06-12' })
   await api.handle({ action: 'initFoodBase' })
