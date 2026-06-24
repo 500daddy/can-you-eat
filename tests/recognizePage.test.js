@@ -80,3 +80,24 @@ test('recognize page recovers when selected image recognition fails', async () =
   assert.deepEqual(page.data.results, [])
   assert.deepEqual(toasts, [{ title: '识别失败，请重试', icon: 'none' }])
 })
+
+test('recognize page manual search switches to food search tab', () => {
+  const tabSwitches = []
+  global.wx = {
+    navigateTo: () => {
+      throw new Error('should use switchTab for tabBar pages')
+    },
+    switchTab: (input) => tabSwitches.push(input)
+  }
+  const page = createPageInstance(loadRecognizePage({
+    foodService: {
+      getAssets: () => ({ food: { carrot: '/assets/sprites/food/food_carrot.png' } })
+    },
+    recognitionService: {}
+  }))
+
+  page.manualSearch()
+
+  delete global.wx
+  assert.deepEqual(tabSwitches, [{ url: '/pages/food/search' }])
+})
