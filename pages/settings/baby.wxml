@@ -6,20 +6,54 @@
     <image class="baby-img" src="{{assets.mascot.babyBasket}}" mode="aspectFit" />
     <view>
       <view class="section-title">当前宝宝：{{nickname}}</view>
-      <view class="subtitle">宝宝月龄：{{babyAgeText || '0天'}}（自动计算）</view>
+      <view class="subtitle">宝宝月龄：{{babyAgeText || '0个月'}}</view>
     </view>
   </view>
 
   <view class="form-card">
+    <view class="field avatar-field">
+      <text class="label">宝宝头像</text>
+      <view class="avatar-editor">
+        <image class="avatar-preview" src="{{babyAvatarImage || assets.mascot.babyBasket}}" mode="aspectFill" />
+        <view class="avatar-actions">
+          <view class="avatar-action-row">
+            <view class="mini-btn avatar-upload" bindtap="chooseAvatar">上传头像</view>
+            <view wx:if="{{babyAvatarUrl}}" class="avatar-secondary" bindtap="clearAvatar">恢复默认</view>
+          </view>
+          <view class="avatar-helper">未上传时，会按月龄和性别显示默认头像。</view>
+        </view>
+      </view>
+    </view>
     <view class="field">
       <text class="label">宝宝昵称</text>
       <input class="input" value="{{nickname}}" bindinput="onNicknameInput" placeholder="请输入宝宝昵称" />
     </view>
     <view class="field">
-      <text class="label">宝宝出生日期</text>
-      <picker mode="date" value="{{birthday}}" bindchange="onBirthdayChange">
-        <view class="picker-box">{{birthday}}</view>
+      <text class="label">宝宝月龄</text>
+      <picker mode="selector" range="{{ageOptions}}" range-key="text" value="{{ageOptionIndex}}" bindchange="onAgeChange">
+        <view class="picker-box">{{ageOptions[ageOptionIndex].text}}</view>
       </picker>
+    </view>
+    <view class="field">
+      <text class="label">宝宝性别</text>
+      <view class="segmented">
+        <view wx:for="{{genderOptions}}" wx:key="value" class="segment {{babyGender === item.value ? 'active' : ''}}" data-value="{{item.value}}" bindtap="selectGender">
+          {{item.text}}
+        </view>
+      </view>
+    </view>
+    <view class="field">
+      <text class="label">过敏源</text>
+      <view class="allergen-input-row">
+        <input class="input allergen-input" value="{{allergenInput}}" bindinput="onAllergenInput" placeholder="如：鸡蛋、牛奶、虾" confirm-type="done" bindconfirm="addAllergen" />
+        <view class="mini-btn" bindtap="addAllergen">添加</view>
+      </view>
+      <view wx:if="{{allergens.length}}" class="allergen-list">
+        <view class="allergen-chip" wx:for="{{allergens}}" wx:key="*this" data-index="{{index}}" bindtap="removeAllergen">
+          {{item}} ×
+        </view>
+      </view>
+      <view class="subtitle">保存食材时如命中过敏源，会先提示确认。</view>
     </view>
     <view class="switch-row">
       <view>

@@ -1,0 +1,117 @@
+@import "../food/add.wxss";
+
+.crop-page {
+  min-height: 100vh;
+  padding: 32rpx 28rpx 48rpx;
+  box-sizing: border-box;
+}
+
+.crop-panel {
+  display: flex;
+  justify-content: center;
+  margin: 32rpx 0 24rpx;
+}
+
+.crop-area {
+  position: relative;
+  overflow: hidden;
+  border: 6rpx solid #51351f;
+  border-radius: 28rpx;
+  background: #2b241b;
+  box-shadow: inset 0 0 0 4rpx rgba(255, 255, 255, 0.12), 0 8rpx 0 rgba(81, 53, 31, 0.18);
+}
+
+.crop-image-wrap {
+  position: relative;
+}
+
+.crop-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.crop-frame {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 4rpx solid rgba(255, 249, 233, 0.96);
+  box-sizing: border-box;
+}
+
+.grid-line {
+  position: absolute;
+  background: rgba(255, 249, 233, 0.55);
+}
+
+.grid-line.vertical {
+  top: 0;
+  bottom: 0;
+  width: 2rpx;
+}
+
+.grid-line.horizontal {
+  left: 0;
+  right: 0;
+  height: 2rpx;
+}
+
+.grid-line.vertical.one {
+  left: 33.333%;
+}
+
+.grid-line.vertical.two {
+  left: 66.666%;
+}
+
+.grid-line.horizontal.one {
+  top: 33.333%;
+}
+
+.grid-line.horizontal.two {
+  top: 66.666%;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 18rpx 22rpx;
+  border: 3rpx solid #e2c97d;
+  border-radius: 18rpx;
+  background: #fff9e9;
+}
+
+.slider-label {
+  color: #51351f;
+  font-size: 26rpx;
+  font-weight: 900;
+}
+
+.crop-slider {
+  flex: 1;
+}
+
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 18rpx;
+  margin-top: 34rpx;
+}
+
+.secondary-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 78rpx;
+  border: 3rpx solid #d4bd74;
+  border-radius: 18rpx;
+  background: #fff9e9;
+  color: #6d5b3d;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.crop-confirm {
+  height: 78rpx;
+}

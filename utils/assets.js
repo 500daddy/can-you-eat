@@ -18,6 +18,8 @@ module.exports = {
   },
   mascot: {
     babyFront: `${sprite}mascot/mascot_baby_front.png`,
+    babySide: `${sprite}mascot/mascot_baby_side.png`,
+    babyWave: `${sprite}mascot/mascot_baby_wave.png`,
     babyHappy: `${sprite}mascot/mascot_baby_happy.png`,
     babyBasket: `${sprite}mascot/mascot_baby_basket.png`,
     emptyFridge: `${sprite}mascot/empty_fridge.png`,
@@ -61,6 +63,7 @@ module.exports = {
     bread: `${sprite}food/food_bread.png`,
     noodle: `${sprite}food/food_noodle.png`,
     porridge: `${sprite}food/food_porridge.png`,
-    babyPuree: `${sprite}food/food_baby_puree.png`
+    babyPuree: `${sprite}food/food_baby_puree.png`,
+    customFood: `${sprite}food/food_jar.png`
   }
 }

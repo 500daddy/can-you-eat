@@ -97,8 +97,8 @@ test('search page filters foods by first and second level categories', async () 
   const foods = [
     { id: 'carrot', name: '胡萝卜', category: '蔬菜', subCategory: '根茎类', icon: '/assets/sprites/food/food_carrot.png' },
     { id: 'pumpkin', name: '南瓜', category: '蔬菜', subCategory: '瓜类', icon: '/assets/sprites/food/food_pumpkin.png' },
-    { id: 'chicken', name: '鸡胸肉', category: '肉类', subCategory: '禽类', icon: '/assets/sprites/food/food_chicken.png' },
-    { id: 'beef', name: '牛肉', category: '肉类', subCategory: '畜类', icon: '/assets/sprites/food/food_beef.png' }
+    { id: 'chicken', name: '鸡胸肉', category: '肉禽水产', subCategory: '禽肉类', icon: '/assets/sprites/food/food_chicken.png' },
+    { id: 'beef', name: '牛肉', category: '肉禽水产', subCategory: '畜肉类', icon: '/assets/sprites/food/food_beef.png' }
   ]
   const page = createPageInstance(loadPage('pages/food/search', {
     getAssets: () => assets,
@@ -108,7 +108,7 @@ test('search page filters foods by first and second level categories', async () 
 
   await page.onLoad()
 
-  assert.deepEqual(page.data.categoryGroups.map((item) => item.name), ['蔬菜', '肉类'])
+  assert.deepEqual(page.data.categoryGroups.map((item) => item.name), ['蔬菜', '肉禽水产'])
 
   page.selectCategory({ currentTarget: { dataset: { name: '蔬菜' } } })
 
@@ -127,6 +127,122 @@ test('search page filters foods by first and second level categories', async () 
   assert.equal(page.data.resultTitle, '搜索结果')
   assert.equal(page.data.activeCategory, '')
   assert.equal(page.data.results.length, 2)
+})
+
+test('search page category filtering shows all foods in the selected category', async () => {
+  const vegetableFoods = Array.from({ length: 25 }, (_, index) => ({
+    id: `veg-${index}`,
+    name: `蔬菜${index}`,
+    category: '蔬菜',
+    subCategory: index < 15 ? '叶花菜类' : '菌藻类',
+    icon: '/assets/sprites/food/food_broccoli.png'
+  }))
+  const foods = [
+    ...vegetableFoods,
+    { id: 'apple', name: '苹果', category: '水果', subCategory: '仁果类', icon: '/assets/sprites/food/food_apple.png' }
+  ]
+  const page = createPageInstance(loadPage('pages/food/search', {
+    getAssets: () => assets,
+    getFoodBase: async () => foods,
+    searchFoods: async () => foods.slice(0, 20)
+  }))
+
+  await page.onLoad()
+  page.selectCategory({ currentTarget: { dataset: { name: '蔬菜' } } })
+
+  assert.equal(page.data.results.length, 25)
+
+  page.selectSubCategory({ currentTarget: { dataset: { name: '叶花菜类' } } })
+
+  assert.equal(page.data.results.length, 15)
+})
+
+test('search page all category shows the complete food base instead of recommendations', async () => {
+  const foods = Array.from({ length: 26 }, (_, index) => ({
+    id: `food-${index}`,
+    name: `食材${index}`,
+    category: index < 13 ? '蔬菜' : '水果',
+    subCategory: index < 13 ? '叶花菜类' : '仁果类',
+    icon: '/assets/sprites/food/food_broccoli.png'
+  }))
+  const page = createPageInstance(loadPage('pages/food/search', {
+    getAssets: () => assets,
+    getFoodBase: async () => foods,
+    getRecommendedFoods: async () => foods.slice(0, 5),
+    getRecommendationSummary: async () => ({ hint: '优先推荐' }),
+    searchFoods: async () => foods.slice(0, 20)
+  }))
+
+  await page.onLoad()
+
+  assert.equal(page.data.resultTitle, '推荐食材')
+  assert.equal(page.data.results.length, 5)
+
+  await page.clearCategory()
+
+  assert.equal(page.data.resultTitle, '全部食材')
+  assert.equal(page.data.recommendationHint, '')
+  assert.equal(page.data.results.length, 26)
+})
+
+test('search page shows a back to top action for long result lists', async () => {
+  const foods = Array.from({ length: 26 }, (_, index) => ({
+    id: `food-${index}`,
+    name: `食材${index}`,
+    category: '蔬菜',
+    subCategory: '叶花菜类',
+    icon: '/assets/sprites/food/food_broccoli.png'
+  }))
+  const scrollCalls = []
+  global.wx = {
+    pageScrollTo: (input) => scrollCalls.push(input)
+  }
+  const page = createPageInstance(loadPage('pages/food/search', {
+    getAssets: () => assets,
+    getFoodBase: async () => foods,
+    getRecommendedFoods: async () => foods.slice(0, 5),
+    searchFoods: async () => foods
+  }))
+
+  await page.onLoad()
+  await page.clearCategory()
+  page.onPageScroll({ scrollTop: 700 })
+
+  assert.equal(page.data.showBackTop, true)
+
+  page.scrollToTop()
+
+  assert.deepEqual(scrollCalls, [{ scrollTop: 0, duration: 260 }])
+  assert.equal(page.data.showBackTop, false)
+
+  delete global.wx
+})
+
+test('search page normalizes legacy food categories into user-facing groups', async () => {
+  const foods = [
+    { id: 'carrot', name: '胡萝卜', category: '根茎', subCategory: '旧分类', icon: '/assets/sprites/food/food_carrot.png' },
+    { id: 'mushroom', name: '蘑菇', category: '蔬菜', subCategory: '菌菇类', icon: '/assets/sprites/food/food_mushroom.png' },
+    { id: 'chicken', name: '鸡胸肉', category: '肉蛋奶', subCategory: '蛋白', icon: '/assets/sprites/food/food_chicken.png' },
+    { id: 'egg', name: '鸡蛋', category: '蛋奶', subCategory: '蛋白', icon: '/assets/sprites/food/food_egg.png' },
+    { id: 'tofu', name: '豆腐', category: '蛋白', subCategory: '豆制品', icon: '/assets/sprites/food/food_tofu.png' }
+  ]
+  const page = createPageInstance(loadPage('pages/food/search', {
+    getAssets: () => assets,
+    getFoodBase: async () => foods,
+    searchFoods: async () => foods
+  }))
+
+  await page.onLoad()
+
+  assert.deepEqual(page.data.categoryGroups.map((item) => item.name), ['蔬菜', '肉禽水产', '蛋奶豆制品'])
+  assert.deepEqual(page.data.categoryGroups[0].subCategories.map((item) => item.name), ['根茎类', '菌菇类'])
+
+  page.selectCategory({ currentTarget: { dataset: { name: '肉禽水产' } } })
+  assert.deepEqual(page.data.results.map((item) => item.id), ['chicken'])
+
+  page.selectCategory({ currentTarget: { dataset: { name: '蛋奶豆制品' } } })
+  assert.deepEqual(page.data.subCategories.map((item) => item.name), ['蛋类', '豆制品'])
+  assert.deepEqual(page.data.results.map((item) => item.id), ['egg', 'tofu'])
 })
 
 test('search page opens custom add flow with the missing keyword', async () => {
@@ -159,6 +275,21 @@ test('search page category section uses icon cards', () => {
   assert.match(stylesheet, /\.category-tile/)
   assert.match(stylesheet, /\.category-icon/)
   assert.doesNotMatch(stylesheet, /\.category-scroll/)
+  assert.doesNotMatch(markup, /category-count/)
+  assert.doesNotMatch(markup, /\{\{item\.count\}\}/)
+  assert.doesNotMatch(markup, /\{\{foodBase\.length\}\}/)
+  assert.match(markup, /class="back-top/)
+  assert.match(stylesheet, /\.back-top/)
+})
+
+test('search page category styles stay compact and centered', () => {
+  const stylesheet = fs.readFileSync(path.resolve(__dirname, '../pages/food/search.wxss'), 'utf8')
+
+  assert.match(stylesheet, /\.category-tile\s*\{[\s\S]*min-height:\s*106rpx/)
+  assert.match(stylesheet, /\.category-icon\s*\{[\s\S]*width:\s*54rpx/)
+  assert.match(stylesheet, /\.subcategory-grid\s*\{[\s\S]*justify-content:\s*center/)
+  assert.match(stylesheet, /\.subcategory-chip\s*\{[\s\S]*min-width:\s*108rpx/)
+  assert.doesNotMatch(stylesheet, /min-height:\s*144rpx/)
 })
 
 test('detail page treats missing query object as missing record', async () => {

@@ -1,6 +1,6 @@
 <view class="page">
   <view class="page-title">添加食材</view>
-  <view class="subtitle">先记录关键字段，宝宝建议期会按食材和保存方式保守计算。</view>
+  <view class="subtitle">记录名称、购买日期和保存方式，小管家会按规则帮你提醒处理。</view>
 
   <view class="selected-food">
     <image class="selected-icon" src="{{form.icon}}" mode="aspectFit" />
@@ -8,12 +8,11 @@
       <view class="selected-name">{{form.name}}</view>
       <view class="subtitle">{{selectedFoodHint}}</view>
     </view>
-    <view class="change-btn" bindtap="goSearch">更换</view>
   </view>
 
   <view wx:if="{{isCustomFood}}" class="custom-tip">
-    <view class="custom-tip-title">自定义食材</view>
-    <view class="subtitle">先记录名称、保存方式和购买日期，小程序会按保守周期提醒处理。</view>
+    <view class="custom-tip-title">安全提醒</view>
+    <view class="subtitle">自定义食材仅用于提醒保存时间，不代表食材一定安全。给宝宝食用前，请检查外观、气味和触感；有过敏、疾病或不确定情况，请咨询医生或专业人士。</view>
   </view>
 
   <view class="form-card">
@@ -52,7 +51,7 @@
     <view class="switch-row">
       <view>
         <view class="label no-margin">宝宝食材</view>
-        <view class="subtitle">开启后会优先使用宝宝建议期</view>
+        <view class="subtitle">{{isCustomFood ? '开启后按更保守周期提醒，请自行判断能否食用' : '开启后会优先使用宝宝建议期'}}</view>
       </view>
       <switch checked="{{form.isBabyFood}}" color="#55a85a" bindchange="onBabySwitch" />
     </view>
@@ -66,5 +65,5 @@
   </view>
 
   <view class="pixel-btn save-btn {{saving ? 'disabled' : ''}}" bindtap="save">{{saving ? '保存中...' : '保存'}}</view>
-  <view class="disclaimer">保存后仍需结合食材实际外观、气味和宝宝身体情况判断。</view>
+  <view class="disclaimer">免责声明：本工具仅提供保存提醒参考，不能替代食品安全、医疗或营养建议。保存后仍需结合食材实际状态、宝宝身体情况和医生或专业人士建议综合判断。</view>
 </view>

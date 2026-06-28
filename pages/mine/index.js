@@ -15,10 +15,11 @@ Page({
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 3 })
     }
+    const recognitionCount = await recognitionService.getRecognitionCount()
     this.setData({
       settings: await foodService.getSettings(),
       stats: await foodService.getStats(),
-      recognitionCount: await recognitionService.getRecognitionCount()
+      recognitionCount
     })
   },
 

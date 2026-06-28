@@ -10,3 +10,103 @@
   width: 126rpx;
   height: 126rpx;
 }
+
+.avatar-editor {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  padding: 18rpx;
+  border: 3rpx solid #ead590;
+  border-radius: 22rpx;
+  background: #fffdf3;
+}
+
+.avatar-preview {
+  flex: 0 0 128rpx;
+  width: 128rpx;
+  height: 128rpx;
+  border: 3rpx solid #51351f;
+  border-radius: 24rpx;
+  background: #fff9e9;
+  box-shadow: 0 4rpx 0 rgba(81, 53, 31, 0.16);
+}
+
+.avatar-actions {
+  flex: 1;
+  min-width: 0;
+}
+
+.avatar-action-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.avatar-upload {
+  width: 150rpx;
+}
+
+.avatar-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 58rpx;
+  padding: 0 20rpx;
+  border: 3rpx solid #d3b96c;
+  border-radius: 16rpx;
+  background: #fff7dc;
+  color: #6f5424;
+  font-size: 24rpx;
+  font-weight: 900;
+}
+
+.avatar-helper {
+  margin-top: 12rpx;
+  color: #8a806d;
+  font-size: 23rpx;
+  line-height: 1.45;
+}
+
+.allergen-input-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.allergen-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.mini-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 112rpx;
+  height: 58rpx;
+  border: 3rpx solid #2f6c37;
+  border-radius: 16rpx;
+  background: #55a85a;
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: 900;
+  box-shadow: inset 0 4rpx 0 rgba(255, 255, 255, 0.24), 0 4rpx 0 #2f6c37;
+}
+
+.allergen-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 14rpx;
+}
+
+.allergen-chip {
+  padding: 8rpx 14rpx;
+  border: 2rpx solid #e4bf68;
+  border-radius: 999rpx;
+  background: #fff0b8;
+  color: #8b5414;
+  font-size: 23rpx;
+  font-weight: 900;
+}

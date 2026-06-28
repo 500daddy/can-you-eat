@@ -1,6 +1,13 @@
 const { getFoodRepository } = require('./foodRepository')
-const { calculateBabyAgeText } = require('./babyAge')
+const {
+  calculateBabyAgeMonths,
+  calculateBabyAgeText,
+  formatBabyAgeFromMonths,
+  normalizeBabyAgeMonths
+} = require('./babyAge')
 const { todayString } = require('./foodRules')
+const { getRecommendationStage, sortFoodsForBabyAge } = require('./foodRecommendations')
+const { decorateBabyProfile } = require('./babyProfile')
 
 function unwrapCloudResult(result) {
   const payload = result && result.result !== undefined ? result.result : result
@@ -39,11 +46,32 @@ function createFoodService(options = {}) {
   }
 
   function withComputedBabyAge(settings) {
-    if (!settings || !settings.babyBirthday) return settings
-    return {
+    if (!settings) return settings
+    let nextSettings = settings
+    if (settings.babyAgeMonths !== undefined && settings.babyAgeMonths !== null) {
+      const babyAgeMonths = normalizeBabyAgeMonths(settings.babyAgeMonths)
+      nextSettings = {
+        ...settings,
+        babyAgeMonths,
+        babyAgeText: formatBabyAgeFromMonths(babyAgeMonths)
+      }
+      return decorateBabyProfile(nextSettings, repo.getAssets())
+    }
+    if (!settings.babyBirthday) return decorateBabyProfile(settings, repo.getAssets())
+    const babyAgeMonths = normalizeBabyAgeMonths(calculateBabyAgeMonths(settings.babyBirthday, currentToday()))
+    nextSettings = {
       ...settings,
+      babyAgeMonths,
       babyAgeText: calculateBabyAgeText(settings.babyBirthday, currentToday())
     }
+    return decorateBabyProfile(nextSettings, repo.getAssets())
+  }
+
+  function settingsAgeMonths(settings) {
+    if (settings && settings.babyAgeMonths !== undefined && settings.babyAgeMonths !== null) {
+      return normalizeBabyAgeMonths(settings.babyAgeMonths)
+    }
+    return calculateBabyAgeMonths(settings && settings.babyBirthday, currentToday())
   }
 
   async function cloudOrLocal(action, data, localHandler) {
@@ -90,7 +118,7 @@ function createFoodService(options = {}) {
     },
 
     async getFoodBase() {
-      return cloudOrLocal('searchFoods', { keyword: '' }, () => repo.getFoodBase())
+      return cloudOrLocal('getFoodBase', {}, () => repo.getFoodBase())
     },
 
     async getFoodBaseById(id) {
@@ -100,6 +128,24 @@ function createFoodService(options = {}) {
 
     async searchFoods(keyword = '') {
       return cloudOrLocal('searchFoods', { keyword }, () => repo.searchFoods(keyword))
+    },
+
+    async getRecommendedFoods() {
+      const settings = await this.getSettings()
+      const foodBase = await this.getFoodBase()
+      const ageMonths = settingsAgeMonths(settings)
+      return sortFoodsForBabyAge(foodBase, ageMonths)
+    },
+
+    async getRecommendationSummary() {
+      const settings = await this.getSettings()
+      const ageMonths = settingsAgeMonths(settings)
+      const stage = getRecommendationStage(ageMonths)
+      return {
+        babyAgeText: settings && settings.babyAgeText,
+        stageLabel: stage.label,
+        hint: stage.hint
+      }
     },
 
     async addFoodRecord(input) {
@@ -159,9 +205,15 @@ function createFoodService(options = {}) {
     },
 
     async updateSettings(input) {
+      const hasAgeMonths = input.babyAgeMonths !== undefined && input.babyAgeMonths !== null
+      const babyAgeMonths = hasAgeMonths ? normalizeBabyAgeMonths(input.babyAgeMonths) : undefined
       const nextInput = {
         ...input,
-        babyAgeText: input.babyBirthday ? calculateBabyAgeText(input.babyBirthday, currentToday()) : input.babyAgeText
+        babyAgeMonths: hasAgeMonths ? babyAgeMonths : input.babyAgeMonths,
+        babyBirthday: hasAgeMonths ? undefined : input.babyBirthday,
+        babyAgeText: hasAgeMonths
+          ? formatBabyAgeFromMonths(babyAgeMonths)
+          : (input.babyBirthday ? calculateBabyAgeText(input.babyBirthday, currentToday()) : input.babyAgeText)
       }
       const settings = await cloudOrLocal('updateUserSettings', nextInput, () => repo.updateSettings(nextInput))
       return withComputedBabyAge(settings)

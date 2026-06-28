@@ -69,6 +69,29 @@ test('initializing food base is a no-op for local repository', async () => {
   assert.deepEqual(result, { inserted: 0, total: foodBase.length, localOnly: true })
 })
 
+test('gets complete cloud food base through dedicated food base action', async () => {
+  const calls = []
+  const service = createFoodService({
+    useCloud: true,
+    repo: createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] }),
+    callCloud: async (data) => {
+      calls.push(data)
+      if (data.action === 'getFoodBase') {
+        return [{ id: 'broccoli' }, { id: 'yam' }]
+      }
+      if (data.action === 'searchFoods') {
+        return [{ id: 'broccoli' }]
+      }
+      return []
+    }
+  })
+
+  const result = await service.getFoodBase()
+
+  assert.equal(calls[0].action, 'getFoodBase')
+  assert.deepEqual(result.map((item) => item.id), ['broccoli', 'yam'])
+})
+
 test('falls back to local repository when cloud call fails', async () => {
   const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
   repo.addFoodRecord({
@@ -134,6 +157,74 @@ test('computes baby age text from birthday in settings', async () => {
   const settings = await service.getSettings()
 
   assert.equal(settings.babyAgeText, '8个月15天')
+})
+
+test('computes baby age text from age months in settings', async () => {
+  const service = createFoodService({
+    today: '2026-06-16',
+    repo: createMemoryFoodRepository({
+      today: '2026-06-16',
+      seedRecords: [],
+      settings: {
+        babyAgeMonths: 30,
+        babyAgeText: '旧月龄',
+        babyBirthday: '2025-10-01'
+      }
+    })
+  })
+
+  const settings = await service.getSettings()
+
+  assert.equal(settings.babyAgeText, '2岁半')
+  assert.equal(settings.babyStageText, '家庭餐过渡')
+  assert.match(settings.babyStageDescription, /2岁以上/)
+})
+
+test('decorates settings with custom or generated baby avatar', async () => {
+  const service = createFoodService({
+    today: '2026-06-16',
+    repo: createMemoryFoodRepository({
+      today: '2026-06-16',
+      seedRecords: [],
+      settings: {
+        babyAgeMonths: 18,
+        babyGender: 'girl',
+        babyAvatarUrl: ''
+      }
+    })
+  })
+
+  const generated = await service.getSettings()
+  assert.match(generated.babyAvatarImage, /mascot_baby_happy/)
+
+  await service.updateSettings({ babyAvatarUrl: '/tmp/custom.jpg', babyAgeMonths: 18 })
+  const custom = await service.getSettings()
+  assert.equal(custom.babyAvatarImage, '/tmp/custom.jpg')
+})
+
+test('recommends foods from the current baby age stage', async () => {
+  const repo = createMemoryFoodRepository({
+    today: '2026-06-16',
+    seedRecords: [],
+    settings: {
+      babyAgeMonths: 6
+    }
+  })
+  const service = createFoodService({
+    today: '2026-06-16',
+    repo
+  })
+
+  const sixMonthRecommendations = await service.getRecommendedFoods()
+  repo.updateSettings({ babyAgeMonths: 12 })
+  const twelveMonthRecommendations = await service.getRecommendedFoods()
+
+  assert.deepEqual(sixMonthRecommendations.slice(0, 3).map((item) => item.id), ['babyPuree', 'porridge', 'carrot'])
+  assert.notDeepEqual(
+    twelveMonthRecommendations.slice(0, 5).map((item) => item.id),
+    sixMonthRecommendations.slice(0, 5).map((item) => item.id)
+  )
+  assert.ok(twelveMonthRecommendations.slice(0, 5).some((item) => item.id === 'cheese'))
 })
 
 test('gets settings from cloud foodApi when enabled', async () => {

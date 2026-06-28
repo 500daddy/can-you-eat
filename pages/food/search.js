@@ -2,6 +2,50 @@ const { getFoodService } = require('../../utils/foodService')
 
 const foodService = getFoodService()
 
+const categoryOrder = ['蔬菜', '水果', '肉禽水产', '蛋奶豆制品', '主食辅食', '其他']
+
+function normalizeFoodCategory(food) {
+  const category = food.category || '其他'
+  const subCategory = food.subCategory || '其他'
+  const name = food.name || ''
+  const id = food.id || ''
+  const aliases = Array.isArray(food.aliases) ? food.aliases.join('') : String(food.aliases || '')
+  const searchText = `${id}${name}${aliases}`
+
+  if (category === '根茎' || category === '根茎类') {
+    return { ...food, category: '蔬菜', subCategory: '根茎类' }
+  }
+  if (['肉类', '肉蛋奶'].includes(category)) {
+    let nextSubCategory = subCategory
+    if (['禽类', '禽肉'].includes(subCategory)) nextSubCategory = '禽肉类'
+    else if (['畜类', '畜肉'].includes(subCategory)) nextSubCategory = '畜肉类'
+    else if (/鸡|鸭|鹅|chicken/i.test(searchText)) nextSubCategory = '禽肉类'
+    else if (/牛|猪|羊|beef|pork/i.test(searchText)) nextSubCategory = '畜肉类'
+    else if (/鱼|虾|蟹|fish|shrimp/i.test(searchText)) nextSubCategory = '水产类'
+    else if (subCategory === '蛋白') nextSubCategory = '肉类'
+    return { ...food, category: '肉禽水产', subCategory: nextSubCategory }
+  }
+  if (category === '蛋奶') {
+    let nextSubCategory = subCategory
+    if (subCategory === '蛋白' || /蛋|egg/i.test(searchText)) nextSubCategory = '蛋类'
+    else if (/奶|芝士|奶酪|milk|cheese/i.test(searchText)) nextSubCategory = '奶制品'
+    return { ...food, category: '蛋奶豆制品', subCategory: nextSubCategory }
+  }
+  if (category === '蛋白') {
+    let nextSubCategory = subCategory
+    if (subCategory === '蛋白') nextSubCategory = /蛋|egg/i.test(searchText) ? '蛋类' : '豆制品'
+    return { ...food, category: '蛋奶豆制品', subCategory: nextSubCategory }
+  }
+  if (category === '主食') {
+    return { ...food, category: '主食辅食', subCategory }
+  }
+  return food
+}
+
+function normalizeFoods(foods) {
+  return (foods || []).map(normalizeFoodCategory)
+}
+
 function buildCategoryGroups(foods) {
   const groups = []
   const groupMap = {}
@@ -26,7 +70,11 @@ function buildCategoryGroups(foods) {
     }
     group.subMap[subCategory].count += 1
   })
-  return groups.map((group) => ({
+  return groups.sort((left, right) => {
+    const leftIndex = categoryOrder.includes(left.name) ? categoryOrder.indexOf(left.name) : categoryOrder.length
+    const rightIndex = categoryOrder.includes(right.name) ? categoryOrder.indexOf(right.name) : categoryOrder.length
+    return leftIndex - rightIndex
+  }).map((group) => ({
     name: group.name,
     count: group.count,
     icon: group.icon,
@@ -49,24 +97,40 @@ Page({
     foodBase: [],
     results: [],
     resultTitle: '推荐食材',
+    recommendationHint: '',
+    recommendationSummary: {},
+    recommendedFoods: [],
     categoryGroups: [],
     subCategories: [],
     activeCategory: '',
-    activeSubCategory: ''
+    activeSubCategory: '',
+    showBackTop: false
   },
 
   async onLoad(query = {}) {
     const keyword = (query.keyword || '').trim()
-    const foodBase = await foodService.getFoodBase()
+    const foodBase = normalizeFoods(await foodService.getFoodBase())
+    const recommendationSummary = foodService.getRecommendationSummary
+      ? await foodService.getRecommendationSummary()
+      : {}
+    const recommendedFoods = keyword
+      ? []
+      : (foodService.getRecommendedFoods
+        ? await foodService.getRecommendedFoods()
+        : await foodService.searchFoods(''))
     this.setData({
       keyword,
       foodBase,
-      results: (await foodService.searchFoods(keyword)).slice(0, 5),
+      results: normalizeFoods(keyword ? await foodService.searchFoods(keyword) : recommendedFoods).slice(0, 5),
       resultTitle: keyword ? '搜索结果' : '推荐食材',
+      recommendationSummary,
+      recommendationHint: keyword ? '' : recommendationSummary.hint || '',
+      recommendedFoods,
       categoryGroups: buildCategoryGroups(foodBase),
       subCategories: [],
       activeCategory: '',
-      activeSubCategory: ''
+      activeSubCategory: '',
+      showBackTop: false
     })
   },
 
@@ -78,14 +142,24 @@ Page({
 
   async onInput(e) {
     const keyword = e.detail.value.trim()
-    const results = (await foodService.searchFoods(keyword)).slice(0, 20)
+    const recommendedFoods = keyword
+      ? this.data.recommendedFoods
+      : (foodService.getRecommendedFoods
+        ? await foodService.getRecommendedFoods()
+        : this.data.foodBase.slice(0, 5))
+    const results = normalizeFoods(keyword
+      ? await foodService.searchFoods(keyword)
+      : recommendedFoods).slice(0, keyword ? 20 : 5)
     this.setData({
       keyword,
       results,
       resultTitle: keyword ? '搜索结果' : '推荐食材',
+      recommendationHint: keyword ? '' : this.data.recommendationSummary.hint || '',
+      recommendedFoods,
       subCategories: [],
       activeCategory: '',
-      activeSubCategory: ''
+      activeSubCategory: '',
+      showBackTop: false
     })
   },
 
@@ -98,15 +172,16 @@ Page({
     wx.navigateTo({ url: `/pages/food/add?foodId=${id}` })
   },
 
-  clearCategory() {
+  async clearCategory() {
     this.setData({
+      keyword: '',
       activeCategory: '',
       activeSubCategory: '',
       subCategories: [],
-      resultTitle: this.data.keyword ? '搜索结果' : '推荐食材',
-      results: this.data.keyword
-        ? this.data.results
-        : this.data.foodBase.slice(0, 5)
+      resultTitle: '全部食材',
+      results: this.data.foodBase,
+      recommendationHint: '',
+      showBackTop: false
     })
   },
 
@@ -119,7 +194,9 @@ Page({
       activeSubCategory: '',
       subCategories: group.subCategories,
       resultTitle: `${category}食材`,
-      results: filterFoodsByCategory(this.data.foodBase, category).slice(0, 20)
+      recommendationHint: '',
+      results: filterFoodsByCategory(this.data.foodBase, category),
+      showBackTop: false
     })
   },
 
@@ -129,8 +206,22 @@ Page({
       keyword: '',
       activeSubCategory: subCategory,
       resultTitle: `${this.data.activeCategory} / ${subCategory}`,
-      results: filterFoodsByCategory(this.data.foodBase, this.data.activeCategory, subCategory).slice(0, 20)
+      recommendationHint: '',
+      results: filterFoodsByCategory(this.data.foodBase, this.data.activeCategory, subCategory),
+      showBackTop: false
     })
+  },
+
+  onPageScroll(e) {
+    const shouldShow = this.data.results.length > 12 && e.scrollTop > 520
+    if (shouldShow !== this.data.showBackTop) {
+      this.setData({ showBackTop: shouldShow })
+    }
+  },
+
+  scrollToTop() {
+    wx.pageScrollTo({ scrollTop: 0, duration: 260 })
+    this.setData({ showBackTop: false })
   },
 
   goAdd() {

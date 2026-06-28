@@ -1,6 +1,7 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
 
+const { foodBase } = require('../utils/foodBase')
 const { createMemoryFoodRepository } = require('../utils/foodRepository')
 
 test('searches food by alias and returns normalized food metadata', () => {
@@ -20,10 +21,46 @@ test('food base uses broad categories with second-level categories', () => {
 
   assert.equal(carrot.category, '蔬菜')
   assert.equal(carrot.subCategory, '根茎类')
-  assert.equal(chicken.category, '肉类')
-  assert.equal(chicken.subCategory, '禽类')
+  assert.equal(chicken.category, '肉禽水产')
+  assert.equal(chicken.subCategory, '禽肉类')
   assert.equal(mushroom.category, '蔬菜')
   assert.equal(mushroom.subCategory, '菌菇类')
+})
+
+test('food base covers daily family ingredients with authority-aligned categories', () => {
+  const repo = createMemoryFoodRepository({ today: '2026-06-12' })
+  const requiredIds = [
+    'bokChoy',
+    'lettuce',
+    'shiitake',
+    'enoki',
+    'yam',
+    'pork',
+    'salmon',
+    'yogurt',
+    'oat',
+    'millet',
+    'pear',
+    'watermelon'
+  ]
+
+  for (const id of requiredIds) {
+    assert.ok(repo.getFoodBaseById(id), `${id} should exist in food base`)
+  }
+
+  const ids = foodBase.map((item) => item.id)
+  const uniqueIds = new Set(ids)
+  const allowedCategories = new Set(['蔬菜', '水果', '肉禽水产', '蛋奶豆制品', '主食辅食'])
+
+  assert.ok(foodBase.length >= 100)
+  assert.equal(uniqueIds.size, foodBase.length)
+
+  for (const item of foodBase) {
+    assert.ok(allowedCategories.has(item.category), `${item.name} category should be broad`)
+    assert.ok(item.subCategory, `${item.name} should have second-level category`)
+    assert.ok(!item.category.includes('根茎'), `${item.name} should not promote subcategory to top level`)
+    assert.ok(!item.category.includes('蛋白'), `${item.name} should avoid nutrient-style category`)
+  }
 })
 
 test('adds a food record and recalculates it for list/detail/reminders', () => {
@@ -155,7 +192,7 @@ test('returns null when finishing a missing record', () => {
 test('keeps custom food detail base empty instead of falling back to broccoli', () => {
   const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
   const created = repo.addFoodRecord({
-    foodName: '山药',
+    foodName: '雪莲果',
     purchaseDate: '2026-06-12',
     storageMethod: 'fridge'
   })
@@ -163,7 +200,7 @@ test('keeps custom food detail base empty instead of falling back to broccoli', 
   const detail = repo.getFoodDetail(created.id)
 
   assert.equal(detail.record.foodBaseId, 'custom')
-  assert.equal(detail.record.name, '山药')
+  assert.equal(detail.record.name, '雪莲果')
   assert.equal(detail.base, null)
 })
 
@@ -178,6 +215,7 @@ test('calculates custom food reminders from the selected storage method', () => 
   assert.equal(created.foodBaseId, 'custom')
   assert.equal(created.babyExpireDate, '2026-06-27')
   assert.equal(created.adultExpireDate, '2026-07-12')
+  assert.equal(created.icon, '/assets/sprites/food/food_jar.png')
   assert.equal(created.status, 'baby_ok')
   assert.equal(repo.getReminders().today.length, 0)
 })

@@ -1,11 +1,15 @@
 <view class="page with-tab">
-  <view class="profile-card">
-    <image class="profile-avatar" src="{{assets.mascot.babyFront}}" mode="aspectFit" />
+  <view class="profile-card" bindtap="goBaby">
+    <image class="profile-avatar" src="{{settings.babyAvatarImage || assets.mascot.babyFront}}" mode="aspectFill" />
     <view class="profile-main">
       <view class="profile-name">{{settings.babyName || '新手村村民'}}</view>
       <view class="subtitle">宝宝月龄：{{settings.babyAgeText}}</view>
     </view>
-    <text class="profile-level">Lv.3</text>
+    <view class="profile-side">
+      <text class="profile-stage">{{settings.babyStageText || '辅食探索'}}</text>
+      <text class="profile-edit">编辑 ›</text>
+    </view>
+    <view wx:if="{{settings.babyStageDescription}}" class="profile-stage-desc">{{settings.babyStageDescription}}</view>
   </view>
 
   <view class="stats-grid">

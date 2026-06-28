@@ -13,8 +13,11 @@ const FEEDBACK_KEY = 'baby_food_feedback_v1'
 
 const defaultSettings = {
   babyName: '小芽贝',
-  babyBirthday: '2025-10-01',
-  babyAgeText: '8个月12天',
+  babyAgeMonths: 8,
+  babyAgeText: '8个月',
+  babyGender: '',
+  babyAvatarUrl: '',
+  babyAllergens: [],
   babyMode: true,
   reminderEnabled: true,
   remindBeforeDays: 1,
@@ -93,7 +96,7 @@ function createCustomFood(name, storageMethod = 'fridge') {
     id: 'custom',
     name: name || '自定义食材',
     defaultStorage: storageMethod,
-    icon: assets.food.babyPuree,
+    icon: assets.food.customFood,
     room: { babyDaysMax: 1, adultDaysMax: 2 },
     fridge: { babyDaysMax: 2, adultDaysMax: 3 },
     freezer: { babyDaysMax: 15, adultDaysMax: 30 },
@@ -107,7 +110,11 @@ function createMemoryFoodRepository(options = {}) {
   let feedbackCounter = 0
   let records = clone(options.seedRecords === undefined ? defaultSeedRecords : options.seedRecords)
   let feedbackList = clone(options.feedbackList || [])
-  let settings = { ...defaultSettings, ...(options.settings || {}) }
+  const inputSettings = options.settings || {}
+  let settings = { ...defaultSettings, ...inputSettings }
+  if (inputSettings.babyBirthday && inputSettings.babyAgeMonths === undefined) {
+    delete settings.babyAgeMonths
+  }
 
   function currentToday() {
     return typeof today === 'function' ? today() : today
@@ -152,7 +159,7 @@ function createMemoryFoodRepository(options = {}) {
       foodName,
       name: foodName,
       customFoodName: food ? '' : fallbackName,
-      icon: raw.icon || (food && food.icon) || assets.food.babyPuree,
+      icon: raw.icon || (food && food.icon) || assets.food.customFood,
       storageMethod,
       quantity: raw.quantity || '',
       unit: raw.unit || '',

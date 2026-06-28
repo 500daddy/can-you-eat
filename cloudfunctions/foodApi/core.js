@@ -4,7 +4,11 @@ const DAY_MS = 24 * 60 * 60 * 1000
 
 const defaultSettings = {
   babyName: '小芽贝',
-  babyBirthday: '2025-10-01',
+  babyAgeMonths: 8,
+  babyAgeText: '8个月',
+  babyGender: '',
+  babyAvatarUrl: '',
+  babyAllergens: [],
   babyMode: true,
   reminderEnabled: true,
   remindBeforeDays: 1,
@@ -108,6 +112,31 @@ function calculateBabyAgeText(birthday, currentDay) {
   return `${months}个月${days}天`
 }
 
+function calculateBabyAgeMonths(birthday, currentDay) {
+  if (!birthday) return 0
+  const birth = parseDate(birthday)
+  const current = parseDate(currentDay)
+  if (current < birth) return 0
+  let months = (current.getFullYear() - birth.getFullYear()) * 12 + current.getMonth() - birth.getMonth()
+  if (addMonths(birth, months) > current) {
+    months -= 1
+  }
+  return Math.max(0, months)
+}
+
+function normalizeBabyAgeMonths(value) {
+  const months = Math.max(0, Math.round(Number(value) || 0))
+  if (months < 24) return months
+  return Math.max(24, Math.round(months / 6) * 6)
+}
+
+function formatBabyAgeFromMonths(value) {
+  const months = normalizeBabyAgeMonths(value)
+  if (months < 24) return `${months}个月`
+  const years = Math.floor(months / 12)
+  return months % 12 >= 6 ? `${years}岁半` : `${years}岁`
+}
+
 function makeId(prefix) {
   return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2, 8)}`
 }
@@ -123,6 +152,17 @@ function matchFood(food, keyword) {
     .some((value) => String(value || '').toLowerCase().includes(query))
 }
 
+function mergeFoodBaseWithSeed(foods) {
+  const existingById = new Map((foods || []).map((food) => [food.id, food]))
+  const seedIds = new Set(seedFoodBase.map((food) => food.id))
+  const mergedSeed = seedFoodBase.map((food) => {
+    const existing = existingById.get(food.id)
+    return existing ? { ...existing, ...food } : food
+  })
+  const extraFoods = (foods || []).filter((food) => !seedIds.has(food.id))
+  return [...mergedSeed, ...extraFoods]
+}
+
 function storageText(storageMethod) {
   return {
     room: '常温保存',
@@ -136,7 +176,7 @@ function createCustomFood(name, storageMethod = 'fridge') {
     id: 'custom',
     name: name || '自定义食材',
     defaultStorage: storageMethod,
-    icon: '/assets/sprites/food/food_baby_puree.png',
+    icon: '/assets/sprites/food/food_jar.png',
     room: { babyDaysMax: 1, adultDaysMax: 2, text: '自定义食材请尽量短期保存。' },
     fridge: { babyDaysMax: 2, adultDaysMax: 3, text: '自定义食材按保守冷藏建议计算。' },
     freezer: { babyDaysMax: 15, adultDaysMax: 30, text: '自定义食材冷冻后仍建议尽快处理。' },
@@ -292,8 +332,13 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
 
       if (action === 'searchFoods') {
         const foods = await store.list('food_base')
-        const source = foods.length ? foods : seedFoodBase
+        const source = mergeFoodBaseWithSeed(foods)
         return { ok: true, data: source.filter((food) => matchFood(food, event.keyword)).slice(0, 20) }
+      }
+
+      if (action === 'getFoodBase') {
+        const foods = await store.list('food_base')
+        return { ok: true, data: mergeFoodBaseWithSeed(foods) }
       }
 
       if (action === 'getFoodBaseById') {
@@ -303,9 +348,14 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
 
       if (action === 'getUserSettings') {
         const settings = await getSettings()
-        const data = settings.babyBirthday
-          ? { ...settings, babyAgeText: calculateBabyAgeText(settings.babyBirthday, today) }
-          : settings
+        let data = settings
+        if (settings.babyAgeMonths !== undefined && settings.babyAgeMonths !== null) {
+          const babyAgeMonths = normalizeBabyAgeMonths(settings.babyAgeMonths)
+          data = { ...settings, babyAgeMonths, babyAgeText: formatBabyAgeFromMonths(babyAgeMonths) }
+        } else if (settings.babyBirthday) {
+          const babyAgeMonths = normalizeBabyAgeMonths(calculateBabyAgeMonths(settings.babyBirthday, today))
+          data = { ...settings, babyAgeMonths, babyAgeText: calculateBabyAgeText(settings.babyBirthday, today) }
+        }
         return { ok: true, data }
       }
 
@@ -392,6 +442,14 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
         })
         if (nextSettings.babyBirthday) {
           nextSettings.babyAgeText = calculateBabyAgeText(nextSettings.babyBirthday, today)
+          if (event.babyAgeMonths === undefined) {
+            nextSettings.babyAgeMonths = undefined
+          }
+        }
+        if (event.babyAgeMonths !== undefined && event.babyAgeMonths !== null) {
+          nextSettings.babyAgeMonths = normalizeBabyAgeMonths(event.babyAgeMonths)
+          nextSettings.babyAgeText = formatBabyAgeFromMonths(nextSettings.babyAgeMonths)
+          nextSettings.babyBirthday = undefined
         }
         const data = await store.update('user_settings', (item) => item.userId === userId, nextSettings)
         return { ok: true, data }

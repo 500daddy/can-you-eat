@@ -1,0 +1,43 @@
+<view class="page crop-page">
+  <view class="page-title">调整头像</view>
+  <view class="subtitle">拖动图片选择头像区域，也可以缩放到合适大小。</view>
+
+  <view class="crop-panel">
+    <movable-area class="crop-area" style="width: {{cropSize}}px; height: {{cropSize}}px;">
+      <movable-view
+        class="crop-image-wrap"
+        direction="all"
+        x="{{x}}"
+        y="{{y}}"
+        scale
+        scale-min="{{minScale}}"
+        scale-max="{{maxScale}}"
+        scale-value="{{scale}}"
+        bindchange="onMove"
+        bindscale="onScale"
+        animation="{{false}}"
+        style="width: {{imageDisplayWidth}}px; height: {{imageDisplayHeight}}px;"
+      >
+        <image class="crop-image" src="{{src}}" mode="aspectFill" />
+      </movable-view>
+      <view class="crop-frame">
+        <view class="grid-line vertical one"></view>
+        <view class="grid-line vertical two"></view>
+        <view class="grid-line horizontal one"></view>
+        <view class="grid-line horizontal two"></view>
+      </view>
+    </movable-area>
+  </view>
+
+  <view class="slider-row">
+    <text class="slider-label">缩放</text>
+    <slider class="crop-slider" min="{{minScale}}" max="{{maxScale}}" step="0.01" value="{{scale}}" activeColor="#55a85a" block-color="#55a85a" bindchange="onSliderChange" />
+  </view>
+
+  <view class="action-row">
+    <view class="secondary-btn" bindtap="cancelCrop">取消</view>
+    <view class="pixel-btn crop-confirm" bindtap="confirmCrop">{{saving ? '处理中...' : '使用头像'}}</view>
+  </view>
+
+  <canvas canvas-id="avatarCropCanvas" style="position: fixed; left: -9999px; top: -9999px; width: {{cropSize}}px; height: {{cropSize}}px;"></canvas>
+</view>

@@ -12,7 +12,9 @@ exports.main = async () => {
     openid: wxContext.OPENID,
     settings: {
       babyName: '小芽贝',
-      babyBirthday: '2025-10-01',
+      babyAgeMonths: 8,
+      babyAgeText: '8个月',
+      babyAvatarUrl: '',
       babyMode: true,
       reminderEnabled: true,
       remindBeforeDays: 1,

@@ -2,16 +2,9 @@
   <view class="village-hero">
     <image class="hero-bg" src="{{assets.ui.bannerKitchenHome}}" mode="aspectFill" />
     <view class="hero-content">
-      <view class="baby-row">
-        <image class="baby-avatar" src="{{assets.mascot.babyHappy}}" mode="aspectFit" />
-        <view class="baby-info">
-          <view class="pixel-title">养娃新手村</view>
-          <view class="subtitle">宝宝月龄：{{babyAgeText}}</view>
-        </view>
-      </view>
       <view class="hero-card">
-        <view class="page-title">今天先给宝宝吃这些</view>
-        <view class="subtitle">根据购买时间、保存方式和宝宝建议期，为你优先排序</view>
+        <view class="page-title">今天优先处理这些食材</view>
+        <view class="subtitle">先吃快到期的，少浪费，也更安心</view>
       </view>
     </view>
   </view>

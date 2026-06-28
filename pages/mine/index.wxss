@@ -1,6 +1,7 @@
 .profile-card {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 18rpx;
   padding: 22rpx;
   border: 4rpx solid #8ebf7b;
@@ -18,6 +19,7 @@
 
 .profile-main {
   flex: 1;
+  min-width: 0;
 }
 
 .profile-name {
@@ -26,7 +28,8 @@
   font-weight: 900;
 }
 
-.profile-level {
+.profile-stage {
+  display: inline-flex;
   padding: 8rpx 14rpx;
   border: 2rpx solid #e4bf68;
   border-radius: 14rpx;
@@ -34,6 +37,31 @@
   color: #9a5c12;
   font-size: 22rpx;
   font-weight: 900;
+}
+
+.profile-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10rpx;
+}
+
+.profile-edit {
+  color: #2f6c37;
+  font-size: 22rpx;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.profile-stage-desc {
+  flex: 0 0 100%;
+  padding: 12rpx 16rpx;
+  border: 2rpx solid #e4d9aa;
+  border-radius: 16rpx;
+  background: #fff8df;
+  color: #7c6847;
+  font-size: 23rpx;
+  line-height: 1.45;
 }
 
 .stats-grid {

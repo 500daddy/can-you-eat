@@ -5,6 +5,7 @@ const foodService = getFoodService()
 Page({
   data: {
     assets: foodService.getAssets(),
+    settings: {},
     babyAgeText: '8个月12天',
     records: [],
     sections: []
@@ -25,6 +26,7 @@ Page({
     const settings = await foodService.getSettings()
     const records = await foodService.getFoodRecords()
     this.setData({
+      settings,
       babyAgeText: settings.babyAgeText,
       records,
       sections: await foodService.getHomeSections()

@@ -12,6 +12,7 @@
     "pages/recognition-log/index",
     "pages/about/index",
     "pages/settings/baby",
+    "pages/avatar-crop/index",
     "pages/settings/reminder"
   ],
   "window": {

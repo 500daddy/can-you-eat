@@ -1,5 +1,7 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
+const fs = require('node:fs')
+const path = require('node:path')
 
 function loadAddPage(foodService) {
   const servicePath = require.resolve('../utils/foodService')
@@ -64,10 +66,12 @@ function createFoodService(addFoodRecord) {
     getAssets: () => ({
       food: {
         broccoli: '/assets/sprites/food/food_broccoli.png',
-        babyPuree: '/assets/sprites/food/food_baby_puree.png'
+        babyPuree: '/assets/sprites/food/food_baby_puree.png',
+        customFood: '/assets/sprites/food/food_jar.png'
       }
     }),
     getFoodBaseById: async () => null,
+    getSettings: async () => ({ babyAllergens: [] }),
     addFoodRecord
   }
 }
@@ -124,6 +128,7 @@ test('add page enters custom food mode from a missing search keyword', async () 
   assert.equal(page.data.isCustomFood, true)
   assert.equal(page.data.form.foodId, 'custom')
   assert.equal(page.data.form.name, '莲藕')
+  assert.equal(page.data.form.icon, '/assets/sprites/food/food_jar.png')
   assert.equal(page.data.form.quantity, '')
   assert.equal(page.data.form.unit, '')
   assert.match(page.data.selectedFoodHint, /自定义食材/)
@@ -133,4 +138,68 @@ test('add page enters custom food mode from a missing search keyword', async () 
 
   assert.equal(page.data.form.storageMethod, 'freezer')
   assert.match(page.data.form.remindText, /冷冻.*15 天/)
+})
+
+test('add page does not render a change food shortcut', () => {
+  const markup = fs.readFileSync(path.resolve(__dirname, '../pages/food/add.wxml'), 'utf8')
+
+  assert.doesNotMatch(markup, /change-btn/)
+  assert.doesNotMatch(markup, /更换/)
+  assert.doesNotMatch(markup, /goSearch/)
+})
+
+test('add page shows stronger custom food safety copy', () => {
+  const markup = fs.readFileSync(path.resolve(__dirname, '../pages/food/add.wxml'), 'utf8')
+
+  assert.match(markup, /安全提醒/)
+  assert.match(markup, /仅用于提醒/)
+  assert.match(markup, /不代表食材一定安全/)
+  assert.match(markup, /医生或专业人士/)
+})
+
+test('add page warns before saving a food that matches baby allergens', async () => {
+  const added = []
+  const modals = []
+  const page = createPageInstance(loadAddPage({
+    getAssets: () => ({
+      food: {
+        broccoli: '/assets/sprites/food/food_broccoli.png',
+        egg: '/assets/sprites/food/food_egg.png',
+        customFood: '/assets/sprites/food/food_jar.png'
+      }
+    }),
+    getFoodBaseById: async () => ({
+      id: 'egg',
+      name: '鸡蛋',
+      aliases: '蛋',
+      category: '蛋奶豆制品',
+      subCategory: '蛋类',
+      icon: '/assets/sprites/food/food_egg.png',
+      defaultStorage: 'fridge'
+    }),
+    getSettings: async () => ({ babyAllergens: ['鸡蛋'] }),
+    addFoodRecord: async (input) => {
+      added.push(input)
+    }
+  }))
+  global.wx = {
+    showToast: () => {},
+    switchTab: () => {},
+    showModal: (input) => {
+      modals.push(input)
+      input.success({ confirm: true })
+    }
+  }
+  const originalSetTimeout = global.setTimeout
+  global.setTimeout = (fn) => fn()
+
+  await page.onLoad({ foodId: 'egg' })
+  await page.save()
+
+  global.setTimeout = originalSetTimeout
+  delete global.wx
+  assert.equal(modals.length, 1)
+  assert.match(modals[0].content, /鸡蛋/)
+  assert.equal(added.length, 1)
+  assert.equal(added[0].foodBaseId, 'egg')
 })

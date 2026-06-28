@@ -22,6 +22,37 @@ test('initializes food base once and searches by alias', async () => {
   assert.equal(mushroom.data[0].id, 'mushroom')
 })
 
+test('cloud seed food base mirrors the expanded daily food coverage', () => {
+  const ids = seedFoodBase.map((item) => item.id)
+  const requiredIds = ['bokChoy', 'shiitake', 'yam', 'pork', 'salmon', 'yogurt', 'oat', 'pear']
+
+  assert.ok(seedFoodBase.length >= 100)
+  assert.equal(new Set(ids).size, ids.length)
+
+  for (const id of requiredIds) {
+    assert.ok(ids.includes(id), `${id} should exist in cloud seed food base`)
+  }
+})
+
+test('gets complete cloud food base even when stored collection is partially seeded', async () => {
+  const store = createMemoryStore()
+  await store.add('food_base', {
+    id: 'broccoli',
+    name: '西兰花',
+    category: '蔬菜',
+    subCategory: '花菜类'
+  })
+  const api = createFoodApi({ store, userId: 'user-a', today: '2026-06-12' })
+
+  const result = await api.handle({ action: 'getFoodBase' })
+  const ids = result.data.map((item) => item.id)
+
+  assert.ok(result.data.length >= 100)
+  assert.ok(ids.includes('yam'))
+  assert.ok(ids.includes('shiitake'))
+  assert.ok(ids.includes('salmon'))
+})
+
 test('initFoodBase refreshes category metadata for existing foods', async () => {
   const store = createMemoryStore()
   await store.add('food_base', {
@@ -78,15 +109,16 @@ test('adds custom cloud food records without falling back to broccoli', async ()
 
   const added = await api.handle({
     action: 'addFoodRecord',
-    foodName: '山药',
+    foodName: '雪莲果',
     purchaseDate: '2026-06-12',
     storageMethod: 'fridge'
   })
   const detail = await api.handle({ action: 'getFoodDetail', recordId: added.data.id })
 
   assert.equal(added.data.foodBaseId, 'custom')
-  assert.equal(added.data.name, '山药')
-  assert.equal(detail.data.record.name, '山药')
+  assert.equal(added.data.name, '雪莲果')
+  assert.equal(added.data.icon, '/assets/sprites/food/food_jar.png')
+  assert.equal(detail.data.record.name, '雪莲果')
   assert.equal(detail.data.base, null)
 })
 
@@ -187,8 +219,8 @@ test('updates settings and submits feedback', async () => {
   const feedback = await api.handle({
     action: 'submitFeedback',
     type: 'food_not_found',
-    content: '想补充山药',
-    foodName: '山药'
+    content: '想补充雪莲果',
+    foodName: '雪莲果'
   })
 
   assert.equal(settings.data.babyName, '小米粒')
