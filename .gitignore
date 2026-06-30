@@ -1,5 +1,10 @@
 .DS_Store
 project.private.config.json
+*.swp
+
+# Local private runtime config. Copy the matching *.example.js file when needed.
+utils/subscribeConfig.local.js
+cloudfunctions/sendFoodReminder/subscribeConfig.local.js
 
 # Local design/source assets kept outside the committed mini program bundle.
 /1.png

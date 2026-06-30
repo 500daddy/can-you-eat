@@ -62,13 +62,15 @@ wx.cloud.callFunction({
 反馈和识别日志也会在云模式下写入 `feedback`、`recognition_logs` 集合。
 数据库集合、初始化入口、红色叹号排查和订阅模板配置都整理在 [docs/cloud-setup.md](/Users/a500/Documents/宝宝食材小管家/docs/cloud-setup.md)。
 
-订阅消息模板 ID 目前仍是占位值：
+订阅消息模板 ID 默认使用占位值，真实 ID 不写入仓库：
 
 ```js
 const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
 ```
 
-在微信公众平台配置好模板后，替换 `utils/subscribeService.js` 里的模板 ID，即可在提醒中心和提醒设置页请求订阅授权。
+在微信公众平台配置好模板后，复制 `utils/subscribeConfig.example.js` 为 `utils/subscribeConfig.local.js`，再把真实模板 ID 写入本地文件。`subscribeConfig.local.js` 已加入 `.gitignore`，适合未来开源。
+
+如果使用 `sendFoodReminder` 云函数，也复制 `cloudfunctions/sendFoodReminder/subscribeConfig.example.js` 为同目录下的 `subscribeConfig.local.js`，再上传部署云函数。
 
 ## 本地验证
 

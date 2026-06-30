@@ -76,13 +76,20 @@ wx.cloud.callFunction({
 
 ## 订阅消息模板
 
-当前订阅消息模板还是占位值：
+订阅消息模板默认使用占位值，真实模板 ID 不写入仓库：
 
 ```js
 const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
 ```
 
-正式接入时需要在微信公众平台配置订阅消息模板，再替换 [utils/subscribeService.js](/Users/a500/Documents/宝宝食材小管家/utils/subscribeService.js:1) 里的模板 ID。未替换前，提醒页会提示“订阅模板未配置”，这不是代码错误。
+正式接入时需要在微信公众平台配置订阅消息模板，然后：
+
+1. 复制 [utils/subscribeConfig.example.js](/Users/a500/Documents/宝宝食材小管家/utils/subscribeConfig.example.js) 为 `utils/subscribeConfig.local.js`。
+2. 把真实模板 ID 写入 `subscribeConfig.local.js`。
+3. 如果使用云函数发送订阅消息，也复制 [cloudfunctions/sendFoodReminder/subscribeConfig.example.js](/Users/a500/Documents/宝宝食材小管家/cloudfunctions/sendFoodReminder/subscribeConfig.example.js) 为同目录下的 `subscribeConfig.local.js`。
+4. 上传部署 `sendFoodReminder` 云函数。
+
+这些 `*.local.js` 文件已加入 `.gitignore`，不会进入开源仓库。未配置前，提醒页会提示“订阅模板未配置”，这不是代码错误。
 
 ## 拍照识别
 

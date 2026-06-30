@@ -28,7 +28,7 @@
 
   <view class="paper-card yellow">
     <view class="section-title">微信提醒预留</view>
-    <view class="subtitle">TEMPLATE_ID_FOOD_EXPIRE = 请替换为实际订阅消息模板ID</view>
+    <view class="subtitle">在 subscribeConfig.local.js 中配置模板 ID 后，可请求微信订阅提醒。</view>
     <view class="pixel-btn ghost" bindtap="requestSubscribe">开启微信提醒</view>
   </view>
 
