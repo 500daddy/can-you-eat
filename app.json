@@ -2,6 +2,8 @@
   "pages": [
     "pages/index/index",
     "pages/food/search",
+    "pages/purchase-plan/index",
+    "pages/quick-process/index",
     "pages/food/add",
     "pages/recognize/index",
     "pages/food/detail",

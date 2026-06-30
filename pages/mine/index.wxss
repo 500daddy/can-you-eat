@@ -72,12 +72,22 @@
 }
 
 .stat-card {
+  position: relative;
   min-height: 120rpx;
   padding: 18rpx 8rpx;
   border: 3rpx solid #d8c99d;
   border-radius: 22rpx;
   background: #fffdf2;
   text-align: center;
+}
+
+.stat-card.tappable {
+  border-color: #c9da9c;
+  box-shadow: 0 5rpx 0 rgba(84, 143, 75, 0.18);
+}
+
+.stat-card.info {
+  border-style: dashed;
 }
 
 .stat-value {
@@ -93,4 +103,29 @@
   line-height: 1.25;
   white-space: nowrap;
   word-break: keep-all;
+}
+
+.stat-arrow,
+.stat-info {
+  position: absolute;
+  top: 10rpx;
+  right: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26rpx;
+  height: 26rpx;
+  border-radius: 999rpx;
+  font-size: 21rpx;
+  font-weight: 900;
+}
+
+.stat-arrow {
+  color: #3f8a43;
+}
+
+.stat-info {
+  border: 2rpx solid #d8c99d;
+  background: #fff9e9;
+  color: #7c735f;
 }

@@ -2,8 +2,8 @@ const stagePlans = [
   {
     min: 12,
     label: '12个月+',
-    hint: '可尝试更丰富的家庭食材，仍需注意糖盐、过敏原和食物形态。',
-    ids: ['cheese', 'egg', 'fish', 'chicken', 'beef', 'tofu', 'broccoli', 'tomato', 'noodle', 'bread']
+    hint: '优先覆盖主食、蔬菜、优质蛋白、豆制品和水果，仍需注意少盐少糖、过敏原和食物形态。',
+    ids: ['porridge', 'carrot', 'chicken', 'tofu', 'banana', 'egg', 'fish', 'broccoli', 'tomato', 'rice']
   },
   {
     min: 10,

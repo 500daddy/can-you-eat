@@ -1,3 +1,7 @@
+.detail-page {
+  padding-bottom: 260rpx;
+}
+
 .detail-header {
   display: flex;
   align-items: center;
@@ -54,4 +58,26 @@
   grid-template-columns: 1fr 1fr;
   gap: 18rpx;
   margin-top: 28rpx;
+}
+
+.fixed-action-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14rpx;
+  padding: 18rpx 24rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  border-top: 3rpx solid #e2d2a4;
+  background: rgba(255, 249, 233, 0.96);
+  box-shadow: 0 -6rpx 0 rgba(81, 53, 31, 0.08);
+}
+
+.fixed-action-dock .pixel-btn {
+  height: 64rpx;
+  min-height: 64rpx;
+  font-size: 25rpx;
 }

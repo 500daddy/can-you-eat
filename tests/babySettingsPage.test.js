@@ -131,6 +131,7 @@ test('baby settings page opens a custom cropper before accepting uploaded avatar
 
 test('baby settings page shows gender and allergen controls', () => {
   const markup = fs.readFileSync(path.resolve(__dirname, '../pages/settings/baby.wxml'), 'utf8')
+  const stylesheet = fs.readFileSync(path.resolve(__dirname, '../pages/settings/baby.wxss'), 'utf8')
 
   assert.match(markup, /宝宝月龄/)
   assert.doesNotMatch(markup, /宝宝出生日期/)
@@ -142,4 +143,16 @@ test('baby settings page shows gender and allergen controls', () => {
   assert.match(markup, /avatar-action-row/)
   assert.match(markup, /avatar-secondary/)
   assert.match(markup, /avatar-helper/)
+  assert.match(markup, /sticky-save-bar/)
+  assert.match(markup, /button-primary/)
+  assert.match(markup, /button-secondary/)
+  assert.match(markup, /button-compact/)
+  assert.doesNotMatch(markup, /<view class="pixel-btn save-btn" bindtap="save">保存<\/view>/)
+  assert.match(stylesheet, /\.settings-page/)
+  assert.match(stylesheet, /\.sticky-save-bar/)
+  assert.match(stylesheet, /position:\s*fixed/)
+  assert.match(stylesheet, /env\(safe-area-inset-bottom\)/)
+  assert.match(stylesheet, /\.button-primary/)
+  assert.match(stylesheet, /\.button-secondary/)
+  assert.match(stylesheet, /\.button-compact/)
 })

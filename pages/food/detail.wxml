@@ -53,7 +53,7 @@
     成人参考不是安全承诺。超过宝宝建议期后，请结合食材外观、气味、触感判断。
   </view>
 
-  <view class="detail-actions">
+  <view class="detail-actions fixed-action-dock">
     <view class="pixel-btn" bindtap="finish">已吃掉</view>
     <view class="pixel-btn secondary" bindtap="keepAdult">留给大人吃</view>
     <view class="pixel-btn ghost" bindtap="edit">编辑记录</view>

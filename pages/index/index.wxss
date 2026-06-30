@@ -44,21 +44,118 @@
   backdrop-filter: blur(2px);
 }
 
-.button-row .pixel-btn {
-  flex: 1;
+.home-page .button-row {
+  align-items: stretch;
+  gap: 20rpx;
+  margin-top: 22rpx;
 }
 
-.btn-symbol {
+.home-page .button-row .main-action-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 168rpx;
+  min-height: 168rpx;
+  flex-direction: column;
+  padding: 18rpx 10rpx;
+  border-radius: 20rpx;
+  font-size: 30rpx;
+  line-height: 1.15;
+}
+
+.main-action-icon {
+  width: 60rpx;
+  height: 60rpx;
+  margin-bottom: 12rpx;
+  image-rendering: pixelated;
+}
+
+.secondary-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 24rpx;
+  margin-top: 24rpx;
+  margin-bottom: 26rpx;
+}
+
+.secondary-action-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34rpx;
-  height: 34rpx;
-  margin-right: 10rpx;
-  border: 3rpx solid #fffdf2;
-  border-radius: 10rpx;
-  color: #fffdf2;
-  font-size: 30rpx;
+  width: 180rpx;
+  height: 60rpx;
+  min-height: 60rpx;
+  padding: 0 20rpx;
+  border-radius: 16rpx;
+  font-size: 28rpx;
   font-weight: 900;
-  line-height: 1;
+  box-shadow: 0 4rpx 0 rgba(84, 143, 75, 0.3);
+}
+
+.secondary-action-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 10rpx;
+  image-rendering: pixelated;
+}
+
+.status-filter-scroll {
+  margin: 2rpx -24rpx 12rpx;
+  padding: 0 24rpx;
+  white-space: nowrap;
+}
+
+.status-filter-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 12rpx;
+  min-width: 100%;
+  padding: 4rpx 0 8rpx;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  height: 58rpx;
+  padding: 0 20rpx;
+  border: 3rpx solid #d8c99d;
+  border-radius: 18rpx;
+  background: #fffdf2;
+  color: #6f654f;
+  font-size: 24rpx;
+  font-weight: 900;
+  box-shadow: 0 4rpx 0 rgba(81, 53, 31, 0.08);
+}
+
+.status-chip.active {
+  border-color: #68aa63;
+  background: #e7f4d8;
+  color: #2f6c37;
+  box-shadow: 0 4rpx 0 rgba(84, 143, 75, 0.3);
+}
+
+.status-count {
+  min-width: 30rpx;
+  height: 30rpx;
+  padding: 0 8rpx;
+  border-radius: 999rpx;
+  background: rgba(84, 143, 75, 0.14);
+  color: inherit;
+  font-size: 21rpx;
+  line-height: 30rpx;
+  text-align: center;
+}
+
+.filtered-empty {
+  margin: 22rpx 0;
+  padding: 28rpx 20rpx;
+  border: 3rpx dashed #d8c99d;
+  border-radius: 20rpx;
+  background: #fffdf2;
+  color: #7c735f;
+  font-size: 25rpx;
+  font-weight: 800;
+  text-align: center;
 }

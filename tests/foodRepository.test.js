@@ -86,6 +86,28 @@ test('adds a food record and recalculates it for list/detail/reminders', () => {
   assert.equal(repo.getReminders().today[0].id, created.id)
 })
 
+test('keeps saved baby allergen foods out of baby recommendation lists', () => {
+  const repo = createMemoryFoodRepository({
+    today: '2026-06-12',
+    seedRecords: [],
+    settings: { babyAllergens: ['鸡蛋'] }
+  })
+
+  const created = repo.addFoodRecord({
+    foodBaseId: 'egg',
+    purchaseDate: '2026-06-12',
+    storageMethod: 'fridge',
+    isBabyFood: true
+  })
+  const reminders = repo.getReminders()
+
+  assert.equal(created.status, 'not_recommended')
+  assert.equal(created.statusText, '不建议给宝宝食用')
+  assert.match(created.note, /宝宝过敏源.*鸡蛋/)
+  assert.equal(reminders.today.length, 0)
+  assert.equal(reminders.overdue[0].id, created.id)
+})
+
 test('marks records as finished and removes them from active lists', () => {
   const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
   const created = repo.addFoodRecord({
@@ -241,4 +263,62 @@ test('stores local feedback with pending status', () => {
   assert.equal(feedback.createdAt, '2026-06-12')
   assert.equal(repo.getFeedbackList().length, 1)
   assert.equal(repo.getFeedbackList()[0].id, feedback.id)
+})
+
+test('stores purchase plans separately from active food records', () => {
+  const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
+
+  const later = repo.addPurchasePlan({
+    foodBaseId: 'broccoli',
+    foodName: '西兰花',
+    plannedDate: '2026-06-20',
+    storageMethod: 'fridge',
+    quantity: '2',
+    unit: '颗'
+  })
+  const sooner = repo.addPurchasePlan({
+    foodName: '自定义零食',
+    plannedDate: '2026-06-15',
+    storageMethod: 'room'
+  })
+
+  const plans = repo.getPurchasePlans()
+
+  assert.deepEqual(plans.map((item) => item.id), [sooner.id, later.id])
+  assert.equal(plans[0].name, '自定义零食')
+  assert.equal(plans[0].foodBaseId, 'custom')
+  assert.equal(plans[0].icon, '/assets/sprites/food/food_jar.png')
+  assert.equal(plans[1].name, '西兰花')
+  assert.equal(plans[1].icon, '/assets/sprites/food/food_broccoli.png')
+  assert.equal(repo.getFoodRecords().length, 0)
+})
+
+test('custom purchase plans without a matched food show storage as pending confirmation', () => {
+  const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
+
+  repo.addPurchasePlan({
+    foodName: '雪莲果',
+    plannedDate: '2026-06-15'
+  })
+
+  const plan = repo.getPurchasePlans()[0]
+
+  assert.equal(plan.foodBaseId, 'custom')
+  assert.equal(plan.name, '雪莲果')
+  assert.equal(plan.storageText, '保存方式待确认')
+})
+
+test('marks purchase plans as purchased and hides them from active plan list', () => {
+  const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
+  const plan = repo.addPurchasePlan({
+    foodBaseId: 'carrot',
+    plannedDate: '2026-06-14',
+    storageMethod: 'fridge'
+  })
+
+  const updated = repo.finishPurchasePlan({ planId: plan.id, action: 'purchased' })
+
+  assert.equal(updated.status, 'purchased')
+  assert.equal(repo.getPurchasePlans().length, 0)
+  assert.equal(repo.getAllRawPurchasePlans()[0].status, 'purchased')
 })

@@ -3,6 +3,7 @@ const { getSubscribeService } = require('../../utils/subscribeService')
 
 const foodService = getFoodService()
 const subscribeService = getSubscribeService()
+const TARGET_TAB_KEY = 'mine_target_reminder_tab'
 
 Page({
   data: {
@@ -19,7 +20,17 @@ Page({
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 2 })
     }
+    this.applyTargetTab()
     this.refreshReminders()
+  },
+
+  applyTargetTab() {
+    if (typeof wx === 'undefined' || !wx.getStorageSync) return
+    const target = wx.getStorageSync(TARGET_TAB_KEY)
+    if (target === undefined || target === null || target === '') return
+    const active = Math.max(0, Math.min(2, Number(target) || 0))
+    this.setData({ active })
+    if (wx.removeStorageSync) wx.removeStorageSync(TARGET_TAB_KEY)
   },
 
   async refreshReminders() {

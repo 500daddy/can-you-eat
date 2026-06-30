@@ -82,6 +82,30 @@ test('preserves manual not_recommended status', () => {
   assert.equal(record.group, '不建议继续食用')
 })
 
+test('marks baby allergen foods as not recommended even when still fresh', () => {
+  const record = calculateRecordState({
+    food: {
+      id: 'egg',
+      name: '鸡蛋',
+      aliases: '蛋',
+      defaultStorage: 'fridge',
+      fridge: {
+        babyDaysMax: 7,
+        adultDaysMax: 14
+      }
+    },
+    purchaseDate: '2026-06-12',
+    storageMethod: 'fridge',
+    today: '2026-06-12',
+    babyAllergens: ['鸡蛋']
+  })
+
+  assert.equal(record.status, 'not_recommended')
+  assert.equal(record.statusText, '不建议给宝宝食用')
+  assert.equal(record.group, '不建议继续食用')
+  assert.match(record.note, /宝宝过敏源.*鸡蛋/)
+})
+
 test('preserves manual adult_only status', () => {
   const record = calculateRecordState({
     food: broccoli,

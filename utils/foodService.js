@@ -152,6 +152,18 @@ function createFoodService(options = {}) {
       return cloudOrLocal('addFoodRecord', input, () => repo.addFoodRecord(input))
     },
 
+    async addPurchasePlan(input) {
+      return repo.addPurchasePlan(input)
+    },
+
+    async getPurchasePlans() {
+      return repo.getPurchasePlans()
+    },
+
+    async finishPurchasePlan(input) {
+      return repo.finishPurchasePlan(input)
+    },
+
     async getFoodRecords() {
       return cloudOrLocal('getFoodRecords', {}, () => repo.getFoodRecords())
     },

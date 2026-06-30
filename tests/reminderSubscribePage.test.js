@@ -79,6 +79,29 @@ test('reminder page does not persist settings when subscribe request fails', asy
   await assertFailedSubscribeIsNotPersisted('pages/reminder/index')
 })
 
+test('reminder page opens the tab requested from mine stats', async () => {
+  const removedKeys = []
+  global.wx = {
+    getStorageSync: (key) => (key === 'mine_target_reminder_tab' ? 1 : undefined),
+    removeStorageSync: (key) => removedKeys.push(key)
+  }
+  const page = createPageInstance(loadPage('pages/reminder/index', {
+    foodService: {
+      getReminders: async () => ({ today: [], soon: [], overdue: [] }),
+      getSettings: async () => ({ reminderEnabled: true, dailySummaryEnabled: true })
+    },
+    subscribeService: {
+      requestFoodExpireSubscribe: async () => ({ status: 'not_configured' })
+    }
+  }))
+
+  page.onShow()
+
+  delete global.wx
+  assert.equal(page.data.active, 1)
+  assert.deepEqual(removedKeys, ['mine_target_reminder_tab'])
+})
+
 test('reminder settings page does not persist settings when subscribe request fails', async () => {
   await assertFailedSubscribeIsNotPersisted('pages/settings/reminder')
 })

@@ -6,15 +6,21 @@ module.exports = {
     bannerVillage: `${sprite}ui/ui_banner_village.png`,
     bannerKitchenHome: `${sprite}ui/ui_banner_kitchen_home.png`,
     signBoard: `${sprite}ui/ui_sign_board.png`,
+    heat: `${sprite}ui/ui_decoration_heat.png`,
     heart: `${sprite}ui/ui_decoration_heart.png`,
     fence: `${sprite}ui/ui_decoration_fence.png`
   },
   actions: {
     add: `${sprite}actions/action_add.png`,
+    addIcon: `${sprite}actions/action_add_icon.png`,
+    basket: `${sprite}actions/action_basket.png`,
     camera: `${sprite}actions/action_camera.png`,
+    cart: `${sprite}actions/action_cart.png`,
+    cookware: `${sprite}actions/action_cookware.png`,
     search: `${sprite}actions/action_search.png`,
     edit: `${sprite}actions/action_edit.png`,
-    back: `${sprite}actions/action_back.png`
+    back: `${sprite}actions/action_back.png`,
+    eaten: `${sprite}actions/action_eaten_button.png`
   },
   mascot: {
     babyFront: `${sprite}mascot/mascot_baby_front.png`,

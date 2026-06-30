@@ -1,4 +1,4 @@
-<view class="page">
+<view class="page settings-page">
   <view class="page-title">宝宝模式设置</view>
   <view class="subtitle">开启后，首页和详情页会优先展示宝宝建议期，文案采用更保守表达。</view>
 
@@ -17,8 +17,8 @@
         <image class="avatar-preview" src="{{babyAvatarImage || assets.mascot.babyBasket}}" mode="aspectFill" />
         <view class="avatar-actions">
           <view class="avatar-action-row">
-            <view class="mini-btn avatar-upload" bindtap="chooseAvatar">上传头像</view>
-            <view wx:if="{{babyAvatarUrl}}" class="avatar-secondary" bindtap="clearAvatar">恢复默认</view>
+            <view class="button-primary button-compact avatar-upload" bindtap="chooseAvatar">上传头像</view>
+            <view wx:if="{{babyAvatarUrl}}" class="button-secondary button-compact avatar-secondary" bindtap="clearAvatar">恢复默认</view>
           </view>
           <view class="avatar-helper">未上传时，会按月龄和性别显示默认头像。</view>
         </view>
@@ -46,7 +46,7 @@
       <text class="label">过敏源</text>
       <view class="allergen-input-row">
         <input class="input allergen-input" value="{{allergenInput}}" bindinput="onAllergenInput" placeholder="如：鸡蛋、牛奶、虾" confirm-type="done" bindconfirm="addAllergen" />
-        <view class="mini-btn" bindtap="addAllergen">添加</view>
+        <view class="button-primary button-compact add-allergen-btn" bindtap="addAllergen">添加</view>
       </view>
       <view wx:if="{{allergens.length}}" class="allergen-list">
         <view class="allergen-chip" wx:for="{{allergens}}" wx:key="*this" data-index="{{index}}" bindtap="removeAllergen">
@@ -64,5 +64,7 @@
     </view>
   </view>
 
-  <view class="pixel-btn save-btn" bindtap="save">保存</view>
+  <view class="sticky-save-bar">
+    <view class="button-primary save-action" bindtap="save">保存设置</view>
+  </view>
 </view>

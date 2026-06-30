@@ -10,6 +10,7 @@ const {
 const STORAGE_KEY = 'baby_food_records_v1'
 const SETTINGS_KEY = 'baby_food_settings_v1'
 const FEEDBACK_KEY = 'baby_food_feedback_v1'
+const PURCHASE_PLAN_KEY = 'baby_food_purchase_plans_v1'
 
 const defaultSettings = {
   babyName: '小芽贝',
@@ -104,12 +105,22 @@ function createCustomFood(name, storageMethod = 'fridge') {
   }
 }
 
+function storageLabel(storageMethod) {
+  return {
+    room: '常温',
+    fridge: '冷藏',
+    freezer: '冷冻'
+  }[storageMethod] || '冷藏'
+}
+
 function createMemoryFoodRepository(options = {}) {
   const today = options.today || todayString
   let counter = 0
   let feedbackCounter = 0
+  let purchasePlanCounter = 0
   let records = clone(options.seedRecords === undefined ? defaultSeedRecords : options.seedRecords)
   let feedbackList = clone(options.feedbackList || [])
+  let purchasePlans = clone(options.purchasePlans || [])
   const inputSettings = options.settings || {}
   let settings = { ...defaultSettings, ...inputSettings }
   if (inputSettings.babyBirthday && inputSettings.babyAgeMonths === undefined) {
@@ -136,6 +147,38 @@ function createMemoryFoodRepository(options = {}) {
     feedbackList = clone(nextList)
   }
 
+  function readPurchasePlans() {
+    return purchasePlans
+  }
+
+  function writePurchasePlans(nextPlans) {
+    purchasePlans = clone(nextPlans)
+  }
+
+  function normalizePurchasePlan(raw) {
+    const food = findFood(raw.foodBaseId || raw.foodId || raw.foodName || raw.name)
+    const fallbackName = raw.customFoodName || raw.foodName || raw.name || '自定义食材'
+    const storageMethod = raw.storageMethod || (food && food.defaultStorage) || ''
+    return {
+      ...raw,
+      id: raw.id,
+      foodId: food ? food.id : raw.foodBaseId || 'custom',
+      foodBaseId: food ? food.id : raw.foodBaseId || 'custom',
+      foodName: food ? food.name : fallbackName,
+      name: food ? food.name : fallbackName,
+      customFoodName: food ? '' : fallbackName,
+      icon: raw.icon || (food && food.icon) || assets.food.customFood,
+      plannedDate: raw.plannedDate || currentToday(),
+      storageMethod,
+      storageText: storageMethod ? `${storageLabel(storageMethod)}保存` : '保存方式待确认',
+      quantity: raw.quantity || '',
+      unit: raw.unit || '',
+      status: raw.status || 'active',
+      createdAt: raw.createdAt || currentToday(),
+      updatedAt: raw.updatedAt || raw.createdAt || currentToday()
+    }
+  }
+
   function normalizeRecord(raw) {
     const food = findFood(raw.foodBaseId || raw.foodId || raw.foodName || raw.name)
     const fallbackName = raw.customFoodName || raw.foodName || raw.name || '自定义食材'
@@ -146,7 +189,8 @@ function createMemoryFoodRepository(options = {}) {
       storageMethod,
       status: raw.status,
       today: currentToday(),
-      remindBeforeDays: settings.remindBeforeDays
+      remindBeforeDays: settings.remindBeforeDays,
+      babyAllergens: settings.babyAllergens
     })
     const foodName = food ? food.name : fallbackName
 
@@ -165,7 +209,7 @@ function createMemoryFoodRepository(options = {}) {
       unit: raw.unit || '',
       isBabyFood: raw.isBabyFood !== false,
       userNote: raw.note || '',
-      note: raw.note || calculated.note,
+      note: calculated.riskNote || raw.riskNote || raw.note || calculated.note,
       updatedAt: raw.updatedAt || raw.createdAt || currentToday()
     }
   }
@@ -219,6 +263,8 @@ function createMemoryFoodRepository(options = {}) {
         unit: input.unit || '',
         isBabyFood: input.isBabyFood !== false,
         note: input.note || '',
+        ...(input.riskNote ? { riskNote: input.riskNote } : {}),
+        ...(input.status === 'not_recommended' ? { status: 'not_recommended' } : {}),
         createdAt: currentToday(),
         updatedAt: currentToday()
       }
@@ -328,6 +374,49 @@ function createMemoryFoodRepository(options = {}) {
 
     getFeedbackList() {
       return clone(readFeedbackList())
+    },
+
+    addPurchasePlan(input) {
+      const food = findFood(input.foodBaseId || input.foodName || input.name)
+      const id = input.id || `purchase-plan-${Date.now()}-${purchasePlanCounter += 1}`
+      const plan = {
+        id,
+        foodBaseId: food ? food.id : 'custom',
+        customFoodName: food ? '' : input.foodName || input.name,
+        plannedDate: input.plannedDate || currentToday(),
+        storageMethod: input.storageMethod || (food && food.defaultStorage) || '',
+        quantity: input.quantity || '',
+        unit: input.unit || '',
+        status: input.status || 'active',
+        createdAt: input.createdAt || currentToday(),
+        updatedAt: input.updatedAt || currentToday()
+      }
+      writePurchasePlans([plan, ...readPurchasePlans()])
+      return normalizePurchasePlan(plan)
+    },
+
+    getPurchasePlans() {
+      return readPurchasePlans()
+        .map(normalizePurchasePlan)
+        .filter((item) => item.status === 'active')
+        .sort((a, b) => String(a.plannedDate).localeCompare(String(b.plannedDate)))
+    },
+
+    getAllRawPurchasePlans() {
+      return clone(readPurchasePlans())
+    },
+
+    finishPurchasePlan({ planId, action = 'purchased' }) {
+      const allowed = ['purchased', 'deleted']
+      const nextAction = allowed.includes(action) ? action : 'purchased'
+      let updatedPlan = null
+      const nextPlans = readPurchasePlans().map((item) => {
+        if (item.id !== planId) return item
+        updatedPlan = { ...item, status: nextAction, updatedAt: currentToday() }
+        return updatedPlan
+      })
+      writePurchasePlans(nextPlans)
+      return updatedPlan ? normalizePurchasePlan(updatedPlan) : null
     }
   }
 }
@@ -338,6 +427,7 @@ function createWxRepository() {
   const repo = createMemoryFoodRepository({
     seedRecords: hasWxStorage() ? (wx.getStorageSync(STORAGE_KEY) || defaultSeedRecords) : defaultSeedRecords,
     feedbackList: hasWxStorage() ? (wx.getStorageSync(FEEDBACK_KEY) || []) : [],
+    purchasePlans: hasWxStorage() ? (wx.getStorageSync(PURCHASE_PLAN_KEY) || []) : [],
     settings: hasWxStorage() ? (wx.getStorageSync(SETTINGS_KEY) || defaultSettings) : defaultSettings
   })
   const originalAdd = repo.addFoodRecord.bind(repo)
@@ -345,6 +435,8 @@ function createWxRepository() {
   const originalFinish = repo.finishFoodRecord.bind(repo)
   const originalUpdateSettings = repo.updateSettings.bind(repo)
   const originalSubmitFeedback = repo.submitFeedback.bind(repo)
+  const originalAddPurchasePlan = repo.addPurchasePlan.bind(repo)
+  const originalFinishPurchasePlan = repo.finishPurchasePlan.bind(repo)
 
   repo.addFoodRecord = function addFoodRecord(input) {
     const result = originalAdd(input)
@@ -373,6 +465,18 @@ function createWxRepository() {
   repo.submitFeedback = function submitFeedback(input) {
     const result = originalSubmitFeedback(input)
     if (hasWxStorage()) wx.setStorageSync(FEEDBACK_KEY, repo.getFeedbackList())
+    return result
+  }
+
+  repo.addPurchasePlan = function addPurchasePlan(input) {
+    const result = originalAddPurchasePlan(input)
+    if (hasWxStorage()) wx.setStorageSync(PURCHASE_PLAN_KEY, repo.getAllRawPurchasePlans())
+    return result
+  }
+
+  repo.finishPurchasePlan = function finishPurchasePlan(input) {
+    const result = originalFinishPurchasePlan(input)
+    if (hasWxStorage()) wx.setStorageSync(PURCHASE_PLAN_KEY, repo.getAllRawPurchasePlans())
     return result
   }
 

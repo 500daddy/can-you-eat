@@ -1,0 +1,43 @@
+<view class="page quick-process-page">
+  <view class="process-hero">
+    <image class="process-hero-icon" src="{{assets.food.babyPuree}}" mode="aspectFit" />
+    <view class="process-hero-main">
+      <view class="page-title">快速处理临期食材</view>
+      <view class="subtitle">先处理今天和即将临期的食材，建议只做参考，不替代食品安全判断。</view>
+    </view>
+  </view>
+
+  <view class="safety-box">
+    <view class="safety-title">安全提醒</view>
+    <view class="safety-copy">给宝宝吃之前请确认颜色、气味、质地、包装和保存过程；只要有霉点、酸败、发黏、胀包或来源不清，就不要给宝宝食用。</view>
+  </view>
+
+  <block wx:if="{{items.length}}">
+    <view wx:for="{{items}}" wx:key="id" class="process-card">
+      <image class="food-icon" src="{{item.icon || assets.food.customFood}}" mode="aspectFit" />
+      <view class="process-main">
+        <view class="process-head">
+          <view class="process-name">{{item.name}}</view>
+          <view class="process-tag">{{item.sourceLabel}}</view>
+        </view>
+        <view class="process-meta">{{item.metaText}}</view>
+        <view class="suggest-title">{{item.suggestion.title}}</view>
+        <view wx:for="{{item.suggestion.steps}}" wx:key="*this" wx:for-item="step" class="suggest-step">
+          {{step}}
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <view wx:else class="empty-process">
+    <image class="empty-icon" src="{{assets.mascot.emptyFood}}" mode="aspectFit" />
+    <view class="empty-title">暂时没有需要快速处理的食材</view>
+    <view class="empty-copy">今天可以按原计划做饭，继续关注提醒中心的临期变化。</view>
+  </view>
+
+  <view wx:if="{{safetyNotes.length}}" class="safety-box warning">
+    <view class="safety-title">不推荐给宝宝</view>
+    <view class="safety-copy">不建议把已过期或异常食材推荐给宝宝。</view>
+    <view wx:for="{{safetyNotes}}" wx:key="*this" class="safety-copy">{{item}}</view>
+  </view>
+</view>

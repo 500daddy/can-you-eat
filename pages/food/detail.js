@@ -3,6 +3,37 @@ const { getStatus } = require('../../utils/status')
 
 const foodService = getFoodService()
 
+function normalizeBase(base, record = {}) {
+  const tips = (base && (base.tips || base.storageTips)) || []
+  if (base) {
+    return {
+      ...base,
+      tips: Array.isArray(tips) ? tips : [tips].filter(Boolean)
+    }
+  }
+  return {
+    tips: [`${record.name || '自定义食材'}暂无标准保存建议，请按实际保存方式、外观、气味和触感谨慎判断。`],
+    spoilageSigns: []
+  }
+}
+
+function confirmFinish(foodName) {
+  if (typeof wx === 'undefined' || !wx.showModal) {
+    return Promise.resolve(true)
+  }
+  return new Promise((resolve) => {
+    wx.showModal({
+      title: '确认已吃掉？',
+      content: `确认「${foodName || '这个食材'}」已经吃掉或处理了吗？确认后会从首页和提醒列表移除。`,
+      confirmText: '确认',
+      cancelText: '取消',
+      confirmColor: '#2f8d3d',
+      success: (res) => resolve(Boolean(res.confirm)),
+      fail: () => resolve(false)
+    })
+  })
+}
+
 Page({
   data: {
     assets: foodService.getAssets(),
@@ -30,7 +61,7 @@ Page({
     }
     this.setData({
       record,
-      base,
+      base: normalizeBase(base, record),
       statusInfo: getStatus(record.status)
     })
   },
@@ -40,6 +71,8 @@ Page({
   },
 
   async finish() {
+    const confirmed = await confirmFinish(this.data.record.name)
+    if (!confirmed) return
     await foodService.finishFoodRecord({ recordId: this.data.record.id, action: 'finished' })
     wx.showToast({ title: '已标记处理', icon: 'success' })
     setTimeout(() => {
@@ -68,3 +101,7 @@ Page({
     })
   }
 })
+
+module.exports = {
+  normalizeBase
+}

@@ -10,25 +10,55 @@
   </view>
 
   <view class="button-row">
-    <button class="pixel-btn" bindtap="goAdd">
-      <text class="btn-symbol">+</text>
+    <button class="pixel-btn main-action-btn" bindtap="goAdd">
+      <image class="main-action-icon" src="{{assets.food.carrot}}" mode="aspectFit" />
       <text>添加食材</text>
     </button>
-    <button class="pixel-btn secondary" bindtap="goRecognize">
-      <image class="btn-icon" src="{{assets.actions.camera}}" mode="aspectFit" />拍照识别
+    <button class="pixel-btn main-action-btn secondary" bindtap="goRecognize">
+      <image class="main-action-icon" src="{{assets.actions.camera}}" mode="aspectFit" />
+      <text>拍照识别</text>
     </button>
   </view>
 
-  <block wx:if="{{records.length}}">
-    <block wx:for="{{sections}}" wx:key="title">
-      <view class="section-head">
-        <view class="section-title">{{item.title}}</view>
-        <view class="section-more">{{item.items.length}} 个</view>
+  <view class="secondary-action-row">
+    <button class="pixel-btn ghost secondary-action-btn" bindtap="goPurchasePlan">
+      <image class="secondary-action-icon" src="{{assets.actions.cart}}" mode="aspectFit" />
+      <text>计划采购</text>
+    </button>
+    <button class="pixel-btn ghost secondary-action-btn" bindtap="goQuickProcess">
+      <image class="secondary-action-icon" src="{{assets.food.babyPuree}}" mode="aspectFit" />
+      <text>快速处理</text>
+    </button>
+  </view>
+
+  <scroll-view wx:if="{{records.length}}" class="status-filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="status-filter-row">
+      <view
+        wx:for="{{statusFilters}}"
+        wx:key="key"
+        class="status-chip {{activeStatusFilter === item.key ? 'active' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="chooseStatusFilter"
+      >
+        <text>{{item.label}}</text>
+        <text class="status-count">{{item.count}}</text>
       </view>
-      <block wx:for="{{item.items}}" wx:key="id" wx:for-item="food">
-        <food-card food="{{food}}" bindfinished="refreshRecords" />
+    </view>
+  </scroll-view>
+
+  <block wx:if="{{records.length}}">
+    <block wx:if="{{sections.length}}">
+      <block wx:for="{{sections}}" wx:key="title">
+        <view class="section-head">
+          <view class="section-title">{{item.title}}</view>
+          <view class="section-more">{{item.items.length}} 个</view>
+        </view>
+        <block wx:for="{{item.items}}" wx:key="id" wx:for-item="food">
+          <food-card food="{{food}}" bindfinished="refreshRecords" />
+        </block>
       </block>
     </block>
+    <view wx:else class="filtered-empty">这个分类暂时没有食材</view>
   </block>
 
   <pixel-empty wx:else show-actions="{{false}}" />

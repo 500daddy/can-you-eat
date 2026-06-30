@@ -6,7 +6,7 @@
       <status-tag status="{{food.status}}" />
     </view>
     <view class="food-meta">{{food.storageText}}｜购买：{{food.purchaseDate}}</view>
-    <view class="food-note">{{food.note}}</view>
+    <view wx:if="{{food.note && food.note !== food.statusText}}" class="food-note">{{food.note}}</view>
     <view class="food-days">
       <text>宝宝建议期：{{food.babyLeft}}</text>
       <text>成人参考期：{{food.adultLeft}}</text>

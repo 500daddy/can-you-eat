@@ -171,6 +171,28 @@ function storageText(storageMethod) {
   }[storageMethod] || '冷藏保存'
 }
 
+function normalizeAllergens(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean)
+  }
+  return String(value || '').split(/[、,，\s]/).map((item) => item.trim()).filter(Boolean)
+}
+
+function foodAllergenText(food) {
+  return [
+    food && food.name,
+    food && food.aliases,
+    food && food.category,
+    food && food.subCategory
+  ].flatMap((item) => Array.isArray(item) ? item : String(item || '').split(/[、,，\s]/))
+    .join(' ')
+}
+
+function getMatchedAllergens(food, babyAllergens) {
+  const searchText = foodAllergenText(food)
+  return normalizeAllergens(babyAllergens).filter((allergen) => searchText.includes(allergen))
+}
+
 function createCustomFood(name, storageMethod = 'fridge') {
   return {
     id: 'custom',
@@ -194,11 +216,14 @@ function calculateRecord({ record, food, settings, today }) {
   const daysToBaby = daysBetween(today, babyExpireDate)
   const daysToAdult = daysBetween(today, adultExpireDate)
   let status = record.status
+  const matchedAllergens = getMatchedAllergens(food, settings.babyAllergens)
+  const riskNote = matchedAllergens.length ? `包含宝宝过敏源：${matchedAllergens.join('、')}，请不要给宝宝食用。` : ''
 
   if (status === 'adult_only') {
     status = daysToAdult >= 0 ? 'adult_only' : 'expired'
   } else if (!manualStatusSet.has(status)) {
-    if (daysToBaby >= 2) status = 'baby_ok'
+    if (matchedAllergens.length) status = 'not_recommended'
+    else if (daysToBaby >= 2) status = 'baby_ok'
     else if (daysToBaby >= 0) status = 'baby_today'
     else if (daysToAdult >= 0) status = 'adult_only'
     else status = 'expired'
@@ -230,13 +255,14 @@ function calculateRecord({ record, food, settings, today }) {
       finished: '已处理',
       deleted: '已删除'
     }[status] || '新鲜食材',
-    note: record.note || {
+    note: riskNote || record.riskNote || record.note || {
       baby_today: '今天优先做熟食用',
       adult_only: '可留给大人结合状态判断',
       expired: '已超过参考期，建议谨慎处理',
       not_recommended: '如有出水或异味请处理',
       finished: '这条记录已处理'
-    }[status] || '当前仍在宝宝建议期内'
+    }[status] || '当前仍在宝宝建议期内',
+    riskNote
   }
 }
 
@@ -373,6 +399,8 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
           unit: event.unit || '',
           isBabyFood: event.isBabyFood !== false,
           note: event.note || '',
+          ...(event.riskNote ? { riskNote: event.riskNote } : {}),
+          ...(event.status === 'not_recommended' ? { status: 'not_recommended' } : {}),
           createdAt: today,
           updatedAt: today
         })

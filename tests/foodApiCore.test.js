@@ -93,6 +93,26 @@ test('adds and lists calculated user food records', async () => {
   assert.equal(detail.data.base.name, '西兰花')
 })
 
+test('cloud records treat configured baby allergens as risk reminders', async () => {
+  const api = createFoodApi({ store: createMemoryStore(), userId: 'user-a', today: '2026-06-12' })
+  await api.handle({ action: 'initFoodBase' })
+  await api.handle({ action: 'updateUserSettings', babyAllergens: ['鸡蛋'] })
+
+  const added = await api.handle({
+    action: 'addFoodRecord',
+    foodBaseId: 'egg',
+    purchaseDate: '2026-06-12',
+    storageMethod: 'fridge'
+  })
+  const reminders = await api.handle({ action: 'getReminders' })
+
+  assert.equal(added.data.status, 'not_recommended')
+  assert.equal(added.data.statusText, '不建议给宝宝食用')
+  assert.match(added.data.note, /宝宝过敏源.*鸡蛋/)
+  assert.equal(reminders.data.today.length, 0)
+  assert.equal(reminders.data.overdue[0].id, added.data.id)
+})
+
 test('gets cloud food base by id', async () => {
   const api = createFoodApi({ store: createMemoryStore(), userId: 'user-a', today: '2026-06-12' })
   await api.handle({ action: 'initFoodBase' })

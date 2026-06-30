@@ -22,6 +22,46 @@ test('uses local repository by default', async () => {
   assert.equal(list[0].id, added.id)
 })
 
+test('manages local purchase plans through the food service', async () => {
+  const service = createFoodService({
+    repo: createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
+  })
+
+  const plan = await service.addPurchasePlan({
+    foodBaseId: 'broccoli',
+    plannedDate: '2026-06-20',
+    storageMethod: 'fridge'
+  })
+  const activePlans = await service.getPurchasePlans()
+  const updated = await service.finishPurchasePlan({ planId: plan.id, action: 'purchased' })
+
+  assert.equal(activePlans.length, 1)
+  assert.equal(activePlans[0].name, '西兰花')
+  assert.equal(updated.status, 'purchased')
+  assert.deepEqual(await service.getPurchasePlans(), [])
+})
+
+test('keeps purchase plans local even when cloud food api is enabled', async () => {
+  const calls = []
+  const service = createFoodService({
+    useCloud: true,
+    repo: createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] }),
+    callCloud: async (data) => {
+      calls.push(data)
+      return []
+    }
+  })
+
+  await service.addPurchasePlan({
+    foodName: '山药',
+    plannedDate: '2026-06-18',
+    storageMethod: 'room'
+  })
+
+  assert.equal(calls.some((item) => String(item.action).includes('PurchasePlan')), false)
+  assert.equal((await service.getPurchasePlans())[0].name, '山药')
+})
+
 test('uses cloud foodApi when enabled', async () => {
   const calls = []
   const service = createFoodService({
@@ -220,11 +260,20 @@ test('recommends foods from the current baby age stage', async () => {
   const twelveMonthRecommendations = await service.getRecommendedFoods()
 
   assert.deepEqual(sixMonthRecommendations.slice(0, 3).map((item) => item.id), ['babyPuree', 'porridge', 'carrot'])
-  assert.notDeepEqual(
-    twelveMonthRecommendations.slice(0, 5).map((item) => item.id),
-    sixMonthRecommendations.slice(0, 5).map((item) => item.id)
-  )
-  assert.ok(twelveMonthRecommendations.slice(0, 5).some((item) => item.id === 'cheese'))
+  assert.deepEqual(twelveMonthRecommendations.slice(0, 5).map((item) => item.id), [
+    'porridge',
+    'carrot',
+    'chicken',
+    'tofu',
+    'banana'
+  ])
+  assert.deepEqual(twelveMonthRecommendations.slice(0, 5).map((item) => item.category), [
+    '主食辅食',
+    '蔬菜',
+    '肉禽水产',
+    '蛋奶豆制品',
+    '水果'
+  ])
 })
 
 test('gets settings from cloud foodApi when enabled', async () => {

@@ -13,9 +13,11 @@
   </view>
 
   <view class="stats-grid">
-    <view class="stat-card" wx:for="{{stats}}" wx:key="label">
+    <view class="stat-card {{item.action === 'score' ? 'info' : 'tappable'}}" wx:for="{{stats}}" wx:key="label" data-action="{{item.action}}" data-tab="{{item.tab}}" bindtap="handleStatTap">
       <view class="stat-value">{{item.value}}</view>
       <view class="stat-label">{{item.label}}</view>
+      <view wx:if="{{item.action === 'score'}}" class="stat-info">?</view>
+      <view wx:elif="{{item.action}}" class="stat-arrow">›</view>
     </view>
   </view>
 

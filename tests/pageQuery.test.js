@@ -3,6 +3,10 @@ const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const path = require('node:path')
 
+function readText(projectPath) {
+  return fs.readFileSync(path.resolve(__dirname, '..', projectPath), 'utf8')
+}
+
 function loadPage(pagePath, foodService) {
   const servicePath = require.resolve('../utils/foodService')
   const absolutePagePath = require.resolve(`../${pagePath}`)
@@ -314,4 +318,105 @@ test('detail page treats missing query object as missing record', async () => {
   delete global.wx
   assert.deepEqual(toasts, [{ title: '记录不存在', icon: 'none' }])
   assert.equal(navigatedBack, true)
+})
+
+test('detail page shows storage tips from food base storageTips field', async () => {
+  const page = createPageInstance(loadPage('pages/food/detail', {
+    getAssets: () => assets,
+    getFoodDetail: async () => ({
+      record: {
+        id: 'record-chicken',
+        name: '鸡胸肉',
+        status: 'baby_today',
+        storageText: '冷藏保存'
+      },
+      base: {
+        name: '鸡胸肉',
+        storageTips: ['冷藏仅短期保存。', '建议分装冷冻，避免反复解冻。'],
+        spoilageSigns: ['异味', '发黏']
+      }
+    })
+  }))
+
+  await page.onLoad({ id: 'record-chicken' })
+
+  assert.deepEqual(page.data.base.tips, ['冷藏仅短期保存。', '建议分装冷冻，避免反复解冻。'])
+  assert.match(readText('pages/food/detail.wxml'), /base\.tips/)
+})
+
+test('detail page keeps action buttons visible in a fixed bottom dock', () => {
+  const markup = readText('pages/food/detail.wxml')
+  const styles = readText('pages/food/detail.wxss')
+
+  assert.match(markup, /class="detail-actions fixed-action-dock"/)
+  assert.match(styles, /\.detail-page[\s\S]*padding-bottom:\s*260rpx/)
+  assert.match(styles, /\.fixed-action-dock[\s\S]*position:\s*fixed/)
+  assert.match(styles, /\.fixed-action-dock[\s\S]*bottom:\s*0/)
+  assert.match(styles, /\.fixed-action-dock[\s\S]*padding-bottom:\s*calc\(20rpx \+ env\(safe-area-inset-bottom\)\)/)
+  assert.match(styles, /\.fixed-action-dock[\s\S]*z-index:\s*20/)
+  assert.match(styles, /\.fixed-action-dock[\s\S]*grid-template-columns:\s*1fr 1fr/)
+})
+
+test('detail page confirms before marking a food as eaten', async () => {
+  const finished = []
+  const modals = []
+  const toasts = []
+  const switches = []
+  const page = createPageInstance(loadPage('pages/food/detail', {
+    getAssets: () => assets,
+    finishFoodRecord: async (input) => finished.push(input)
+  }))
+  page.setData({
+    record: {
+      id: 'record-chicken',
+      name: '鸡胸肉'
+    }
+  })
+  global.wx = {
+    showModal: (input) => {
+      modals.push(input)
+      input.success({ confirm: true })
+    },
+    showToast: (input) => toasts.push(input),
+    switchTab: (input) => switches.push(input)
+  }
+  const originalSetTimeout = global.setTimeout
+  global.setTimeout = (fn) => fn()
+
+  await page.finish()
+
+  global.setTimeout = originalSetTimeout
+  delete global.wx
+  assert.equal(modals.length, 1)
+  assert.equal(modals[0].title, '确认已吃掉？')
+  assert.match(modals[0].content, /鸡胸肉/)
+  assert.deepEqual(finished, [{ recordId: 'record-chicken', action: 'finished' }])
+  assert.deepEqual(toasts, [{ title: '已标记处理', icon: 'success' }])
+  assert.deepEqual(switches, [{ url: '/pages/index/index' }])
+})
+
+test('detail page keeps a food when eaten confirmation is cancelled', async () => {
+  const finished = []
+  const switches = []
+  const page = createPageInstance(loadPage('pages/food/detail', {
+    getAssets: () => assets,
+    finishFoodRecord: async (input) => finished.push(input)
+  }))
+  page.setData({
+    record: {
+      id: 'record-chicken',
+      name: '鸡胸肉'
+    }
+  })
+  global.wx = {
+    showModal: (input) => input.success({ confirm: false }),
+    showToast: () => {},
+    switchTab: (input) => switches.push(input)
+  }
+
+  await page.finish()
+
+  delete global.wx
+  assert.deepEqual(finished, [])
+  assert.deepEqual(switches, [])
 })
