@@ -68,5 +68,28 @@ Page({
       title: result.accepted ? '已开启微信提醒' : '未开启订阅',
       icon: result.accepted ? 'success' : 'none'
     })
+  },
+
+  async sendTestReminder() {
+    if (!wx.cloud || !wx.cloud.callFunction) {
+      wx.showToast({ title: '云函数不可用', icon: 'none' })
+      return
+    }
+    wx.showLoading({ title: '发送中' })
+    try {
+      const result = await wx.cloud.callFunction({
+        name: 'sendFoodReminder',
+        data: { test: true }
+      })
+      wx.hideLoading()
+      if (result && result.result && result.result.ok) {
+        wx.showToast({ title: '测试提醒已发送', icon: 'success' })
+        return
+      }
+      wx.showToast({ title: '测试提醒发送失败', icon: 'none' })
+    } catch (error) {
+      wx.hideLoading()
+      wx.showToast({ title: '测试提醒发送失败', icon: 'none' })
+    }
   }
 })

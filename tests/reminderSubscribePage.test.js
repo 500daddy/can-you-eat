@@ -105,3 +105,37 @@ test('reminder page opens the tab requested from mine stats', async () => {
 test('reminder settings page does not persist settings when subscribe request fails', async () => {
   await assertFailedSubscribeIsNotPersisted('pages/settings/reminder')
 })
+
+test('reminder page sends a test subscribe message through cloud function', async () => {
+  const toasts = []
+  const calls = []
+  global.wx = {
+    showLoading: () => {},
+    hideLoading: () => {},
+    showToast: (input) => toasts.push(input),
+    cloud: {
+      callFunction: async (input) => {
+        calls.push(input)
+        return { result: { ok: true } }
+      }
+    }
+  }
+  const page = createPageInstance(loadPage('pages/reminder/index', {
+    foodService: {
+      getReminders: async () => ({ today: [], soon: [], overdue: [] }),
+      getSettings: async () => ({ reminderEnabled: true, dailySummaryEnabled: true })
+    },
+    subscribeService: {
+      requestFoodExpireSubscribe: async () => ({ status: 'accept', accepted: true })
+    }
+  }))
+
+  await page.sendTestReminder()
+
+  delete global.wx
+  assert.deepEqual(calls, [{
+    name: 'sendFoodReminder',
+    data: { test: true }
+  }])
+  assert.deepEqual(toasts, [{ title: '测试提醒已发送', icon: 'success' }])
+})

@@ -28,6 +28,9 @@
       <text>每日早上 8 点摘要</text>
       <switch checked="{{dailyEnabled}}" color="#55a85a" />
     </view>
-    <view class="pixel-btn ghost" bindtap="requestSubscribe">开启微信提醒</view>
+    <view class="reminder-action-stack">
+      <view class="pixel-btn ghost" bindtap="requestSubscribe">开启微信提醒</view>
+      <view class="pixel-btn secondary" bindtap="sendTestReminder">发送测试提醒</view>
+    </view>
   </view>
 </view>

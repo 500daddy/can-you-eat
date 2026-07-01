@@ -49,3 +49,9 @@
   font-size: 27rpx;
   font-weight: 800;
 }
+
+.reminder-action-stack {
+  display: grid;
+  gap: 18rpx;
+  margin-top: 22rpx;
+}

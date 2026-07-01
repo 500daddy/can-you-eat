@@ -56,12 +56,30 @@ function normalizeReminderCandidate(record, today = todayString()) {
 }
 
 function selectReminderCandidate(reminders = {}, today = todayString()) {
-  const record = [
+  const records = [
     ...(reminders.today || []),
     ...(reminders.soon || []),
     ...(reminders.overdue || [])
-  ][0]
-  return normalizeReminderCandidate(record, today)
+  ]
+  if (!records.length) return null
+  const candidates = records
+    .map((record) => normalizeReminderCandidate(record, today))
+    .filter(Boolean)
+  if (!candidates.length) return null
+  const first = candidates[0]
+  const earliest = candidates.reduce((selected, candidate) => (
+    daysBetween(today, candidate.expireDate) < daysBetween(today, selected.expireDate)
+      ? candidate
+      : selected
+  ), first)
+  const remainingDays = candidates.reduce((min, candidate) => (
+    Math.min(min, candidate.remainingDays)
+  ), first.remainingDays)
+  return {
+    foodName: candidates.length === 1 ? first.foodName : `${first.foodName}等${candidates.length}样`,
+    remainingDays,
+    expireDate: earliest.expireDate
+  }
 }
 
 function buildReminderMessagePayload(options = {}) {

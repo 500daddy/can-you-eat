@@ -7,6 +7,7 @@ const {
   buildReminderMessagePayload,
   createSendFoodReminder,
   PLACEHOLDER_TEMPLATE_ID,
+  selectReminderCandidate,
   TEMPLATE_ID_FOOD_EXPIRE
 } = require('../cloudfunctions/sendFoodReminder/core')
 
@@ -99,5 +100,24 @@ test('uses the current reminder candidate when no explicit food is provided', as
     thing6: { value: '杏鲍菇' },
     number2: { value: '0' },
     time16: { value: '2026-06-30' }
+  })
+})
+
+test('summarizes multiple reminder foods into one subscribe message candidate', () => {
+  const candidate = selectReminderCandidate({
+    today: [
+      { foodName: '杏鲍菇', babyExpireDate: '2026-06-30' },
+      { foodName: '牛奶', babyExpireDate: '2026-06-30' }
+    ],
+    soon: [
+      { foodName: '蓝莓', babyExpireDate: '2026-07-01' }
+    ],
+    overdue: []
+  }, '2026-06-30')
+
+  assert.deepEqual(candidate, {
+    foodName: '杏鲍菇等3样',
+    remainingDays: 0,
+    expireDate: '2026-06-30'
   })
 })
