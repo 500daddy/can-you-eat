@@ -12,7 +12,7 @@
 - 自动化测试：`tests/foodRules.test.js`、`tests/foodRepository.test.js`、`tests/foodApiCore.test.js`
 - 云函数：`login`、`mockRecognize`、`foodApi`
 - 数据访问层：`utils/foodService.js` 默认本地，云模式优先调用 `foodApi`
-- 识别访问层：`utils/recognitionService.js` 默认本地模拟，云模式上传图片并调用 `mockRecognize`
+- 识别访问层：`utils/recognitionService.js` 默认本地模拟，云模式上传图片并调用 `mockRecognize`；云函数配置 `OPENAI_API_KEY` 后会调用视觉模型识别多食材
 - 反馈页：`pages/feedback/index`，通过 `foodService.submitFeedback` 写入本地/云端反馈
 - 识别记录：选择识别结果时记录日志，“我的”页展示识别次数
 - 识别记录页：`pages/recognition-log/index`，可查看历史识别选择并继续添加食材
@@ -58,7 +58,7 @@ wx.cloud.callFunction({
 ```
 
 当前页面通过 `utils/foodService.js` 访问数据，已切到微信云开发环境 `cloud1-d2g659tkmf84d1d07`。
-部署 `foodApi` 和 `mockRecognize` 后，页面会优先调用云函数；如果云函数失败，会自动回退本地数据，方便调试不中断。拍照识别会优先上传到云存储并调用 `mockRecognize`，失败时回退本地模拟识别。
+部署 `foodApi` 和 `mockRecognize` 后，页面会优先调用云函数；如果云函数失败，会自动回退本地数据，方便调试不中断。拍照识别会优先上传到云存储并调用 `mockRecognize`，云函数配置 `OPENAI_API_KEY` 后会把图片交给视觉模型识别，未配置或调用失败时回退本地模拟识别。
 反馈和识别日志也会在云模式下写入 `feedback`、`recognition_logs` 集合。
 数据库集合、初始化入口、红色叹号排查和订阅模板配置都整理在 [docs/cloud-setup.md](/Users/a500/Documents/宝宝食材小管家/docs/cloud-setup.md)。
 
@@ -83,4 +83,4 @@ find app.js utils components pages cloudfunctions custom-tab-bar tests -name '*.
 
 - 在开发者工具里创建并验证 `food_base`、`user_food_records`、`user_settings`、`feedback` 集合权限。
 - 部署 `foodApi` 和 `mockRecognize`，做真机/模拟器云数据联调。
-- 将 `mockRecognize` 替换为真实识别服务，保留当前结果归一化结构。
+- 在云函数环境变量里配置 `OPENAI_API_KEY`，上传部署 `mockRecognize`，验证真实多食材识别。

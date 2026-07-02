@@ -93,15 +93,26 @@ const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
 
 ## 拍照识别
 
-当前 `mockRecognize` 是模拟识别函数，适合先验证流程：
+当前 `mockRecognize` 已保留原函数名，方便前端调用链稳定：
 
 - 上传图片。
-- 返回候选食材。
+- 如果云函数配置了 `OPENAI_API_KEY`，会调用视觉模型识别图片里的多种食材。
+- 如果没有配置密钥、图片无法访问或模型调用失败，会自动回退到模拟候选食材。
 - 用户选择识别结果。
 - 进入添加食材页。
 - 写入识别记录。
 
-后续替换真实识别服务时，建议继续返回当前结构，页面代码就不需要大改：
+真实识别的配置方式：
+
+1. 在云开发控制台打开 `mockRecognize` 云函数。
+2. 添加环境变量 `OPENAI_API_KEY`，值为你的 OpenAI API Key。
+3. 可选添加 `OPENAI_VISION_MODEL`，默认使用 `gpt-4.1-mini`。
+4. 可选添加 `OPENAI_BASE_URL`，默认使用 `https://api.openai.com`。
+5. 重新上传并部署 `cloudfunctions/mockRecognize`。
+
+不要把 API Key 写入代码或提交到 GitHub。仓库已忽略 `.env` 和 `.env.*`，但微信云函数推荐直接在云开发控制台配置环境变量。
+
+云函数会把微信云存储的 `cloud://` 图片转换成临时 HTTPS URL，再交给视觉模型。返回结构保持不变，页面代码不需要大改：
 
 ```js
 {
@@ -110,6 +121,8 @@ const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
   foodBaseId: 'broccoli'
 }
 ```
+
+为了避免误导用户，识别结果只作为“可能是这些食材”的候选，不直接给出宝宝食用判断。用户仍需点“添加”后确认保存日期和方式。
 
 ## 常见问题
 

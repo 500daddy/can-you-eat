@@ -1,6 +1,8 @@
 .DS_Store
 project.private.config.json
 *.swp
+.env
+.env.*
 
 # Local private runtime config. Copy the matching *.example.js file when needed.
 utils/subscribeConfig.local.js
