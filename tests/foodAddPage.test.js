@@ -2,6 +2,8 @@ const test = require('node:test')
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const path = require('node:path')
+const { createMemoryFoodRepository } = require('../utils/foodRepository')
+const { createFoodService: createRealFoodService } = require('../utils/foodService')
 
 function loadAddPage(foodService) {
   const servicePath = require.resolve('../utils/foodService')
@@ -148,7 +150,7 @@ test('add page enters custom food mode from a missing search keyword', async () 
   assert.equal(page.data.isCustomFood, true)
   assert.equal(page.data.form.foodId, 'custom')
   assert.equal(page.data.form.name, '莲藕')
-  assert.equal(page.data.form.icon, '/assets/sprites/food/food_jar.png')
+  assert.equal(page.data.form.icon, '')
   assert.match(page.data.selectedFoodHint, /自定义食材/)
   assert.match(page.data.form.remindText, /冷藏.*2 天/)
 
@@ -227,6 +229,64 @@ test('add page uses neutral copy for selected known foods', async () => {
   assert.equal(page.data.selectedFoodHint, '已根据所选食材带入推荐信息')
   assert.doesNotMatch(page.data.selectedFoodHint, /选错|重新选择/)
   assert.doesNotMatch(markup, /选错|重新选择/)
+})
+
+test('add page shows only verified selected food icons', async () => {
+  const page = createPageInstance(loadAddPage({
+    getAssets: () => ({
+      food: {
+        apple: '/assets/sprites/food/food_apple.png',
+        customFood: '/assets/sprites/food/food_jar.png'
+      }
+    }),
+    getFoodBaseById: async () => ({
+      id: 'apple',
+      name: '苹果',
+      category: '水果',
+      subCategory: '仁果类',
+      icon: '/assets/sprites/food/food_apple.png',
+      defaultStorage: 'fridge'
+    }),
+    getSettings: async () => ({ babyAllergens: [] }),
+    addFoodRecord: async () => {}
+  }))
+  const markup = fs.readFileSync(path.resolve(__dirname, '../pages/food/add.wxml'), 'utf8')
+  const styles = fs.readFileSync(path.resolve(__dirname, '../pages/food/add.wxss'), 'utf8')
+
+  await page.onLoad({ foodId: 'apple' })
+
+  assert.equal(page.data.selectedFood.showFoodIcon, true)
+  assert.equal(page.data.selectedFood.displayFoodIcon, '/assets/sprites/food/food_apple.png')
+  assert.match(markup, /selectedFood\.showFoodIcon/)
+  assert.match(markup, /selectedFood\.displayFoodIcon/)
+  assert.doesNotMatch(markup, /src="\{\{form\.icon\}\}"/)
+  assert.match(styles, /\.selected-food-icon/)
+})
+
+test('add page hides unverified selected food icons', async () => {
+  const page = createPageInstance(loadAddPage({
+    getAssets: () => ({
+      food: {
+        apple: '/assets/sprites/food/food_apple.png',
+        customFood: '/assets/sprites/food/food_jar.png'
+      }
+    }),
+    getFoodBaseById: async () => ({
+      id: 'unknownFood',
+      name: '未知食材',
+      category: '自定义',
+      subCategory: '',
+      icon: '/assets/sprites/food/food_apple.png',
+      defaultStorage: 'fridge'
+    }),
+    getSettings: async () => ({ babyAllergens: [] }),
+    addFoodRecord: async () => {}
+  }))
+
+  await page.onLoad({ foodId: 'unknownFood' })
+
+  assert.equal(page.data.selectedFood.showFoodIcon, false)
+  assert.equal(page.data.selectedFood.displayFoodIcon, '')
 })
 
 test('add page completes the source purchase plan only after inventory save succeeds', async () => {
@@ -330,16 +390,17 @@ test('add page shows stronger custom food safety copy', () => {
   const markup = fs.readFileSync(path.resolve(__dirname, '../pages/food/add.wxml'), 'utf8')
 
   assert.match(markup, /安全提醒/)
-  assert.match(markup, /仅用于提醒/)
-  assert.match(markup, /不代表食材一定安全/)
-  assert.match(markup, /医生或专业人士/)
+  assert.match(markup, /保守时间提醒/)
+  assert.match(markup, /看外观/)
+  assert.match(markup, /闻气味/)
+  assert.match(markup, /摸质地/)
 })
 
 test('add page uses start saving date wording and a past-only custom date selector', () => {
   const markup = fs.readFileSync(path.resolve(__dirname, '../pages/food/add.wxml'), 'utf8')
 
   assert.match(markup, /开始保存日期/)
-  assert.match(markup, /购买、开封、清洗或分装当天/)
+  assert.match(markup, /按购买、开封或分装当天填写/)
   assert.match(markup, /picker-view/)
   assert.match(markup, /availableSaveDates/)
   assert.doesNotMatch(markup, /mode="date"/)
@@ -438,4 +499,44 @@ test('add page warns before saving a food that matches baby allergens', async ()
   assert.equal(added[0].foodBaseId, 'egg')
   assert.equal(added[0].status, 'not_recommended')
   assert.match(added[0].riskNote, /宝宝过敏源.*鸡蛋/)
+})
+
+test('add page can save local food after logout stops cloud sync', async () => {
+  const toasts = []
+  const switches = []
+  const repo = createMemoryFoodRepository({
+    today: '2026-06-22',
+    seedRecords: [],
+    settings: {
+      babyName: '未登录',
+      babyAgeMonths: 0,
+      babyAllergens: []
+    }
+  })
+  const service = createRealFoodService({
+    useCloud: true,
+    loggedOut: true,
+    today: '2026-06-22',
+    repo,
+    callCloud: async () => {
+      throw new Error('should not call cloud after logout')
+    }
+  })
+  const page = createPageInstance(loadAddPage(service))
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    switchTab: (input) => switches.push(input)
+  }
+  const originalSetTimeout = global.setTimeout
+  global.setTimeout = (fn) => fn()
+
+  await page.onLoad({ foodId: 'carrot' })
+  await page.save()
+
+  global.setTimeout = originalSetTimeout
+  delete global.wx
+  assert.equal(repo.getFoodRecords().length, 1)
+  assert.equal(repo.getFoodRecords()[0].name, '胡萝卜')
+  assert.deepEqual(toasts, [{ title: '已添加，可开启提醒', icon: 'success' }])
+  assert.deepEqual(switches, [{ url: '/pages/index/index' }])
 })

@@ -1,8 +1,29 @@
 const { getFoodService } = require('../../utils/foodService')
+const { decorateFoodIconDisplay } = require('../../utils/foodIconPolicy')
 
 const foodService = getFoodService()
 
 const categoryOrder = ['蔬菜', '水果', '肉禽水产', '蛋奶豆制品', '主食辅食', '其他']
+const subCategoryMap = {
+  花菜类: '叶花菜类',
+  叶菜类: '叶花菜类',
+  根茎薯芋类: '根茎类',
+  茄果瓜类: '茄果类',
+  菌藻类: '菌菇类',
+  莓果类: '浆果类'
+}
+
+function normalizeSubCategory(subCategory) {
+  const value = subCategory || '其他'
+  return subCategoryMap[value] || value
+}
+
+function withNormalizedSubCategory(food) {
+  return {
+    ...food,
+    subCategory: normalizeSubCategory(food.subCategory)
+  }
+}
 
 function normalizeFoodCategory(food) {
   const category = food.category || '其他'
@@ -13,7 +34,7 @@ function normalizeFoodCategory(food) {
   const searchText = `${id}${name}${aliases}`
 
   if (category === '根茎' || category === '根茎类') {
-    return { ...food, category: '蔬菜', subCategory: '根茎类' }
+    return withNormalizedSubCategory({ ...food, category: '蔬菜', subCategory: '根茎类' })
   }
   if (['肉类', '肉蛋奶'].includes(category)) {
     let nextSubCategory = subCategory
@@ -23,23 +44,23 @@ function normalizeFoodCategory(food) {
     else if (/牛|猪|羊|beef|pork/i.test(searchText)) nextSubCategory = '畜肉类'
     else if (/鱼|虾|蟹|fish|shrimp/i.test(searchText)) nextSubCategory = '水产类'
     else if (subCategory === '蛋白') nextSubCategory = '肉类'
-    return { ...food, category: '肉禽水产', subCategory: nextSubCategory }
+    return withNormalizedSubCategory({ ...food, category: '肉禽水产', subCategory: nextSubCategory })
   }
   if (category === '蛋奶') {
     let nextSubCategory = subCategory
     if (subCategory === '蛋白' || /蛋|egg/i.test(searchText)) nextSubCategory = '蛋类'
     else if (/奶|芝士|奶酪|milk|cheese/i.test(searchText)) nextSubCategory = '奶制品'
-    return { ...food, category: '蛋奶豆制品', subCategory: nextSubCategory }
+    return withNormalizedSubCategory({ ...food, category: '蛋奶豆制品', subCategory: nextSubCategory })
   }
   if (category === '蛋白') {
     let nextSubCategory = subCategory
     if (subCategory === '蛋白') nextSubCategory = /蛋|egg/i.test(searchText) ? '蛋类' : '豆制品'
-    return { ...food, category: '蛋奶豆制品', subCategory: nextSubCategory }
+    return withNormalizedSubCategory({ ...food, category: '蛋奶豆制品', subCategory: nextSubCategory })
   }
   if (category === '主食') {
-    return { ...food, category: '主食辅食', subCategory }
+    return withNormalizedSubCategory({ ...food, category: '主食辅食', subCategory })
   }
-  return food
+  return withNormalizedSubCategory(food)
 }
 
 function normalizeFoods(foods) {
@@ -90,6 +111,10 @@ function filterFoodsByCategory(foods, category, subCategory = '') {
   })
 }
 
+function toDisplayResults(foods) {
+  return decorateFoodIconDisplay(normalizeFoods(foods))
+}
+
 Page({
   data: {
     assets: foodService.getAssets(),
@@ -99,11 +124,13 @@ Page({
     resultTitle: '推荐食材',
     recommendationHint: '',
     recommendationSummary: {},
+    needsBabyProfilePrompt: false,
     recommendedFoods: [],
     categoryGroups: [],
     subCategories: [],
     activeCategory: '',
     activeSubCategory: '',
+    searchFocus: false,
     showBackTop: false
   },
 
@@ -121,10 +148,11 @@ Page({
     this.setData({
       keyword,
       foodBase,
-      results: normalizeFoods(keyword ? await foodService.searchFoods(keyword) : recommendedFoods).slice(0, 5),
+      results: toDisplayResults((keyword ? await foodService.searchFoods(keyword) : recommendedFoods).slice(0, 5)),
       resultTitle: keyword ? '搜索结果' : '推荐食材',
       recommendationSummary,
       recommendationHint: keyword ? '' : recommendationSummary.hint || '',
+      needsBabyProfilePrompt: Boolean(recommendationSummary.needsBabyProfilePrompt),
       recommendedFoods,
       categoryGroups: buildCategoryGroups(foodBase),
       subCategories: [],
@@ -138,6 +166,24 @@ Page({
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 1 })
     }
+    this.applyEntryIntent()
+  },
+
+  applyEntryIntent() {
+    if (typeof wx === 'undefined' || !wx.getStorageSync) return
+    const intent = wx.getStorageSync('food_search_entry')
+    if (!intent) return
+    if (wx.removeStorageSync) wx.removeStorageSync('food_search_entry')
+    if (intent === 'search') {
+      wx.navigateTo({ url: '/pages/food/name-search' })
+      return
+    }
+    if (intent === 'category') {
+      this.setData({ searchFocus: false })
+      if (wx.pageScrollTo) {
+        wx.pageScrollTo({ selector: '#category-section', duration: 260 })
+      }
+    }
   },
 
   async onInput(e) {
@@ -147,9 +193,10 @@ Page({
       : (foodService.getRecommendedFoods
         ? await foodService.getRecommendedFoods()
         : this.data.foodBase.slice(0, 5))
-    const results = normalizeFoods(keyword
+    const rawResults = normalizeFoods(keyword
       ? await foodService.searchFoods(keyword)
       : recommendedFoods).slice(0, keyword ? 20 : 5)
+    const results = decorateFoodIconDisplay(rawResults)
     this.setData({
       keyword,
       results,
@@ -172,6 +219,19 @@ Page({
     wx.navigateTo({ url: `/pages/food/add?foodId=${id}` })
   },
 
+  selectRecommended() {
+    this.setData({
+      keyword: '',
+      activeCategory: '',
+      activeSubCategory: '',
+      subCategories: [],
+      resultTitle: '推荐食材',
+      recommendationHint: this.data.recommendationSummary.hint || '',
+      results: toDisplayResults(this.data.recommendedFoods.slice(0, 5)),
+      showBackTop: false
+    })
+  },
+
   async clearCategory() {
     this.setData({
       keyword: '',
@@ -179,7 +239,7 @@ Page({
       activeSubCategory: '',
       subCategories: [],
       resultTitle: '全部食材',
-      results: this.data.foodBase,
+      results: toDisplayResults(this.data.foodBase),
       recommendationHint: '',
       showBackTop: false
     })
@@ -195,7 +255,7 @@ Page({
       subCategories: group.subCategories,
       resultTitle: `${category}食材`,
       recommendationHint: '',
-      results: filterFoodsByCategory(this.data.foodBase, category),
+      results: toDisplayResults(filterFoodsByCategory(this.data.foodBase, category)),
       showBackTop: false
     })
   },
@@ -207,7 +267,7 @@ Page({
       activeSubCategory: subCategory,
       resultTitle: `${this.data.activeCategory} / ${subCategory}`,
       recommendationHint: '',
-      results: filterFoodsByCategory(this.data.foodBase, this.data.activeCategory, subCategory),
+      results: toDisplayResults(filterFoodsByCategory(this.data.foodBase, this.data.activeCategory, subCategory)),
       showBackTop: false
     })
   },
@@ -227,6 +287,14 @@ Page({
   goAdd() {
     const keyword = this.data.keyword ? `?name=${encodeURIComponent(this.data.keyword)}&custom=1` : ''
     wx.navigateTo({ url: `/pages/food/add${keyword}` })
+  },
+
+  goNameSearch() {
+    wx.navigateTo({ url: '/pages/food/name-search' })
+  },
+
+  goBabySettings() {
+    wx.navigateTo({ url: '/pages/settings/baby' })
   },
 
   goFeedback() {

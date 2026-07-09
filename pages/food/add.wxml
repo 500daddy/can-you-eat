@@ -1,9 +1,9 @@
 <view class="page">
   <view class="page-title">添加食材</view>
-  <view class="subtitle">记录名称、开始保存日期和保存方式，小管家会按规则帮你提醒处理。</view>
+  <view class="subtitle">填好日期和保存方式，我来提醒你及时处理。</view>
 
   <view class="selected-food">
-    <image class="selected-icon" src="{{form.icon}}" mode="aspectFit" />
+    <image wx:if="{{selectedFood.showFoodIcon}}" class="selected-food-icon" src="{{selectedFood.displayFoodIcon}}" mode="aspectFit" />
     <view class="selected-main">
       <view class="selected-name">{{form.name}}</view>
       <view class="subtitle">{{selectedFoodHint}}</view>
@@ -12,7 +12,7 @@
 
   <view wx:if="{{isCustomFood}}" class="custom-tip">
     <view class="custom-tip-title">安全提醒</view>
-    <view class="subtitle">自定义食材仅用于提醒保存时间，不代表食材一定安全。给宝宝食用前，请检查外观、气味和触感；有过敏、疾病或不确定情况，请咨询医生或专业人士。</view>
+    <view class="subtitle">自定义食材会按保守时间提醒。给宝宝前，请先看外观、闻气味、摸质地。</view>
   </view>
 
   <view class="form-card">
@@ -23,7 +23,10 @@
 
     <view wx:else class="field">
       <text class="label">已选食材</text>
-      <view class="readonly-food-name">{{form.name}}</view>
+      <view class="readonly-food-name">
+        <image wx:if="{{selectedFood.showFoodIcon}}" class="readonly-food-icon" src="{{selectedFood.displayFoodIcon}}" mode="aspectFit" />
+        <text>{{form.name}}</text>
+      </view>
     </view>
 
     <view class="field">
@@ -32,7 +35,7 @@
         <text>{{form.purchaseDate}}</text>
         <text class="date-trigger-arrow">选择</text>
       </view>
-      <view class="field-helper">购买、开封、清洗或分装当天，用来计算提醒时间。只能选择今天及以前。</view>
+      <view class="field-helper">按购买、开封或分装当天填写。</view>
     </view>
 
     <view class="field">
@@ -49,7 +52,7 @@
     <view class="switch-row">
       <view>
         <view class="label no-margin">宝宝食材</view>
-        <view class="subtitle">{{isCustomFood ? '开启后按更保守周期提醒，请自行判断能否食用' : '开启后会优先使用宝宝建议期'}}</view>
+        <view class="subtitle">{{isCustomFood ? '按更保守时间提醒' : '按宝宝建议期提醒'}}</view>
       </view>
       <switch checked="{{form.isBabyFood}}" color="#55a85a" bindchange="onBabySwitch" />
     </view>
@@ -62,7 +65,7 @@
     <view class="remind-box">{{form.remindText}}</view>
   </view>
 
-  <view class="disclaimer">免责声明：本工具仅提供保存提醒参考，不能替代食品安全、医疗或营养建议。保存后仍需结合食材实际状态、宝宝身体情况和医生或专业人士建议综合判断。</view>
+  <view class="disclaimer">使用提醒：保存建议仅供参考。给宝宝前，请结合食材状态和宝宝情况判断。</view>
 
   <view class="save-dock">
     <view class="save-dock-text">确认日期和保存方式后保存</view>

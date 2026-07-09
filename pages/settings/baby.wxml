@@ -1,11 +1,11 @@
 <view class="page settings-page">
   <view class="page-title">宝宝模式设置</view>
-  <view class="subtitle">开启后，首页和详情页会优先展示宝宝建议期，文案采用更保守表达。</view>
+  <view class="subtitle">告诉我们宝宝的大致情况，后面添加食材时会更贴近宝宝当前阶段。</view>
 
   <view class="paper-card green baby-card">
     <image class="baby-img" src="{{assets.mascot.babyBasket}}" mode="aspectFit" />
     <view>
-      <view class="section-title">当前宝宝：{{nickname}}</view>
+      <view class="section-title">当前宝宝：{{nickname || '待设置'}}</view>
       <view class="subtitle">宝宝月龄：{{babyAgeText || '0个月'}}</view>
     </view>
   </view>
@@ -20,13 +20,13 @@
             <view class="button-primary button-compact avatar-upload" bindtap="chooseAvatar">上传头像</view>
             <view wx:if="{{babyAvatarUrl}}" class="button-secondary button-compact avatar-secondary" bindtap="clearAvatar">恢复默认</view>
           </view>
-          <view class="avatar-helper">未上传时，会按月龄和性别显示默认头像。</view>
+          <view class="avatar-helper">不上传也可以，我们会先用默认头像。</view>
         </view>
       </view>
     </view>
     <view class="field">
       <text class="label">宝宝昵称</text>
-      <input class="input" value="{{nickname}}" bindinput="onNicknameInput" placeholder="请输入宝宝昵称" />
+      <input class="input" value="{{nickname}}" bindinput="onNicknameInput" placeholder="如：小宝、团团、豆豆" />
     </view>
     <view class="field">
       <text class="label">宝宝月龄</text>
@@ -58,10 +58,18 @@
     <view class="switch-row">
       <view>
         <view class="label no-margin">宝宝模式</view>
-        <view class="subtitle">优先展示宝宝食材建议</view>
+        <view class="subtitle">添加食材时多给宝宝相关提醒</view>
       </view>
       <switch checked="{{babyMode}}" color="#55a85a" bindchange="onSwitch" />
     </view>
+  </view>
+
+  <view class="logout-card">
+    <view>
+      <view class="logout-title">账号与数据</view>
+      <view class="logout-helper">退出后，下次打开会重新加载资料。</view>
+    </view>
+    <view class="logout-btn" bindtap="logout">退出登录</view>
   </view>
 
   <view class="sticky-save-bar">

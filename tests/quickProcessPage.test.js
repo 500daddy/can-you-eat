@@ -90,6 +90,36 @@ test('quick process page builds recipe suggestions from today and soon reminders
   assert.match(page.data.safetyNotes[0], /牛奶/)
   assert.match(page.data.items[0].suggestion.title, /焯水|蒸熟/)
   assert.match(page.data.items[1].suggestion.title, /充分加热/)
+  assert.ok(page.data.items[0].suggestion.dishes.includes('蔬菜粥'))
+  assert.ok(page.data.items[1].suggestion.dishes.includes('鱼泥豆腐'))
+})
+
+test('quick process page filters to one food when opened from a food card', async () => {
+  const { definition } = loadQuickProcessPage({
+    getAssets: () => ({
+      food: { babyPuree: '/assets/sprites/food/food_baby_puree.png' },
+      mascot: { emptyFood: '/assets/sprites/mascot/empty_no_food.png' }
+    }),
+    getReminders: async () => ({
+      today: [
+        { id: 'carrot-record', name: '胡萝卜', category: '蔬菜', storageText: '冷藏' },
+        { id: 'porridge-record', name: '粥', category: '主食辅食', storageText: '冷藏' }
+      ],
+      soon: [
+        { id: 'fish-record', name: '鳕鱼', category: '肉禽水产', storageText: '冷冻' }
+      ],
+      overdue: [
+        { id: 'milk-record', name: '牛奶', category: '蛋奶豆制品' }
+      ]
+    })
+  })
+  const page = createPageInstance(definition)
+
+  await page.onLoad({ id: 'porridge-record' })
+
+  assert.equal(page.data.focusId, 'porridge-record')
+  assert.deepEqual(page.data.items.map((item) => item.id), ['porridge-record'])
+  assert.deepEqual(page.data.safetyNotes, [])
 })
 
 test('quick process advice is conservative for unknown custom foods', () => {
@@ -115,13 +145,16 @@ test('quick process page renders safety disclaimer and empty state copy', () => 
 
   assert.equal(config.navigationBarTitleText, '快速处理')
   assert.match(markup, /快速处理临期食材/)
-  assert.match(markup, /assets\.food\.babyPuree/)
+  assert.doesNotMatch(markup, /assets\.food/)
   assert.doesNotMatch(markup, /assets\.actions\.cookware/)
   assert.doesNotMatch(markup, /assets\.ui\.heat/)
   assert.doesNotMatch(markup, /assets\.actions\.eaten/)
-  assert.match(markup, /不替代食品安全判断/)
-  assert.match(markup, /不建议把已过期或异常食材推荐给宝宝/)
+  assert.match(markup, /先看今天该处理什么/)
+  assert.match(markup, /class="dish-row"/)
+  assert.match(markup, /class="dish-chip"/)
+  assert.match(markup, /这些食材更适合直接处理掉/)
   assert.match(markup, /暂时没有需要快速处理的食材/)
   assert.match(styles, /\.process-card/)
+  assert.match(styles, /\.dish-chip/)
   assert.match(styles, /\.safety-box/)
 })

@@ -1,5 +1,6 @@
 const { getFoodService } = require('../../utils/foodService')
 const { todayString } = require('../../utils/foodRules')
+const { decorateFoodIconDisplay } = require('../../utils/foodIconPolicy')
 
 const foodService = getFoodService()
 
@@ -69,7 +70,11 @@ Page({
   async refresh() {
     const foodBase = await foodService.getFoodBase()
     const plans = await foodService.getPurchasePlans()
-    this.setData({ foodBase, quickFoods: foodBase.slice(0, 12), plans })
+    this.setData({
+      foodBase,
+      quickFoods: foodBase.slice(0, 12),
+      plans: decorateFoodIconDisplay(plans)
+    })
   },
 
   onFoodNameInput(e) {

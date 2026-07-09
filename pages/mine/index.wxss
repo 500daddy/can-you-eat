@@ -90,6 +90,24 @@
   border-style: dashed;
 }
 
+.list-cell {
+  align-items: center;
+  line-height: 1;
+}
+
+.list-cell > text {
+  display: inline-flex;
+  align-items: center;
+  min-height: 86rpx;
+}
+
+.cell-note {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  line-height: 1.2;
+}
+
 .stat-value {
   color: #2d261c;
   font-size: 34rpx;
@@ -128,4 +146,106 @@
   border: 2rpx solid #d8c99d;
   background: #fff9e9;
   color: #7c735f;
+}
+
+.ai-lab-card {
+  margin-top: 22rpx;
+  overflow: hidden;
+}
+
+.ai-lab-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.ai-lab-card.expanded .ai-lab-head {
+  padding-bottom: 16rpx;
+  border-bottom: 2rpx solid #eadfb9;
+}
+
+.ai-lab-heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.ai-lab-head-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8rpx;
+  flex: 0 0 auto;
+}
+
+.ai-lab-badge {
+  flex: 0 0 auto;
+  padding: 6rpx 12rpx;
+  border: 2rpx solid #d4bd74;
+  border-radius: 999rpx;
+  background: #fff8df;
+  color: #8b681f;
+  font-size: 21rpx;
+  font-weight: 900;
+}
+
+.ai-lab-toggle {
+  color: #2f6c37;
+  font-size: 22rpx;
+  font-weight: 900;
+}
+
+.ai-lab-list {
+  margin-top: 14rpx;
+}
+
+.ai-lab-item {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  padding: 16rpx 0;
+  border-bottom: 2rpx solid #f0e5c3;
+}
+
+.ai-lab-item:last-child {
+  border-bottom: 0;
+}
+
+.ai-lab-icon {
+  width: 56rpx;
+  height: 56rpx;
+  padding: 8rpx;
+  border: 3rpx solid #d8c99d;
+  border-radius: 16rpx;
+  background: #fff9e9;
+  box-sizing: border-box;
+}
+
+.ai-lab-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.ai-lab-title {
+  color: #2d261c;
+  font-size: 26rpx;
+  font-weight: 900;
+}
+
+.ai-lab-desc {
+  margin-top: 6rpx;
+  color: #7c735f;
+  font-size: 21rpx;
+  line-height: 1.35;
+}
+
+.ai-lab-status {
+  flex: 0 0 auto;
+  color: #3f8a43;
+  font-size: 22rpx;
+  font-weight: 900;
+}
+
+.ai-lab-item.pending .ai-lab-status {
+  color: #8a806d;
 }

@@ -29,14 +29,23 @@
   background: #fffdf2;
 }
 
-.plan-icon {
-  width: 88rpx;
-  height: 88rpx;
-}
-
 .plan-main {
   flex: 1;
   min-width: 0;
+}
+
+.food-icon-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 76rpx;
+  width: 76rpx;
+  min-height: 76rpx;
+}
+
+.food-icon-img {
+  width: 68rpx;
+  height: 68rpx;
 }
 
 .plan-actions {

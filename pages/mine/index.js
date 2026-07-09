@@ -1,8 +1,6 @@
 const { getFoodService } = require('../../utils/foodService')
-const { getRecognitionService } = require('../../utils/recognitionService')
 
 const foodService = getFoodService()
-const recognitionService = getRecognitionService()
 
 const statActions = {
   已记录食材: { action: 'overview' },
@@ -18,22 +16,49 @@ function decorateStats(stats = []) {
   }))
 }
 
+const aiLabItems = [
+  {
+    id: 'recognize',
+    title: '拍照识别食材',
+    desc: '拍照或从相册选择，识别后再确认保存',
+    status: '可用'
+  },
+  {
+    id: 'mealIdeas',
+    title: '营养搭配灵感',
+    desc: '根据库存和宝宝月龄，生成温和搭配建议',
+    status: '即将上线'
+  },
+  {
+    id: 'safetyQa',
+    title: '辅食安全问答',
+    desc: '围绕过敏源、处理方式和风险点给提示',
+    status: '即将上线'
+  },
+  {
+    id: 'fridgeSummary',
+    title: '冰箱清单总结',
+    desc: '把临期食材整理成今日处理小清单',
+    status: '即将上线'
+  }
+]
+
 Page({
   data: {
     assets: foodService.getAssets(),
     settings: {},
-    stats: []
+    stats: [],
+    aiLabItems,
+    aiLabExpanded: false
   },
 
   async onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 3 })
     }
-    const recognitionCount = await recognitionService.getRecognitionCount()
     this.setData({
       settings: await foodService.getSettings(),
-      stats: decorateStats(await foodService.getStats()),
-      recognitionCount
+      stats: decorateStats(await foodService.getStats())
     })
   },
 
@@ -58,6 +83,25 @@ Page({
     }
   },
 
+  goAiLabItem(e) {
+    const id = e.currentTarget.dataset.id
+    if (id === 'recognize') {
+      wx.navigateTo({ url: '/pages/recognize/index' })
+      return
+    }
+    const item = aiLabItems.find((current) => current.id === id)
+    wx.showModal({
+      title: item ? item.title : '智能工具',
+      content: '这个功能暂未开放。上线后会放在这里。',
+      showCancel: false,
+      confirmText: '知道了'
+    })
+  },
+
+  toggleAiLab() {
+    this.setData({ aiLabExpanded: !this.data.aiLabExpanded })
+  },
+
   goBaby() {
     wx.navigateTo({ url: '/pages/settings/baby' })
   },
@@ -68,10 +112,6 @@ Page({
 
   goFeedback() {
     wx.navigateTo({ url: '/pages/feedback/index' })
-  },
-
-  goRecognitionLog() {
-    wx.navigateTo({ url: '/pages/recognition-log/index' })
   },
 
   goAbout() {

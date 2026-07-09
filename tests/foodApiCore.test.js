@@ -22,6 +22,18 @@ test('initializes food base once and searches by alias', async () => {
   assert.equal(mushroom.data[0].id, 'mushroom')
 })
 
+test('cloud food search covers common family aliases', async () => {
+  const api = createFoodApi({ store: createMemoryStore(), userId: 'user-a', today: '2026-06-12' })
+  await api.handle({ action: 'initFoodBase' })
+  const resultIds = async (keyword) => (await api.handle({ action: 'searchFoods', keyword })).data.map((item) => item.id)
+
+  assert.ok((await resultIds('宝宝米粉')).includes('riceNoodle'))
+  assert.ok((await resultIds('小青菜')).some((id) => ['cabbage', 'bokChoy'].includes(id)))
+  assert.ok((await resultIds('鸡里脊')).includes('chicken'))
+  assert.ok((await resultIds('鱼柳')).includes('fish'))
+  assert.ok((await resultIds('红心火龙果')).includes('dragonFruit'))
+})
+
 test('cloud seed food base mirrors the expanded daily food coverage', () => {
   const ids = seedFoodBase.map((item) => item.id)
   const requiredIds = ['bokChoy', 'shiitake', 'yam', 'pork', 'salmon', 'yogurt', 'oat', 'pear']
@@ -32,6 +44,22 @@ test('cloud seed food base mirrors the expanded daily food coverage', () => {
   for (const id of requiredIds) {
     assert.ok(ids.includes(id), `${id} should exist in cloud seed food base`)
   }
+})
+
+test('cloud seed food base normalizes duplicate second-level categories', () => {
+  const subCategories = new Set(seedFoodBase.map((item) => item.subCategory))
+
+  assert.equal(subCategories.has('花菜类'), false)
+  assert.equal(subCategories.has('叶菜类'), false)
+  assert.equal(subCategories.has('根茎薯芋类'), false)
+  assert.equal(subCategories.has('茄果瓜类'), false)
+  assert.equal(subCategories.has('菌藻类'), false)
+  assert.equal(subCategories.has('莓果类'), false)
+  assert.equal(subCategories.has('叶花菜类'), true)
+  assert.equal(subCategories.has('根茎类'), true)
+  assert.equal(subCategories.has('茄果类'), true)
+  assert.equal(subCategories.has('菌菇类'), true)
+  assert.equal(subCategories.has('浆果类'), true)
 })
 
 test('gets complete cloud food base even when stored collection is partially seeded', async () => {

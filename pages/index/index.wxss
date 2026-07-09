@@ -42,6 +42,7 @@
   border-radius: 22rpx;
   background: rgba(255, 253, 242, 0.9);
   backdrop-filter: blur(2px);
+  animation: home-rise-in 360ms ease-out both;
 }
 
 .home-page .button-row {
@@ -51,43 +52,74 @@
 }
 
 .home-page .button-row .main-action-btn {
-  flex: 1 1 0;
   min-width: 0;
   height: 168rpx;
   min-height: 168rpx;
   flex-direction: column;
-  padding: 18rpx 10rpx;
+  padding: 18rpx 12rpx;
   border-radius: 20rpx;
   font-size: 30rpx;
   line-height: 1.15;
 }
 
+.main-search-btn {
+  flex: 1 1 0;
+}
+
+.main-category-btn {
+  flex: 1 1 0;
+}
+
 .main-action-icon {
   width: 60rpx;
   height: 60rpx;
-  margin-bottom: 12rpx;
+  margin-bottom: 10rpx;
   image-rendering: pixelated;
+}
+
+.main-action-title {
+  display: block;
+  color: inherit;
+  font-size: 31rpx;
+  font-weight: 950;
+  line-height: 1.12;
+  white-space: nowrap;
+}
+
+.main-action-desc {
+  display: block;
+  margin-top: 8rpx;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 22rpx;
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.main-category-btn .main-action-desc {
+  color: #7a5d28;
 }
 
 .secondary-action-row {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 24rpx;
   margin-top: 24rpx;
-  margin-bottom: 26rpx;
+  margin-bottom: 18rpx;
 }
 
 .secondary-action-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 180rpx;
-  height: 60rpx;
-  min-height: 60rpx;
-  padding: 0 20rpx;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 68rpx;
+  min-height: 68rpx;
+  padding: 0 18rpx;
   border-radius: 16rpx;
-  font-size: 28rpx;
+  font-size: 26rpx;
   font-weight: 900;
   box-shadow: 0 4rpx 0 rgba(84, 143, 75, 0.3);
 }
@@ -97,6 +129,65 @@
   height: 40rpx;
   margin-right: 10rpx;
   image-rendering: pixelated;
+}
+
+.home-page .pixel-btn,
+.home-guide-card,
+.status-chip,
+.collapsed-risk-card {
+  transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+}
+
+.home-page .pixel-btn:active,
+.home-guide-card:active,
+.status-chip:active,
+.collapsed-risk-card:active {
+  transform: translateY(4rpx);
+  opacity: 0.92;
+}
+
+.home-guide-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin: 0 0 18rpx;
+  padding: 14rpx 16rpx;
+  border: 2rpx dashed #8ebf7b;
+  border-radius: 18rpx;
+  background: rgba(255, 253, 242, 0.82);
+  box-shadow: 0 4rpx 0 rgba(84, 143, 75, 0.12);
+  animation: home-rise-in 420ms ease-out both;
+}
+
+.home-guide-copy {
+  flex: 1;
+  min-width: 0;
+  color: #6f654f;
+  font-size: 23rpx;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.home-guide-strong {
+  color: #2f6c37;
+  font-weight: 950;
+}
+
+.home-guide-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  height: 42rpx;
+  padding: 0 14rpx;
+  border: 2rpx solid #8ebf7b;
+  border-radius: 14rpx;
+  background: #e7f4d8;
+  color: #2f6c37;
+  font-size: 21rpx;
+  font-weight: 900;
+  white-space: nowrap;
 }
 
 .status-filter-scroll {
@@ -158,4 +249,70 @@
   font-size: 25rpx;
   font-weight: 800;
   text-align: center;
+}
+
+.collapsed-risk-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  margin: -2rpx 0 22rpx;
+  padding: 18rpx 18rpx 18rpx 20rpx;
+  border: 3rpx dashed #d9a39a;
+  border-radius: 20rpx;
+  background: #fff8ed;
+  box-shadow: 0 4rpx 0 rgba(81, 53, 31, 0.08);
+}
+
+.collapsed-risk-card.expanded {
+  background: #fffdf2;
+}
+
+.collapsed-risk-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.collapsed-risk-title {
+  color: #7b312c;
+  font-size: 25rpx;
+  font-weight: 950;
+  line-height: 1.2;
+}
+
+.collapsed-risk-desc {
+  margin-top: 6rpx;
+  color: #8a806d;
+  font-size: 22rpx;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.collapsed-risk-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 82rpx;
+  height: 46rpx;
+  padding: 0 14rpx;
+  border: 2rpx solid #d76a5e;
+  border-radius: 14rpx;
+  background: #fff1eb;
+  color: #9e3029;
+  font-size: 22rpx;
+  font-weight: 950;
+  line-height: 1;
+  box-shadow: 0 3rpx 0 rgba(201, 76, 67, 0.18);
+}
+
+@keyframes home-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18rpx);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

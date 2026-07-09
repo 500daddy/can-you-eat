@@ -1,6 +1,6 @@
 const cloud = require('wx-server-sdk')
-const { createFoodApi } = require('../foodApi/core')
-const { createCloudStore } = require('../foodApi/cloudStore')
+const { createFoodApi } = require('./foodApiCore')
+const { createCloudStore } = require('./cloudStore')
 const { createSendFoodReminder, selectReminderCandidate } = require('./core')
 
 function loadLocalConfig() {

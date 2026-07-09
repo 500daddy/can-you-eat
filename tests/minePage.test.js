@@ -128,3 +128,69 @@ test('mine stats cards expose clear actions without making score a navigation', 
   assert.deepEqual(storageWrites, [{ key: 'mine_target_reminder_tab', value: 1 }])
   assert.match(modals[0].content, /安心指数/)
 })
+
+test('mine page does not expose photo recognition as a normal user entry', () => {
+  const markup = readText('pages/mine/index.wxml')
+
+  assert.doesNotMatch(markup, /识别记录/)
+  assert.doesNotMatch(markup, /goRecognitionLog/)
+  assert.doesNotMatch(markup, /recognitionCount/)
+})
+
+test('mine tab does not repeat the tab label in the navigation bar', () => {
+  const config = JSON.parse(readText('pages/mine/index.json'))
+
+  assert.equal(config.navigationBarTitleText, '')
+})
+
+test('mine page groups AI features in a lightweight lab section', async () => {
+  const markup = readText('pages/mine/index.wxml')
+  const stylesheet = readText('pages/mine/index.wxss')
+  const navigations = []
+  const modals = []
+  const page = createPageInstance(loadMinePage({
+    foodService: {
+      getAssets: () => ({ mascot: {} }),
+      getSettings: async () => ({}),
+      getStats: async () => []
+    },
+    recognitionService: {
+      getRecognitionCount: async () => 0
+    }
+  }))
+
+  global.wx = {
+    navigateTo: (input) => navigations.push(input),
+    showModal: (input) => modals.push(input)
+  }
+
+  page.goAiLabItem({ currentTarget: { dataset: { id: 'recognize' } } })
+  page.goAiLabItem({ currentTarget: { dataset: { id: 'mealIdeas' } } })
+  page.toggleAiLab()
+
+  delete global.wx
+  assert.match(markup, /AI功能实验室/)
+  assert.match(markup, /体验中/)
+  assert.match(markup, /ai-lab-card/)
+  assert.match(markup, /toggleAiLab/)
+  assert.match(markup, /aiLabExpanded/)
+  assert.match(markup, /ai-lab-item/)
+  assert.match(markup, /bindtap="goAiLabItem"/)
+  assert.match(markup, /assets\.actions\.camera/)
+  assert.ok(markup.indexOf('提醒设置') < markup.indexOf('AI功能实验室'))
+  assert.match(stylesheet, /\.ai-lab-card/)
+  assert.match(stylesheet, /\.ai-lab-item/)
+  assert.match(stylesheet, /\.ai-lab-toggle/)
+  assert.match(stylesheet, /\.list-cell[\s\S]*align-items:\s*center/)
+  assert.match(stylesheet, /\.cell-note[\s\S]*display:\s*inline-flex/)
+  assert.match(stylesheet, /\.cell-note[\s\S]*align-items:\s*center/)
+  assert.equal(page.data.aiLabExpanded, true)
+  assert.deepEqual(page.data.aiLabItems.map((item) => item.title), [
+    '拍照识别食材',
+    '营养搭配灵感',
+    '辅食安全问答',
+    '冰箱清单总结'
+  ])
+  assert.deepEqual(navigations, [{ url: '/pages/recognize/index' }])
+  assert.match(modals[0].content, /暂未开放/)
+})

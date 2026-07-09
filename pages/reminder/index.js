@@ -1,9 +1,36 @@
 const { getFoodService } = require('../../utils/foodService')
 const { getSubscribeService } = require('../../utils/subscribeService')
+const { buildDailySummaryTimeState } = require('../../utils/reminderTime')
 
 const foodService = getFoodService()
 const subscribeService = getSubscribeService()
 const TARGET_TAB_KEY = 'mine_target_reminder_tab'
+const defaultDailyTimeState = buildDailySummaryTimeState()
+
+function showTestReminderError(error) {
+  const rawContent = typeof error === 'string'
+    ? error
+    : (error && (error.error || error.errMsg || error.message)) || '请查看云函数日志'
+  const content = /-604101|no permission to call this API/.test(rawContent)
+    ? '云函数缺少订阅消息发送权限。请重新上传 sendFoodReminder 云函数后再试。'
+    : rawContent
+  if (wx.showModal) {
+    wx.showModal({
+      title: '提醒发送失败',
+      content,
+      showCancel: false
+    })
+    return
+  }
+  wx.showToast({ title: '提醒发送失败', icon: 'none' })
+}
+
+function canShowTestReminder() {
+  if (typeof wx === 'undefined' || !wx.getAccountInfoSync) return false
+  const info = wx.getAccountInfoSync()
+  const envVersion = info && info.miniProgram && info.miniProgram.envVersion
+  return envVersion === 'develop' || envVersion === 'trial'
+}
 
 Page({
   data: {
@@ -13,13 +40,17 @@ Page({
     soon: [],
     overdue: [],
     reminderEnabled: true,
-    dailyEnabled: true
+    dailyEnabled: true,
+    dailyTimeEditorVisible: false,
+    showTestReminder: false,
+    ...defaultDailyTimeState
   },
 
   onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 2 })
     }
+    this.setData({ showTestReminder: canShowTestReminder() })
     this.applyTargetTab()
     this.refreshReminders()
   },
@@ -39,7 +70,8 @@ Page({
     this.setData({
       ...reminders,
       reminderEnabled: settings.reminderEnabled,
-      dailyEnabled: settings.dailySummaryEnabled
+      dailyEnabled: settings.dailySummaryEnabled,
+      ...buildDailySummaryTimeState(settings.dailySummaryTime)
     })
   },
 
@@ -51,10 +83,32 @@ Page({
     wx.navigateTo({ url: '/pages/settings/reminder' })
   },
 
+  toggleDailyTimeEditor() {
+    this.setData({ dailyTimeEditorVisible: !this.data.dailyTimeEditorVisible })
+  },
+
+  async updateDailySummaryTime(value) {
+    const nextState = buildDailySummaryTimeState(value)
+    await foodService.updateSettings({ dailySummaryTime: nextState.dailyTime })
+    this.setData({
+      ...nextState,
+      dailyTimeEditorVisible: false
+    })
+    wx.showToast({ title: `已改为${nextState.dailyTimeText}`, icon: 'success' })
+  },
+
+  async selectDailyTimeOption(e) {
+    await this.updateDailySummaryTime(e.currentTarget.dataset.value)
+  },
+
+  async onDailyTimeChange(e) {
+    await this.updateDailySummaryTime(e.detail.value)
+  },
+
   async requestSubscribe() {
     const result = await subscribeService.requestFoodExpireSubscribe()
     if (result.status === 'not_configured') {
-      wx.showToast({ title: '请先配置订阅模板ID', icon: 'none' })
+      wx.showToast({ title: '微信提醒暂不可用', icon: 'none' })
       return
     }
     if (result.status === 'failed') {
@@ -83,13 +137,13 @@ Page({
       })
       wx.hideLoading()
       if (result && result.result && result.result.ok) {
-        wx.showToast({ title: '测试提醒已发送', icon: 'success' })
+        wx.showToast({ title: '提醒已发送', icon: 'success' })
         return
       }
-      wx.showToast({ title: '测试提醒发送失败', icon: 'none' })
+      showTestReminderError(result && result.result)
     } catch (error) {
       wx.hideLoading()
-      wx.showToast({ title: '测试提醒发送失败', icon: 'none' })
+      showTestReminderError(error)
     }
   }
 })

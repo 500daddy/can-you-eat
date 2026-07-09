@@ -1,5 +1,6 @@
 const assets = require('./assets')
 const { foodBase } = require('./foodBase')
+const { resolveFoodIconStatus } = require('./foodIconPolicy')
 const {
   calculateRecordState,
   groupRecords,
@@ -98,6 +99,7 @@ function createCustomFood(name, storageMethod = 'fridge') {
     name: name || '自定义食材',
     defaultStorage: storageMethod,
     icon: assets.food.customFood,
+    iconStatus: 'none',
     room: { babyDaysMax: 1, adultDaysMax: 2 },
     fridge: { babyDaysMax: 2, adultDaysMax: 3 },
     freezer: { babyDaysMax: 15, adultDaysMax: 30 },
@@ -168,6 +170,7 @@ function createMemoryFoodRepository(options = {}) {
       name: food ? food.name : fallbackName,
       customFoodName: food ? '' : fallbackName,
       icon: raw.icon || (food && food.icon) || assets.food.customFood,
+      iconStatus: food ? food.iconStatus : resolveFoodIconStatus(raw),
       plannedDate: raw.plannedDate || currentToday(),
       storageMethod,
       storageText: storageMethod ? `${storageLabel(storageMethod)}保存` : '保存方式待确认',
@@ -204,6 +207,7 @@ function createMemoryFoodRepository(options = {}) {
       name: foodName,
       customFoodName: food ? '' : fallbackName,
       icon: raw.icon || (food && food.icon) || assets.food.customFood,
+      iconStatus: food ? food.iconStatus : resolveFoodIconStatus(raw),
       storageMethod,
       quantity: raw.quantity || '',
       unit: raw.unit || '',
@@ -490,7 +494,17 @@ function getFoodRepository() {
   return singleton
 }
 
+function resetFoodRepository() {
+  singleton = null
+}
+
 module.exports = {
   createMemoryFoodRepository,
-  getFoodRepository
+  getFoodRepository,
+  resetFoodRepository,
+  defaultSettings,
+  STORAGE_KEY,
+  SETTINGS_KEY,
+  FEEDBACK_KEY,
+  PURCHASE_PLAN_KEY
 }

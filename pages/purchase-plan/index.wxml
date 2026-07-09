@@ -49,7 +49,9 @@
 
   <block wx:if="{{plans.length}}">
     <view class="plan-card" wx:for="{{plans}}" wx:key="id">
-      <image class="plan-icon" src="{{item.icon}}" mode="aspectFit" />
+      <view wx:if="{{item.reserveFoodIconSlot}}" class="food-icon-slot">
+        <image wx:if="{{item.showFoodIcon}}" class="food-icon-img" src="{{item.displayFoodIcon}}" mode="aspectFit" />
+      </view>
       <view class="plan-main">
         <view class="plan-name">{{item.name}}</view>
         <view class="plan-meta">预计购买：{{item.plannedDate}}｜{{item.storageText}}</view>

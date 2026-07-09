@@ -10,13 +10,15 @@
   </view>
 
   <view class="button-row">
-    <button class="pixel-btn main-action-btn" bindtap="goAdd">
-      <image class="main-action-icon" src="{{assets.food.carrot}}" mode="aspectFit" />
-      <text>添加食材</text>
+    <button class="pixel-btn main-action-btn main-search-btn" bindtap="goAdd">
+      <image class="main-action-icon" src="{{assets.actions.search}}" mode="aspectFit" />
+      <text class="main-action-title">搜索添加</text>
+      <text class="main-action-desc">知道名字，直接找</text>
     </button>
-    <button class="pixel-btn main-action-btn secondary" bindtap="goRecognize">
-      <image class="main-action-icon" src="{{assets.actions.camera}}" mode="aspectFit" />
-      <text>拍照识别</text>
+    <button class="pixel-btn main-action-btn secondary main-category-btn" bindtap="goCategory">
+      <image class="main-action-icon" src="{{assets.food.broccoli}}" mode="aspectFit" />
+      <text class="main-action-title">按分类找</text>
+      <text class="main-action-desc">蔬菜水果，慢慢选</text>
     </button>
   </view>
 
@@ -26,9 +28,17 @@
       <text>计划采购</text>
     </button>
     <button class="pixel-btn ghost secondary-action-btn" bindtap="goQuickProcess">
-      <image class="secondary-action-icon" src="{{assets.food.babyPuree}}" mode="aspectFit" />
-      <text>快速处理</text>
+      <image class="secondary-action-icon" src="{{assets.actions.cookware}}" mode="aspectFit" />
+      <text>今天怎么处理</text>
     </button>
+  </view>
+
+  <view wx:if="{{homeGuideVisible}}" class="home-guide-card">
+    <view class="home-guide-copy">
+      <text class="home-guide-strong">小提示：</text>
+      <text>买之前用计划采购，快到期看今天怎么处理。</text>
+    </view>
+    <view class="home-guide-close" catchtap="dismissHomeGuide">知道了</view>
   </view>
 
   <scroll-view wx:if="{{records.length}}" class="status-filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
@@ -51,11 +61,22 @@
       <block wx:for="{{sections}}" wx:key="title">
         <view class="section-head">
           <view class="section-title">{{item.title}}</view>
-          <view class="section-more">{{item.items.length}} 个</view>
+          <view class="section-more">{{item.totalCount || item.items.length}} 个</view>
         </view>
         <block wx:for="{{item.items}}" wx:key="id" wx:for-item="food">
           <food-card food="{{food}}" bindfinished="refreshRecords" />
         </block>
+        <view
+          wx:if="{{item.collapsedCount}}"
+          class="collapsed-risk-card {{item.collapsedExpanded ? 'expanded' : ''}}"
+          bindtap="toggleCollapsedRisk"
+        >
+          <view class="collapsed-risk-copy">
+            <view class="collapsed-risk-title">{{item.collapsedTitle}}</view>
+            <view class="collapsed-risk-desc">{{item.collapsedDesc}}</view>
+          </view>
+          <view class="collapsed-risk-action">{{item.collapsedAction}}</view>
+        </view>
       </block>
     </block>
     <view wx:else class="filtered-empty">这个分类暂时没有食材</view>

@@ -2,7 +2,7 @@ const test = require('node:test')
 const assert = require('node:assert/strict')
 
 const { createMemoryFoodRepository } = require('../utils/foodRepository')
-const { createFoodService } = require('../utils/foodService')
+const { createFoodService, LOGGED_OUT_KEY, markLoggedIn } = require('../utils/foodService')
 const { foodBase } = require('../utils/foodBase')
 
 test('uses local repository by default', async () => {
@@ -259,21 +259,85 @@ test('recommends foods from the current baby age stage', async () => {
   repo.updateSettings({ babyAgeMonths: 12 })
   const twelveMonthRecommendations = await service.getRecommendedFoods()
 
-  assert.deepEqual(sixMonthRecommendations.slice(0, 3).map((item) => item.id), ['babyPuree', 'porridge', 'carrot'])
-  assert.deepEqual(twelveMonthRecommendations.slice(0, 5).map((item) => item.id), [
-    'porridge',
-    'carrot',
-    'chicken',
-    'tofu',
-    'banana'
-  ])
-  assert.deepEqual(twelveMonthRecommendations.slice(0, 5).map((item) => item.category), [
-    '主食辅食',
-    '蔬菜',
-    '肉禽水产',
-    '蛋奶豆制品',
-    '水果'
-  ])
+  assert.equal(
+    sixMonthRecommendations.slice(0, 5).every((item) => [
+      'babyPuree',
+      'porridge',
+      'carrot',
+      'pumpkin',
+      'apple',
+      'banana',
+      'broccoli',
+      'rice',
+      'sweetPotato'
+    ].includes(item.id)),
+    true
+  )
+  assert.equal(
+    twelveMonthRecommendations.slice(0, 5).every((item) => [
+      'porridge',
+      'carrot',
+      'chicken',
+      'tofu',
+      'banana',
+      'egg',
+      'fish',
+      'broccoli',
+      'tomato',
+      'rice'
+    ].includes(item.id)),
+    true
+  )
+})
+
+test('personalizes recommendations by allergens and rotates them by day', async () => {
+  const repo = createMemoryFoodRepository({
+    today: '2026-06-16',
+    seedRecords: [],
+    settings: {
+      babyAgeMonths: 12,
+      babyAllergens: ['鸡蛋', '鱼']
+    }
+  })
+  const service = createFoodService({
+    today: '2026-06-16',
+    repo
+  })
+
+  const firstDay = await service.getRecommendedFoods()
+  const secondDayService = createFoodService({
+    today: '2026-06-17',
+    repo
+  })
+  const secondDay = await secondDayService.getRecommendedFoods()
+
+  assert.equal(firstDay.some((item) => item.id === 'egg'), false)
+  assert.equal(firstDay.some((item) => item.id === 'fish'), false)
+  assert.notDeepEqual(
+    firstDay.slice(0, 5).map((item) => item.id),
+    secondDay.slice(0, 5).map((item) => item.id)
+  )
+})
+
+test('recommendation summary prompts profile editing only before baby profile is saved', async () => {
+  const repo = createMemoryFoodRepository({
+    today: '2026-06-16',
+    seedRecords: [],
+    settings: {
+      babyAgeMonths: 12
+    }
+  })
+  const service = createFoodService({
+    today: '2026-06-16',
+    repo
+  })
+
+  const initialSummary = await service.getRecommendationSummary()
+  await service.updateSettings({ babyAgeMonths: 12, babyProfileUpdatedAt: '2026-06-16' })
+  const updatedSummary = await service.getRecommendationSummary()
+
+  assert.equal(initialSummary.needsBabyProfilePrompt, true)
+  assert.equal(updatedSummary.needsBabyProfilePrompt, false)
 })
 
 test('gets settings from cloud foodApi when enabled', async () => {
@@ -307,6 +371,84 @@ test('gets settings from cloud foodApi when enabled', async () => {
   assert.equal(calls[0].action, 'getUserSettings')
   assert.equal(settings.babyName, '云端宝宝')
   assert.equal(settings.babyAgeText, '8个月15天')
+})
+
+test('logged out session stops cloud reads but still saves local food records', async () => {
+  const calls = []
+  const service = createFoodService({
+    useCloud: true,
+    loggedOut: true,
+    today: '2026-06-16',
+    repo: createMemoryFoodRepository({
+      today: '2026-06-16',
+      seedRecords: [],
+      settings: {
+        babyName: '本地旧宝宝',
+        babyAgeMonths: 30
+      }
+    }),
+    callCloud: async (data) => {
+      calls.push(data)
+      return {
+        babyName: '云端宝宝',
+        babyAgeMonths: 11
+      }
+    }
+  })
+
+  const settings = await service.getSettings()
+  const added = await service.addFoodRecord({
+    foodBaseId: 'carrot',
+    foodName: '胡萝卜',
+    purchaseDate: '2026-06-16',
+    storageMethod: 'fridge'
+  })
+  const records = await service.getFoodRecords()
+  const stats = await service.getStats()
+
+  assert.deepEqual(calls, [])
+  assert.equal(settings.babyName, '未登录')
+  assert.equal(settings.babyAgeText, '0个月')
+  assert.equal(added.name, '胡萝卜')
+  assert.equal(records.length, 1)
+  assert.equal(records[0].name, '胡萝卜')
+  assert.deepEqual(stats, [
+    { label: '已记录食材', value: 1 },
+    { label: '今日建议处理', value: 0 },
+    { label: '即将过期', value: 0 },
+    { label: '安心指数', value: '100%' }
+  ])
+})
+
+test('markLoggedIn clears the logged out placeholder without forcing cloud back on', () => {
+  const storage = {
+    [LOGGED_OUT_KEY]: true
+  }
+  const app = {
+    globalData: {
+      loggedOut: true,
+      useCloudFoodApi: false
+    }
+  }
+  const originalGetApp = global.getApp
+  const originalWx = global.wx
+  try {
+    global.getApp = () => app
+    global.wx = {
+      removeStorageSync: (key) => {
+        delete storage[key]
+      },
+      getStorageSync: (key) => storage[key]
+    }
+
+    markLoggedIn()
+  } finally {
+    global.getApp = originalGetApp
+    global.wx = originalWx
+  }
+  assert.equal(app.globalData.loggedOut, false)
+  assert.equal(app.globalData.useCloudFoodApi, false)
+  assert.equal(storage[LOGGED_OUT_KEY], undefined)
 })
 
 test('gets food base by id through cloud foodApi when enabled', async () => {

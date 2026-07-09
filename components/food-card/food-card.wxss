@@ -8,6 +8,14 @@
   border-radius: 24rpx;
   background: #fffdf2;
   box-shadow: 0 5rpx 0 rgba(81, 53, 31, 0.08);
+  animation: food-card-rise 260ms ease-out both;
+  transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+}
+
+.food-card:active {
+  transform: translateY(3rpx);
+  opacity: 0.94;
+  box-shadow: 0 2rpx 0 rgba(81, 53, 31, 0.08);
 }
 
 .food-card.baby_today,
@@ -20,16 +28,23 @@
   border-color: #e76b64;
 }
 
-.food-icon {
-  flex: 0 0 auto;
-  width: 98rpx;
-  height: 98rpx;
-  margin-top: 6rpx;
-}
-
 .food-main {
   flex: 1;
   min-width: 0;
+}
+
+.food-icon-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 76rpx;
+  width: 76rpx;
+  min-height: 76rpx;
+}
+
+.food-icon-img {
+  width: 68rpx;
+  height: 68rpx;
 }
 
 .food-head {
@@ -70,6 +85,7 @@
 
 .food-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 12rpx;
   margin-top: 12rpx;
 }
@@ -102,6 +118,12 @@
   color: #2f6c37;
 }
 
+.mini-action.process {
+  border: 2rpx solid #d9a049;
+  background: #fff0b8;
+  color: #6f4218;
+}
+
 .mini-action.detail {
   border: 2rpx solid #d8c99d;
   background: #fff9e9;
@@ -116,4 +138,16 @@
   color: #8a806d;
   font-size: 46rpx;
   font-weight: 900;
+}
+
+@keyframes food-card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12rpx);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

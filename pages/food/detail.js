@@ -1,5 +1,7 @@
 const { getFoodService } = require('../../utils/foodService')
 const { getStatus } = require('../../utils/status')
+const { decorateFoodIconDisplay } = require('../../utils/foodIconPolicy')
+const { buildProcessAdvice } = require('../../utils/processAdvice')
 
 const foodService = getFoodService()
 
@@ -39,7 +41,8 @@ Page({
     assets: foodService.getAssets(),
     record: {},
     base: {},
-    statusInfo: {}
+    statusInfo: {},
+    processAdvice: {}
   },
 
   onLoad(query = {}) {
@@ -59,10 +62,15 @@ Page({
       setTimeout(() => wx.navigateBack(), 500)
       return
     }
+    const displayRecord = decorateFoodIconDisplay([record])[0]
     this.setData({
-      record,
-      base: normalizeBase(base, record),
-      statusInfo: getStatus(record.status)
+      record: displayRecord,
+      base: normalizeBase(base, displayRecord),
+      statusInfo: getStatus(displayRecord.status),
+      processAdvice: buildProcessAdvice({
+        ...base,
+        ...displayRecord
+      })
     })
   },
 

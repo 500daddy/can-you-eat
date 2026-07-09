@@ -82,6 +82,194 @@ test('avatar crop page lets users move and scale before exporting a square avata
   assert.equal(returned, true)
 })
 
+test('avatar crop page exports through fallback when canvas draw callback is missing', async () => {
+  const events = []
+  let exported = false
+  const page = createPageInstance(loadAvatarCropPage(), {
+    emit: (name, payload) => events.push({ name, payload })
+  })
+  const originalSetTimeout = global.setTimeout
+  const originalClearTimeout = global.clearTimeout
+  global.setTimeout = (fn, delay) => {
+    if (delay === 900) fn()
+    return delay
+  }
+  global.clearTimeout = () => {}
+  global.wx = {
+    createCanvasContext: () => ({
+      drawImage: () => {},
+      draw: () => {}
+    }),
+    canvasToTempFilePath: (input) => {
+      exported = true
+      input.success({ tempFilePath: '/tmp/fallback-avatar.png' })
+    },
+    navigateBack: () => {},
+    showToast: () => {}
+  }
+  page.setData({
+    src: '/tmp/avatar.jpg',
+    ready: true,
+    cropSize: 300,
+    imageDisplayWidth: 300,
+    imageDisplayHeight: 300
+  })
+
+  await page.confirmCrop()
+
+  global.setTimeout = originalSetTimeout
+  global.clearTimeout = originalClearTimeout
+  delete global.wx
+  assert.equal(exported, true)
+  assert.deepEqual(events[0], {
+    name: 'avatarCropped',
+    payload: { avatarUrl: '/tmp/fallback-avatar.png' }
+  })
+})
+
+test('avatar crop page retries canvas export before showing failure', async () => {
+  const events = []
+  const toasts = []
+  let exportAttempts = 0
+  const page = createPageInstance(loadAvatarCropPage(), {
+    emit: (name, payload) => events.push({ name, payload })
+  })
+  const originalSetTimeout = global.setTimeout
+  const originalClearTimeout = global.clearTimeout
+  global.setTimeout = (fn, delay) => {
+    if (delay !== 5000) fn()
+    return delay
+  }
+  global.clearTimeout = () => {}
+  global.wx = {
+    createCanvasContext: () => ({
+      drawImage: () => {},
+      draw: (_reserve, callback) => callback()
+    }),
+    canvasToTempFilePath: (input) => {
+      exportAttempts += 1
+      if (exportAttempts === 1) {
+        input.fail({ errMsg: 'canvas is not ready' })
+        return
+      }
+      input.success({ tempFilePath: '/tmp/retry-avatar.png' })
+    },
+    navigateBack: () => {},
+    showToast: (input) => toasts.push(input)
+  }
+  page.setData({
+    src: '/tmp/avatar.jpg',
+    ready: true,
+    cropSize: 300,
+    imageDisplayWidth: 300,
+    imageDisplayHeight: 300
+  })
+
+  await page.confirmCrop()
+
+  global.setTimeout = originalSetTimeout
+  global.clearTimeout = originalClearTimeout
+  delete global.wx
+  assert.equal(exportAttempts, 2)
+  assert.deepEqual(toasts, [])
+  assert.deepEqual(events[0], {
+    name: 'avatarCropped',
+    payload: { avatarUrl: '/tmp/retry-avatar.png' }
+  })
+})
+
+test('avatar crop page falls back to native crop when canvas export keeps failing', async () => {
+  const events = []
+  let exportAttempts = 0
+  const page = createPageInstance(loadAvatarCropPage(), {
+    emit: (name, payload) => events.push({ name, payload })
+  })
+  const originalSetTimeout = global.setTimeout
+  const originalClearTimeout = global.clearTimeout
+  global.setTimeout = (fn, delay) => {
+    if (delay !== 5000) fn()
+    return 1
+  }
+  global.clearTimeout = () => {}
+  global.wx = {
+    createCanvasContext: () => ({
+      drawImage: () => {},
+      draw: (_reserve, callback) => callback()
+    }),
+    canvasToTempFilePath: (input) => {
+      exportAttempts += 1
+      input.fail({ errMsg: 'canvas export failed' })
+    },
+    cropImage: (input) => {
+      input.success({ tempFilePath: '/tmp/native-cropped-avatar.png' })
+    },
+    navigateBack: () => {},
+    showToast: () => {}
+  }
+  page.setData({
+    src: '/tmp/avatar.jpg',
+    ready: true,
+    cropSize: 300,
+    imageDisplayWidth: 300,
+    imageDisplayHeight: 300
+  })
+
+  await page.confirmCrop()
+
+  global.setTimeout = originalSetTimeout
+  global.clearTimeout = originalClearTimeout
+  delete global.wx
+  assert.equal(exportAttempts, 3)
+  assert.deepEqual(events[0], {
+    name: 'avatarCropped',
+    payload: { avatarUrl: '/tmp/native-cropped-avatar.png' }
+  })
+})
+
+test('avatar crop page falls back to original image when canvas export never responds', async () => {
+  const events = []
+  let returned = false
+  const page = createPageInstance(loadAvatarCropPage(), {
+    emit: (name, payload) => events.push({ name, payload })
+  })
+  const originalSetTimeout = global.setTimeout
+  const originalClearTimeout = global.clearTimeout
+  global.setTimeout = (fn) => {
+    fn()
+    return 1
+  }
+  global.clearTimeout = () => {}
+  global.wx = {
+    createCanvasContext: () => ({
+      drawImage: () => {},
+      draw: () => {}
+    }),
+    canvasToTempFilePath: () => {},
+    navigateBack: () => {
+      returned = true
+    },
+    showToast: () => {}
+  }
+  page.setData({
+    src: '/tmp/avatar.jpg',
+    ready: true,
+    cropSize: 300,
+    imageDisplayWidth: 300,
+    imageDisplayHeight: 300
+  })
+
+  await page.confirmCrop()
+
+  global.setTimeout = originalSetTimeout
+  global.clearTimeout = originalClearTimeout
+  delete global.wx
+  assert.deepEqual(events[0], {
+    name: 'avatarCropped',
+    payload: { avatarUrl: '/tmp/avatar.jpg' }
+  })
+  assert.equal(returned, true)
+})
+
 test('avatar crop page renders a draggable square cropper and hidden export canvas', () => {
   const markup = fs.readFileSync(path.resolve(__dirname, '../pages/avatar-crop/index.wxml'), 'utf8')
 

@@ -15,6 +15,16 @@ cloudfunctions/sendFoodReminder/subscribeConfig.local.js
 /*_sprite切图说明_给Codex.md
 /*_清像素风_sprite_sheet_original.png
 /*_像素厨房首页底图.png
+/assets/sprites/source/
+/food_icon_generation_pack/
+/icon_supplement_pack/
+/strict_icon_regen_pack/
+/docs/superpowers/
+/icon补充.zip
+/*_缺失食材icon生成包_给Codex.zip
+/*_缺失食材icon生成包_给Codex/
+/*_缺失食材icon重生成_*.zip
+/*_缺失食材icon重生成_*/
 
 # Local project briefs supplied to Codex; keep the repository focused on app code.
 /*_Codex开发说明.md

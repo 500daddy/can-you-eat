@@ -28,6 +28,29 @@ function updateCropState(page, patch) {
   }
 }
 
+function finishCrop(page, avatarUrl, resolve) {
+  const channel = page.getOpenerEventChannel && page.getOpenerEventChannel()
+  if (channel && channel.emit) {
+    channel.emit('avatarCropped', { avatarUrl })
+  }
+  if (typeof wx !== 'undefined' && wx.navigateBack) wx.navigateBack({ delta: 1 })
+  resolve(avatarUrl)
+}
+
+function fallbackCrop(page, resolve) {
+  const src = page.data.src
+  if (typeof wx !== 'undefined' && wx.cropImage) {
+    wx.cropImage({
+      src,
+      cropScale: '1:1',
+      success: (res) => finishCrop(page, res.tempFilePath || src, resolve),
+      fail: () => finishCrop(page, src, resolve)
+    })
+    return
+  }
+  finishCrop(page, src, resolve)
+}
+
 Page({
   data: {
     src: '',
@@ -97,7 +120,7 @@ Page({
   },
 
   confirmCrop() {
-    if (!this.data.src || this.data.saving || typeof wx === 'undefined') return Promise.resolve()
+    if (!this.data.src || this.data.saving || !this.data.ready || typeof wx === 'undefined') return Promise.resolve()
     this.setData({ saving: true })
 
     const {
@@ -116,32 +139,63 @@ Page({
     const scaledHeight = imageDisplayHeight * cropState.scale
     const visualX = cropState.x - (scaledWidth - imageDisplayWidth) / 2
     const visualY = cropState.y - (scaledHeight - imageDisplayHeight) / 2
+    if (!wx.createCanvasContext || !wx.canvasToTempFilePath) {
+      return new Promise((resolve) => fallbackCrop(this, resolve))
+    }
+
     const ctx = wx.createCanvasContext('avatarCropCanvas', this)
+    let exportStarted = false
+    let completed = false
 
     ctx.drawImage(src, visualX, visualY, scaledWidth, scaledHeight)
     return new Promise((resolve) => {
-      ctx.draw(false, () => {
+      let drawFallbackTimer
+      let exportTimeoutTimer
+      let retryTimer
+      const clearTimers = () => {
+        if (drawFallbackTimer) clearTimeout(drawFallbackTimer)
+        if (exportTimeoutTimer) clearTimeout(exportTimeoutTimer)
+        if (retryTimer) clearTimeout(retryTimer)
+      }
+      const finishFail = () => {
+        if (completed) return
+        completed = true
+        clearTimers()
+        fallbackCrop(this, resolve)
+      }
+      const exportAvatar = (attempt = 1) => {
+        if (exportStarted || completed) return
+        exportStarted = true
+        exportTimeoutTimer = setTimeout(finishFail, 5000)
         wx.canvasToTempFilePath({
           canvasId: 'avatarCropCanvas',
+          x: 0,
+          y: 0,
           width: cropSize,
           height: cropSize,
           destWidth: 480,
           destHeight: 480,
+          fileType: 'png',
           success: (res) => {
-            const channel = this.getOpenerEventChannel && this.getOpenerEventChannel()
-            if (channel && channel.emit) {
-              channel.emit('avatarCropped', { avatarUrl: res.tempFilePath })
-            }
-            if (wx.navigateBack) wx.navigateBack({ delta: 1 })
-            resolve(res.tempFilePath)
+            if (completed) return
+            completed = true
+            clearTimers()
+            finishCrop(this, res.tempFilePath, resolve)
           },
           fail: () => {
-            this.setData({ saving: false })
-            if (wx.showToast) wx.showToast({ title: '裁剪失败，请重试', icon: 'none' })
-            resolve()
+            if (completed) return
+            exportStarted = false
+            if (exportTimeoutTimer) clearTimeout(exportTimeoutTimer)
+            if (attempt >= 3) {
+              finishFail()
+              return
+            }
+            retryTimer = setTimeout(() => exportAvatar(attempt + 1), 500)
           }
         }, this)
-      })
+      }
+      ctx.draw(false, () => exportAvatar())
+      drawFallbackTimer = setTimeout(() => exportAvatar(), 900)
     })
   }
 })

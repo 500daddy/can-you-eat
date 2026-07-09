@@ -1,5 +1,55 @@
 const assets = require('./assets')
 const { createExpandedFoodBase } = require('./expandedFoodBase')
+const { withFoodIconStatus } = require('./foodIconPolicy')
+
+const subCategoryMap = {
+  根茎薯芋类: '根茎类',
+  茄果瓜类: '茄果类',
+  菌藻类: '菌菇类',
+  叶菜类: '叶花菜类',
+  花菜类: '叶花菜类',
+  莓果类: '浆果类'
+}
+
+const aliasSupplementById = {
+  broccoli: ['西蓝花', '绿菜花', '青花菜'],
+  carrot: ['胡萝卜泥', '红萝卜'],
+  cabbage: ['青菜', '油菜', '小油菜', '小青菜'],
+  bokChoy: ['青菜', '油菜', '小青菜', '青江菜'],
+  riceNoodle: ['宝宝米粉', '辅食米粉', '高铁米粉', '婴幼儿米粉'],
+  babyPuree: ['菜泥', '果泥', '肉泥', '辅食泥'],
+  fish: ['鱼肉', '鱼柳', '鱼片', '白肉鱼'],
+  salmon: ['三文鱼', '鲑鱼', '鱼肉'],
+  bass: ['鲈鱼', '海鲈鱼'],
+  shrimp: ['虾仁', '鲜虾', '基围虾'],
+  chicken: ['鸡肉', '鸡胸', '鸡里脊', '鸡胸肉泥'],
+  pork: ['猪肉', '里脊肉', '猪瘦肉'],
+  beef: ['牛肉泥', '牛里脊'],
+  egg: ['鸡蛋黄', '蛋黄', '蛋白'],
+  quailEgg: ['小鸟蛋'],
+  tofu: ['嫩豆腐', '老豆腐', '北豆腐', '南豆腐'],
+  yogurt: ['无糖酸奶'],
+  milk: ['纯牛奶'],
+  rice: ['白米饭', '熟饭'],
+  porridge: ['白粥', '米粥', '稀饭'],
+  noodle: ['宝宝面', '细面', '挂面'],
+  tomato: ['小番茄', '圣女果', '西红柿'],
+  potato: ['土豆', '马铃薯'],
+  sweetPotato: ['番薯', '地瓜', '甘薯'],
+  yam: ['铁棍山药'],
+  pumpkin: ['贝贝南瓜', '板栗南瓜', '老南瓜'],
+  corn: ['玉米粒', '甜玉米'],
+  cucumber: ['青瓜'],
+  greenPepper: ['彩椒', '甜椒'],
+  mushroom: ['菌菇', '口蘑'],
+  shiitake: ['鲜香菇', '冬菇'],
+  pear: ['梨子', '雪梨'],
+  orange: ['橘子', '桔子', '柑橘'],
+  banana: ['香蕉泥'],
+  kiwi: ['奇异果'],
+  grape: ['提子'],
+  dragonFruit: ['红心火龙果']
+}
 
 const baseRanges = {
   shortFridge: {
@@ -24,14 +74,36 @@ const baseRanges = {
   }
 }
 
-function food(item, ranges) {
+function normalizeAliasList(aliases) {
+  if (Array.isArray(aliases)) return aliases
+  return String(aliases || '').split(/[、,，]/).filter(Boolean)
+}
+
+function mergeAliases(baseAliases, extraAliases) {
+  return [...new Set([
+    ...normalizeAliasList(baseAliases),
+    ...normalizeAliasList(extraAliases)
+  ].map((alias) => String(alias).trim()).filter(Boolean))]
+}
+
+function normalizeFoodItem(item) {
   return {
+    ...item,
+    subCategory: subCategoryMap[item.subCategory] || item.subCategory,
+    aliases: mergeAliases(item.aliases, aliasSupplementById[item.id])
+  }
+}
+
+function food(item, ranges) {
+  const normalizedItem = normalizeFoodItem(item)
+
+  return withFoodIconStatus({
     confidenceLevel: 'medium',
     sourceNote: 'MVP 参考数据，后续可接入正式食材库校准。',
     imageUrl: '',
     ...ranges,
-    ...item
-  }
+    ...normalizedItem
+  })
 }
 
 const coreFoodBase = [
@@ -87,7 +159,7 @@ const coreFoodBase = [
   food({ id: 'sweetPotato', name: '红薯', aliases: ['地瓜', '甘薯'], category: '蔬菜', subCategory: '根茎类', defaultStorage: 'room', icon: assets.food.sweetPotato, babyDays: '5-7天', adultDays: '10-15天', babyNote: '建议蒸熟后观察宝宝接受度。', adultNote: '发霉、黑斑或异味请处理。', storageTips: ['阴凉通风保存。', '切开后请冷藏。'], spoilageSigns: ['发霉', '黑斑', '软烂', '异味'] }, baseRanges.longRoom),
   food({ id: 'lotusRoot', name: '莲藕', aliases: ['藕'], category: '蔬菜', subCategory: '根茎类', defaultStorage: 'fridge', icon: assets.food.lotusRoot, babyDays: '2-3天', adultDays: '4-7天', babyNote: '建议去皮切小块并充分煮熟。', adultNote: '发黑、发黏或有酸味请处理。', storageTips: ['切开后请密封冷藏。', '给宝宝前充分做熟。'], spoilageSigns: ['发黑', '发黏', '酸味', '霉点'] }, baseRanges.mediumFridge),
   food({ id: 'spinach', name: '菠菜', aliases: ['波菜'], category: '蔬菜', subCategory: '叶菜类', defaultStorage: 'fridge', icon: assets.food.spinach, babyDays: '1-2天', adultDays: '2-4天', babyNote: '叶菜类建议尽快做熟。', adultNote: '发黄、出水或发黏请处理。', storageTips: ['叶菜类请冷藏并尽快食用。', '清洗后不建议久放。'], spoilageSigns: ['发黄', '出水', '发黏', '异味'] }, baseRanges.shortFridge),
-  food({ id: 'cabbage', name: '小白菜', aliases: ['青菜', '上海青', '油菜'], category: '蔬菜', subCategory: '叶菜类', defaultStorage: 'fridge', icon: assets.food.cabbage, babyDays: '1-2天', adultDays: '2-4天', babyNote: '建议做熟后给宝宝。', adultNote: '叶片发黏或异味请处理。', storageTips: ['冷藏保存，尽快食用。', '清洗后不建议久放。'], spoilageSigns: ['发黄', '出水', '发黏', '异味'] }, baseRanges.shortFridge),
+  food({ id: 'cabbage', name: '小白菜', aliases: ['青菜', '油菜'], category: '蔬菜', subCategory: '叶菜类', defaultStorage: 'fridge', icon: assets.food.cabbage, babyDays: '1-2天', adultDays: '2-4天', babyNote: '建议做熟后给宝宝。', adultNote: '叶片发黏或异味请处理。', storageTips: ['冷藏保存，尽快食用。', '清洗后不建议久放。'], spoilageSigns: ['发黄', '出水', '发黏', '异味'] }, baseRanges.shortFridge),
   food({ id: 'cucumber', name: '黄瓜', aliases: ['青瓜'], category: '蔬菜', subCategory: '瓜类', defaultStorage: 'fridge', icon: assets.food.cucumber, babyDays: '2-3天', adultDays: '4-6天', babyNote: '宝宝食用建议去皮并结合月龄处理形态。', adultNote: '发软、出水或有异味请处理。', storageTips: ['冷藏保存更稳妥。', '切开后请密封冷藏。'], spoilageSigns: ['发软', '出水', '发黏', '异味'] }, baseRanges.mediumFridge),
   food({ id: 'eggplant', name: '茄子', aliases: ['紫茄'], category: '蔬菜', subCategory: '茄果类', defaultStorage: 'fridge', icon: assets.food.eggplant, babyDays: '2-3天', adultDays: '4-6天', babyNote: '建议做熟后少量尝试。', adultNote: '表皮皱缩、软烂或异味请处理。', storageTips: ['冷藏保存，避免挤压。'], spoilageSigns: ['软烂', '皱缩', '黑斑', '异味'] }, baseRanges.mediumFridge),
   food({ id: 'greenPepper', name: '青椒', aliases: ['甜椒', '彩椒'], category: '蔬菜', subCategory: '茄果类', defaultStorage: 'fridge', icon: assets.food.greenPepper, babyDays: '2-3天', adultDays: '4-6天', babyNote: '建议去籽做熟后少量尝试。', adultNote: '软烂、皱缩或异味请处理。', storageTips: ['冷藏保存。', '切开后请密封。'], spoilageSigns: ['软烂', '皱缩', '霉点', '异味'] }, baseRanges.mediumFridge),

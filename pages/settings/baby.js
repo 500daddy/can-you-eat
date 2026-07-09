@@ -1,4 +1,4 @@
-const { getFoodService } = require('../../utils/foodService')
+const { getFoodService, markLoggedIn, markLoggedOut, resetFoodService } = require('../../utils/foodService')
 const { getBabyAgePickerOptions } = require('../../utils/babyAge')
 const { resolveBabyAvatar } = require('../../utils/babyProfile')
 
@@ -12,6 +12,11 @@ function normalizeAllergens(value) {
   return String(value || '').split(/[、,，\s]/).map((item) => item.trim()).filter(Boolean)
 }
 
+function editableBabyName(value) {
+  const name = String(value || '').trim()
+  return name === '未登录' ? '' : name
+}
+
 function navigateBackAfterSave() {
   if (typeof wx === 'undefined') return
   if (typeof getCurrentPages === 'function' && getCurrentPages().length <= 1 && wx.switchTab) {
@@ -20,6 +25,28 @@ function navigateBackAfterSave() {
   }
   if (wx.navigateBack) {
     wx.navigateBack({ delta: 1 })
+  }
+}
+
+function confirmLogout() {
+  if (typeof wx === 'undefined' || !wx.showModal) return Promise.resolve(false)
+  return new Promise((resolve) => {
+    wx.showModal({
+      title: '退出登录',
+      content: '退出后会清除这台设备上的缓存，下次打开需要重新加载你的资料。确定退出吗？',
+      confirmText: '退出',
+      confirmColor: '#b24b3f',
+      cancelText: '取消',
+      success: (res) => resolve(Boolean(res.confirm)),
+      fail: () => resolve(false)
+    })
+  })
+}
+
+function goMineAfterLogout() {
+  if (typeof wx === 'undefined') return
+  if (wx.switchTab) {
+    wx.switchTab({ url: '/pages/mine/index' })
   }
 }
 
@@ -88,7 +115,7 @@ Page({
     const foundIndex = ageOptions.findIndex((item) => item.months === babyAgeMonths)
     const babyAvatarUrl = settings.babyAvatarUrl || ''
     this.setData({
-      nickname: settings.babyName,
+      nickname: editableBabyName(settings.babyName),
       babyAvatarUrl,
       babyAvatarImage: settings.babyAvatarImage || resolveBabyAvatar({ ...settings, babyAvatarUrl }, foodService.getAssets()),
       babyAgeMonths,
@@ -192,17 +219,33 @@ Page({
   },
 
   async save() {
+    markLoggedIn()
     await foodService.updateSettings({
       babyName: this.data.nickname,
       babyAvatarUrl: this.data.babyAvatarUrl,
       babyAgeMonths: this.data.babyAgeMonths,
       babyGender: this.data.babyGender,
       babyAllergens: this.data.allergens,
-      babyMode: this.data.babyMode
+      babyMode: this.data.babyMode,
+      babyProfileUpdatedAt: new Date().toISOString()
     })
     const settings = await foodService.getSettings()
     this.setData({ babyAgeText: settings.babyAgeText })
     wx.showToast({ title: '已保存设置', icon: 'success' })
     navigateBackAfterSave()
+  },
+
+  async logout() {
+    const confirmed = await confirmLogout()
+    if (!confirmed) return
+    if (typeof wx !== 'undefined' && wx.clearStorageSync) {
+      wx.clearStorageSync()
+    }
+    markLoggedOut()
+    resetFoodService()
+    if (typeof wx !== 'undefined' && wx.showToast) {
+      wx.showToast({ title: '已退出登录', icon: 'success' })
+    }
+    goMineAfterLogout()
   }
 })

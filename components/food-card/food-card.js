@@ -6,8 +6,8 @@ function confirmFinish(foodName) {
   }
   return new Promise((resolve) => {
     wx.showModal({
-      title: '确认已吃掉？',
-      content: `确认「${foodName || '这个食材'}」已经吃掉或处理了吗？确认后会从首页和提醒列表移除。`,
+      title: '确认已处理？',
+      content: `确认「${foodName || '这个食材'}」已经吃掉或扔掉了吗？确认后会从首页和提醒列表移除。`,
       confirmText: '确认',
       cancelText: '取消',
       confirmColor: '#2f8d3d',
@@ -35,6 +35,14 @@ Component({
       if (!id) return
       wx.navigateTo({
         url: `/pages/food/detail?id=${id}`
+      })
+    },
+
+    goProcessAdvice() {
+      const id = this.properties.food.id
+      if (!id) return
+      wx.navigateTo({
+        url: `/pages/quick-process/index?id=${id}`
       })
     },
 

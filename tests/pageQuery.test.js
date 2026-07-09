@@ -93,8 +93,60 @@ test('search page treats missing query object as empty keyword', async () => {
     name: '蔬菜',
     count: 1,
     icon: '/assets/sprites/food/food_broccoli.png',
-    subCategories: [{ name: '花菜类', count: 1 }]
+    subCategories: [{ name: '叶花菜类', count: 1 }]
   }])
+})
+
+test('search page applies home entry intent for dedicated search and category jump', async () => {
+  const foods = [{
+    id: 'broccoli',
+    name: '西兰花',
+    category: '蔬菜',
+    subCategory: '花菜类',
+    icon: '/assets/sprites/food/food_broccoli.png'
+  }]
+  const storage = { food_search_entry: 'search' }
+  const scrollCalls = []
+  const navigations = []
+  global.wx = {
+    getStorageSync: (key) => storage[key],
+    removeStorageSync: (key) => {
+      delete storage[key]
+    },
+    pageScrollTo: (input) => scrollCalls.push(input),
+    navigateTo: (input) => navigations.push(input)
+  }
+  const page = createPageInstance(loadPage('pages/food/search', {
+    getAssets: () => assets,
+    getFoodBase: async () => foods,
+    searchFoods: async () => foods
+  }))
+
+  await page.onLoad()
+  page.onShow()
+
+  assert.deepEqual(navigations, [{ url: '/pages/food/name-search' }])
+  assert.equal(storage.food_search_entry, undefined)
+
+  storage.food_search_entry = 'category'
+  page.onShow()
+
+  delete global.wx
+  assert.equal(page.data.searchFocus, false)
+  assert.deepEqual(scrollCalls, [{ selector: '#category-section', duration: 260 }])
+})
+
+test('search page exposes category anchor and a lightweight search fallback', () => {
+  const markup = readText('pages/food/search.wxml')
+  const config = JSON.parse(readText('pages/food/search.json'))
+
+  assert.match(markup, /class="page-title">按分类找食材/)
+  assert.equal(config.navigationBarTitleText, '')
+  assert.match(markup, /id="category-section"/)
+  assert.match(markup, /class="search-fallback"/)
+  assert.match(markup, /bindtap="goNameSearch"/)
+  assert.doesNotMatch(markup, /class="search-box"/)
+  assert.doesNotMatch(markup, /focus="\{\{searchFocus\}\}"/)
 })
 
 test('search page filters foods by first and second level categories', async () => {
@@ -189,6 +241,73 @@ test('search page all category shows the complete food base instead of recommend
   assert.equal(page.data.results.length, 26)
 })
 
+test('search page does not show all foods as a selected category by default', () => {
+  const markup = readText('pages/food/search.wxml')
+
+  assert.doesNotMatch(markup, /category-name">全部/)
+  assert.doesNotMatch(markup, /!\s*activeCategory\s*\?\s*'active'/)
+  assert.match(markup, /bindtap="clearCategory"[^>]*>查看全部食材/)
+})
+
+test('search page uses a recommended category tile to complete the category grid', async () => {
+  const foods = [
+    { id: 'porridge', name: '粥', category: '主食辅食', subCategory: '熟食', icon: '/assets/sprites/food/food_porridge.png' },
+    { id: 'carrot', name: '胡萝卜', category: '蔬菜', subCategory: '根茎类', icon: '/assets/sprites/food/food_carrot.png' }
+  ]
+  const page = createPageInstance(loadPage('pages/food/search', {
+    getAssets: () => assets,
+    getFoodBase: async () => foods,
+    getRecommendedFoods: async () => foods,
+    getRecommendationSummary: async () => ({ hint: '优先推荐' }),
+    searchFoods: async () => foods
+  }))
+  const markup = readText('pages/food/search.wxml')
+
+  await page.onLoad()
+  page.selectCategory({ currentTarget: { dataset: { name: '蔬菜' } } })
+  page.selectRecommended()
+
+  assert.match(markup, /bindtap="selectRecommended"/)
+  assert.match(markup, /category-name">推荐/)
+  assert.equal(page.data.resultTitle, '推荐食材')
+  assert.equal(page.data.recommendationHint, '优先推荐')
+  assert.deepEqual(page.data.results.map((item) => item.id), ['porridge', 'carrot'])
+})
+
+test('search page lightly prompts baby profile editing when profile is not saved', async () => {
+  const navigations = []
+  global.wx = {
+    navigateTo: (input) => navigations.push(input)
+  }
+  const foods = [{
+    id: 'porridge',
+    name: '粥',
+    category: '主食辅食',
+    subCategory: '熟食',
+    icon: '/assets/sprites/food/food_porridge.png'
+  }]
+  const page = createPageInstance(loadPage('pages/food/search', {
+    getAssets: () => assets,
+    getFoodBase: async () => foods,
+    getRecommendedFoods: async () => foods,
+    getRecommendationSummary: async () => ({
+      hint: '按宝宝信息推荐',
+      needsBabyProfilePrompt: true
+    }),
+    searchFoods: async () => foods
+  }))
+  const markup = readText('pages/food/search.wxml')
+
+  await page.onLoad()
+  page.goBabySettings()
+
+  delete global.wx
+  assert.equal(page.data.needsBabyProfilePrompt, true)
+  assert.match(markup, /完善宝宝信息/)
+  assert.match(markup, /bindtap="goBabySettings"/)
+  assert.deepEqual(navigations, [{ url: '/pages/settings/baby' }])
+})
+
 test('search page shows a back to top action for long result lists', async () => {
   const foods = Array.from({ length: 26 }, (_, index) => ({
     id: `food-${index}`,
@@ -249,6 +368,40 @@ test('search page normalizes legacy food categories into user-facing groups', as
   assert.deepEqual(page.data.results.map((item) => item.id), ['egg', 'tofu'])
 })
 
+test('search page merges duplicate vegetable second-level category labels', async () => {
+  const foods = [
+    { id: 'broccoli', name: '西兰花', category: '蔬菜', subCategory: '花菜类', icon: '/assets/sprites/food/food_broccoli.png' },
+    { id: 'bokChoy', name: '上海青', category: '蔬菜', subCategory: '叶花菜类', icon: '/assets/sprites/food/food_cabbage.png' },
+    { id: 'spinach', name: '菠菜', category: '蔬菜', subCategory: '叶菜类', icon: '/assets/sprites/food/food_spinach.png' },
+    { id: 'yam', name: '山药', category: '蔬菜', subCategory: '根茎薯芋类', icon: '/assets/sprites/food/food_yam.png' },
+    { id: 'carrot', name: '胡萝卜', category: '蔬菜', subCategory: '根茎类', icon: '/assets/sprites/food/food_carrot.png' },
+    { id: 'zucchini', name: '西葫芦', category: '蔬菜', subCategory: '茄果瓜类', icon: '/assets/sprites/food/food_zucchini.png' },
+    { id: 'eggplant', name: '茄子', category: '蔬菜', subCategory: '茄果类', icon: '/assets/sprites/food/food_eggplant.png' },
+    { id: 'shiitake', name: '香菇', category: '蔬菜', subCategory: '菌藻类', icon: '/assets/sprites/food/food_shiitake.png' },
+    { id: 'mushroom', name: '蘑菇', category: '蔬菜', subCategory: '菌菇类', icon: '/assets/sprites/food/food_mushroom.png' }
+  ]
+  const page = createPageInstance(loadPage('pages/food/search', {
+    getAssets: () => assets,
+    getFoodBase: async () => foods,
+    searchFoods: async () => foods
+  }))
+
+  await page.onLoad()
+  page.selectCategory({ currentTarget: { dataset: { name: '蔬菜' } } })
+
+  assert.deepEqual(page.data.subCategories.map((item) => item.name), [
+    '叶花菜类',
+    '根茎类',
+    '茄果类',
+    '菌菇类'
+  ])
+  assert.deepEqual(page.data.subCategories.map((item) => item.count), [3, 2, 2, 2])
+
+  page.selectSubCategory({ currentTarget: { dataset: { name: '菌菇类' } } })
+
+  assert.deepEqual(page.data.results.map((item) => item.id), ['shiitake', 'mushroom'])
+})
+
 test('search page opens custom add flow with the missing keyword', async () => {
   const navigations = []
   global.wx = {
@@ -269,12 +422,15 @@ test('search page opens custom add flow with the missing keyword', async () => {
   }])
 })
 
-test('search page category section uses icon cards', () => {
+test('search page category section uses category icon cards without result food icons', () => {
   const markup = fs.readFileSync(path.resolve(__dirname, '../pages/food/search.wxml'), 'utf8')
   const stylesheet = fs.readFileSync(path.resolve(__dirname, '../pages/food/search.wxss'), 'utf8')
 
   assert.match(markup, /class="category-grid"/)
   assert.match(markup, /class="category-icon"/)
+  assert.match(markup, /assets\.food\.babyPuree/)
+  assert.match(markup, /category\.icon/)
+  assert.doesNotMatch(markup, /src="\{\{item\.icon\}\}"/)
   assert.doesNotMatch(markup, /class="category-scroll"/)
   assert.match(stylesheet, /\.category-tile/)
   assert.match(stylesheet, /\.category-icon/)
@@ -342,6 +498,67 @@ test('detail page shows storage tips from food base storageTips field', async ()
 
   assert.deepEqual(page.data.base.tips, ['冷藏仅短期保存。', '建议分装冷冻，避免反复解冻。'])
   assert.match(readText('pages/food/detail.wxml'), /base\.tips/)
+})
+
+test('detail page shows process advice and dish ideas for the current food', async () => {
+  const page = createPageInstance(loadPage('pages/food/detail', {
+    getAssets: () => assets,
+    getFoodDetail: async () => ({
+      record: {
+        id: 'record-fish',
+        name: '鳕鱼',
+        status: 'baby_today',
+        storageText: '冷冻保存'
+      },
+      base: {
+        name: '鳕鱼',
+        category: '肉禽水产',
+        subCategory: '鱼类',
+        storageTips: ['冷冻保存。'],
+        spoilageSigns: ['异味']
+      }
+    })
+  }))
+  const markup = readText('pages/food/detail.wxml')
+  const styles = readText('pages/food/detail.wxss')
+
+  await page.onLoad({ id: 'record-fish' })
+
+  assert.match(page.data.processAdvice.title, /充分加热/)
+  assert.ok(page.data.processAdvice.dishes.includes('鱼泥豆腐'))
+  assert.match(markup, /处理建议/)
+  assert.match(markup, /processAdvice\.dishes/)
+  assert.match(markup, /processAdvice\.steps/)
+  assert.match(styles, /\.dish-chip/)
+  assert.match(styles, /\.process-title/)
+})
+
+test('detail page shows only verified record food icons', async () => {
+  const page = createPageInstance(loadPage('pages/food/detail', {
+    getAssets: () => assets,
+    getFoodDetail: async () => ({
+      record: {
+        id: 'record-apple',
+        foodBaseId: 'apple',
+        name: '苹果',
+        icon: '/assets/sprites/food/food_apple.png',
+        status: 'baby_ok',
+        storageText: '冷藏保存'
+      },
+      base: null
+    })
+  }))
+  const markup = readText('pages/food/detail.wxml')
+  const styles = readText('pages/food/detail.wxss')
+
+  await page.onLoad({ id: 'record-apple' })
+
+  assert.equal(page.data.record.showFoodIcon, true)
+  assert.equal(page.data.record.displayFoodIcon, '/assets/sprites/food/food_apple.png')
+  assert.match(markup, /record\.showFoodIcon/)
+  assert.match(markup, /record\.displayFoodIcon/)
+  assert.doesNotMatch(markup, /src="\{\{record\.icon\}\}"/)
+  assert.match(styles, /\.detail-food-icon/)
 })
 
 test('detail page keeps action buttons visible in a fixed bottom dock', () => {

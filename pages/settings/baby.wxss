@@ -130,6 +130,45 @@
   font-weight: 900;
 }
 
+.logout-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  margin-top: 22rpx;
+  padding: 22rpx;
+  border: 3rpx solid #e2c9ad;
+  border-radius: 22rpx;
+  background: #fffaf0;
+}
+
+.logout-title {
+  color: #51351f;
+  font-size: 26rpx;
+  font-weight: 900;
+}
+
+.logout-helper {
+  margin-top: 8rpx;
+  color: #8a806d;
+  font-size: 22rpx;
+  line-height: 1.35;
+}
+
+.logout-btn {
+  flex: 0 0 auto;
+  min-width: 144rpx;
+  padding: 16rpx 18rpx;
+  border: 3rpx solid #b36a54;
+  border-radius: 16rpx;
+  background: #fff3ec;
+  color: #9a4338;
+  font-size: 24rpx;
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+}
+
 .sticky-save-bar {
   position: fixed;
   left: 0;

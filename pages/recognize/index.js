@@ -5,32 +5,48 @@ const foodService = getFoodService()
 const recognitionService = getRecognitionService()
 const assets = foodService.getAssets()
 
+function compressRecognitionImage(filePath) {
+  if (!filePath || typeof wx === 'undefined' || !wx.compressImage) return Promise.resolve(filePath)
+  return new Promise((resolve) => {
+    wx.compressImage({
+      src: filePath,
+      quality: 55,
+      success: (res) => resolve(res.tempFilePath || filePath),
+      fail: () => resolve(filePath)
+    })
+  })
+}
+
 Page({
   data: {
     assets,
     hasImage: false,
     imagePath: '',
     recognizing: false,
-    results: []
+    results: [],
+    unmatchedCandidates: []
   },
 
   chooseImage() {
     wx.chooseMedia({
       count: 1,
       mediaType: ['image'],
+      sizeType: ['compressed'],
       sourceType: ['album', 'camera'],
       success: async (res) => {
         const imagePath = res.tempFiles && res.tempFiles[0] ? res.tempFiles[0].tempFilePath : ''
-        this.setData({ hasImage: true, imagePath, recognizing: true, results: [] })
+        const uploadImagePath = await compressRecognitionImage(imagePath)
+        this.setData({ hasImage: true, imagePath: uploadImagePath, recognizing: true, results: [], unmatchedCandidates: [] })
         try {
-          const recognized = await recognitionService.recognizeImage(imagePath)
+          const recognized = await recognitionService.recognizeImage(uploadImagePath)
           this.setData({
             recognizing: false,
-            imagePath: recognized.imageUrl || imagePath,
-            results: recognized.results
+            imagePath: recognized.imageUrl || uploadImagePath,
+            results: recognized.results || [],
+            unmatchedCandidates: recognized.unmatchedCandidates || []
           })
         } catch (error) {
-          this.setData({ recognizing: false, results: [] })
+          this.setData({ recognizing: false, results: [], unmatchedCandidates: [] })
           wx.showToast({ title: '识别失败，请重试', icon: 'none' })
         }
       },
@@ -41,12 +57,14 @@ Page({
   },
 
   async mockRecognize() {
-    const recognized = await recognitionService.recognizeImage(assets.food.carrot)
+    const fallbackImage = assets.actions && assets.actions.camera ? assets.actions.camera : ''
+    const recognized = await recognitionService.recognizeImage(fallbackImage)
     this.setData({
       hasImage: true,
       recognizing: false,
-      imagePath: recognized.imageUrl || assets.food.carrot,
-      results: recognized.results
+      imagePath: recognized.imageUrl || fallbackImage,
+      results: recognized.results || [],
+      unmatchedCandidates: recognized.unmatchedCandidates || []
     })
   },
 
@@ -61,6 +79,12 @@ Page({
       confidence: selected.confidence || 0
     })
     wx.navigateTo({ url: `/pages/food/add?foodId=${id}` })
+  },
+
+  chooseUnmatchedCandidate(e) {
+    const foodName = String(e.currentTarget.dataset.name || '').trim()
+    if (!foodName) return
+    wx.navigateTo({ url: `/pages/food/add?name=${encodeURIComponent(foodName)}&custom=1` })
   },
 
   manualSearch() {

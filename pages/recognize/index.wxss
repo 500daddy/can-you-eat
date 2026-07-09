@@ -35,6 +35,74 @@
   font-weight: 900;
 }
 
+.recognition-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 28rpx 32rpx;
+  background: linear-gradient(180deg, rgba(47, 108, 55, 0.08), rgba(47, 108, 55, 0.34));
+  pointer-events: none;
+}
+
+.scan-line {
+  position: absolute;
+  left: 32rpx;
+  right: 32rpx;
+  top: 34rpx;
+  height: 5rpx;
+  border-radius: 999rpx;
+  background: #fffdf2;
+  box-shadow:
+    0 0 0 2rpx rgba(255, 253, 242, 0.38),
+    0 18rpx 42rpx rgba(255, 253, 242, 0.78);
+  animation: scanMove 1.8s ease-in-out infinite;
+}
+
+.scan-panel {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  max-width: 92%;
+  padding: 14rpx 20rpx;
+  border: 3rpx solid rgba(255, 253, 242, 0.82);
+  border-radius: 999rpx;
+  background: rgba(47, 108, 55, 0.88);
+  color: #fffdf2;
+  font-size: 23rpx;
+  font-weight: 900;
+  box-shadow: 0 8rpx 24rpx rgba(47, 108, 55, 0.24);
+}
+
+.scan-dots {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  flex: 0 0 auto;
+}
+
+.scan-dot {
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 999rpx;
+  background: #fffdf2;
+  animation: dotPulse 1s ease-in-out infinite;
+}
+
+.scan-dot.delay-1 {
+  animation-delay: 0.16s;
+}
+
+.scan-dot.delay-2 {
+  animation-delay: 0.32s;
+}
+
+.scan-copy {
+  min-width: 0;
+  line-height: 1.2;
+}
+
 .corner {
   position: absolute;
   width: 56rpx;
@@ -78,9 +146,40 @@
   font-weight: 800;
 }
 
+.recognize-state.active {
+  color: #fffdf2;
+  text-shadow: 0 2rpx 0 rgba(47, 108, 55, 0.32);
+}
+
 .tiny-baby {
   width: 44rpx;
   height: 44rpx;
+}
+
+@keyframes scanMove {
+  0% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateY(390rpx);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+}
+
+@keyframes dotPulse {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateY(-5rpx);
+    opacity: 1;
+  }
 }
 
 .result-helper {
@@ -93,7 +192,7 @@
 
 .result-card {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16rpx;
   margin-top: 16rpx;
   padding: 18rpx;
@@ -103,19 +202,43 @@
   box-shadow: 0 4rpx 0 rgba(81, 53, 31, 0.08);
 }
 
+.result-card.low {
+  border-style: dashed;
+  background: #fffaf0;
+}
+
+.candidate-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+  margin-top: 16rpx;
+  padding: 18rpx;
+  border: 3rpx dashed #d8c99d;
+  border-radius: 20rpx;
+  background: #fffaf0;
+  box-shadow: 0 4rpx 0 rgba(81, 53, 31, 0.08);
+}
+
+.candidate-card:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 0 rgba(81, 53, 31, 0.08);
+}
+
 .result-card:active {
   transform: translateY(2rpx);
   box-shadow: 0 2rpx 0 rgba(81, 53, 31, 0.08);
 }
 
-.result-icon {
-  width: 82rpx;
-  height: 82rpx;
-}
-
 .result-main {
   flex: 1;
   min-width: 0;
+}
+
+.result-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
 }
 
 .result-label {
@@ -125,11 +248,49 @@
   line-height: 1.2;
 }
 
+.confidence-tag {
+  flex: 0 0 auto;
+  padding: 4rpx 10rpx;
+  border: 2rpx solid #8bb774;
+  border-radius: 999rpx;
+  background: #f2fbdf;
+  color: #2f6c37;
+  font-size: 19rpx;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.result-card.medium .confidence-tag {
+  border-color: #d8c99d;
+  background: #fff8df;
+  color: #8b681f;
+}
+
+.result-card.low .confidence-tag {
+  border-color: #d8c99d;
+  background: #fff9e9;
+  color: #7c735f;
+}
+
+.candidate-card .confidence-tag {
+  border-color: #d8c99d;
+  background: #fff9e9;
+  color: #8b681f;
+}
+
 .result-name {
   margin-top: 2rpx;
   font-size: 30rpx;
   font-weight: 900;
   line-height: 1.2;
+}
+
+.result-reason {
+  margin-top: 8rpx;
+  color: #7c735f;
+  font-size: 21rpx;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .confidence-bar {
@@ -144,6 +305,18 @@
 .confidence-fill {
   height: 100%;
   background: #55a85a;
+}
+
+.result-card.medium .confidence-fill {
+  background: #d8a83f;
+}
+
+.result-card.low .confidence-fill {
+  background: #b8aa87;
+}
+
+.candidate-card .confidence-fill {
+  background: #d8a83f;
 }
 
 .confidence-copy {
@@ -173,6 +346,26 @@
   text-align: center;
   white-space: nowrap;
   box-shadow: inset 0 3rpx 0 rgba(255, 255, 255, 0.28), 0 5rpx 0 #24602c;
+}
+
+.empty-recognition-card {
+  margin-top: 24rpx;
+}
+
+.unmatched-card {
+  margin-top: 24rpx;
+}
+
+.empty-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14rpx;
+  margin-top: 18rpx;
+}
+
+.retry-btn {
+  min-height: 72rpx;
+  font-size: 24rpx;
 }
 
 .manual-btn {

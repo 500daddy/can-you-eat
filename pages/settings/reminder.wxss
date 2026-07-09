@@ -6,6 +6,62 @@
   font-weight: 900;
 }
 
+.setting-title.compact {
+  font-size: 24rpx;
+}
+
+.time-setting {
+  padding: 20rpx 0 4rpx;
+}
+
+.time-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16rpx;
+}
+
+.time-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 68rpx;
+  padding: 0 12rpx;
+  border: 3rpx solid #d8c99d;
+  border-radius: 16rpx;
+  background: linear-gradient(180deg, #fffef7, #fff8e4);
+  color: #6e5a3c;
+  font-size: 24rpx;
+  font-weight: 900;
+  box-shadow: inset 0 3rpx 0 rgba(255, 255, 255, 0.72), 0 4rpx 0 rgba(81, 53, 31, 0.08);
+}
+
+.time-chip.active {
+  border-color: #55a85a;
+  background: linear-gradient(180deg, #eff9df, #dff0ce);
+  color: #214d28;
+  box-shadow: inset 0 3rpx 0 rgba(255, 255, 255, 0.6), 0 4rpx 0 rgba(84, 143, 75, 0.22);
+}
+
+.time-picker-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 76rpx;
+  margin-top: 18rpx;
+  padding: 0 18rpx;
+  border: 3rpx dashed #d8c99d;
+  border-radius: 16rpx;
+  background: #fff9e9;
+}
+
+.time-picker-value {
+  min-width: 96rpx;
+  color: #2f7d3a;
+  font-size: 24rpx;
+  font-weight: 900;
+  text-align: right;
+}
+
 .save-btn {
   margin-top: 28rpx;
 }

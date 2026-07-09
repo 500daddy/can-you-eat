@@ -1,5 +1,7 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
+const fs = require('node:fs')
+const path = require('node:path')
 
 process.env.BABY_FOOD_IGNORE_LOCAL_CONFIG = '1'
 
@@ -10,6 +12,21 @@ const {
   selectReminderCandidate,
   TEMPLATE_ID_FOOD_EXPIRE
 } = require('../cloudfunctions/sendFoodReminder/core')
+
+test('sendFoodReminder cloud function entry stays self-contained for deployment', () => {
+  const entryPath = path.join(__dirname, '..', 'cloudfunctions', 'sendFoodReminder', 'index.js')
+  const source = fs.readFileSync(entryPath, 'utf8')
+
+  assert.doesNotMatch(source, /require\(['"]\.\.\//)
+})
+
+test('sendFoodReminder cloud function declares subscribe message OpenAPI permission', () => {
+  const configPath = path.join(__dirname, '..', 'cloudfunctions', 'sendFoodReminder', 'config.json')
+  const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
+
+  assert.ok(config.permissions)
+  assert.deepEqual(config.permissions.openapi, ['subscribeMessage.send'])
+})
 
 test('builds subscribe message payload with configured reminder template keywords', () => {
   const payload = buildReminderMessagePayload({
@@ -103,21 +120,44 @@ test('uses the current reminder candidate when no explicit food is provided', as
   })
 })
 
-test('summarizes multiple reminder foods into one subscribe message candidate', () => {
+test('summarizes only the highest-priority reminder group into one subscribe message candidate', () => {
   const candidate = selectReminderCandidate({
     today: [
-      { foodName: '杏鲍菇', babyExpireDate: '2026-06-30' },
-      { foodName: '牛奶', babyExpireDate: '2026-06-30' }
+      { foodName: '粥', babyExpireDate: '2026-07-02' },
+      { foodName: '胡萝卜', babyExpireDate: '2026-07-03' }
     ],
     soon: [
       { foodName: '蓝莓', babyExpireDate: '2026-07-01' }
     ],
-    overdue: []
-  }, '2026-06-30')
+    overdue: [
+      { foodName: '杏鲍菇', babyExpireDate: '2026-06-29' },
+      { foodName: '牛奶', babyExpireDate: '2026-06-29' }
+    ]
+  }, '2026-07-02')
 
   assert.deepEqual(candidate, {
-    foodName: '杏鲍菇等3样',
+    foodName: '粥、胡萝卜',
     remainingDays: 0,
-    expireDate: '2026-06-30'
+    expireDate: '2026-07-02'
+  })
+})
+
+test('uses compact summary text for three or more foods in the selected group', () => {
+  const candidate = selectReminderCandidate({
+    today: [],
+    soon: [
+      { foodName: '蓝莓', babyExpireDate: '2026-07-03' },
+      { foodName: '鸡蛋', babyExpireDate: '2026-07-04' },
+      { foodName: '牛奶', babyExpireDate: '2026-07-05' }
+    ],
+    overdue: [
+      { foodName: '粥', babyExpireDate: '2026-07-01' }
+    ]
+  }, '2026-07-02')
+
+  assert.deepEqual(candidate, {
+    foodName: '蓝莓、鸡蛋等3样',
+    remainingDays: 1,
+    expireDate: '2026-07-03'
   })
 })

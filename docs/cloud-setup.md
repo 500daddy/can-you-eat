@@ -96,8 +96,9 @@ const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
 当前 `mockRecognize` 已保留原函数名，方便前端调用链稳定：
 
 - 上传图片。
-- 如果云函数配置了 `OPENAI_API_KEY`，会调用视觉模型识别图片里的多种食材。
-- 如果没有配置密钥、图片无法访问或模型调用失败，会自动回退到模拟候选食材。
+- 如果云函数配置了 `DASHSCOPE_API_KEY` 或 `QWEN_API_KEY`，会优先调用 Qwen 视觉模型识别图片里的多种食材。
+- 如果只保留旧的 `OPENAI_API_KEY`，仍会走 OpenAI 兼容兜底。
+- 如果没有配置密钥，开发联调时会使用模拟候选食材；如果真实模型超时或调用失败，会返回空结果，让页面提示重试或搜索添加，避免把模拟食材误当成识别成功。
 - 用户选择识别结果。
 - 进入添加食材页。
 - 写入识别记录。
@@ -105,18 +106,23 @@ const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
 真实识别的配置方式：
 
 1. 在云开发控制台打开 `mockRecognize` 云函数。
-2. 添加环境变量 `OPENAI_API_KEY`，值为你的 OpenAI API Key。
-3. 可选添加 `OPENAI_VISION_MODEL`，默认使用 `gpt-4.1-mini`。
-4. 可选添加 `OPENAI_BASE_URL`，默认使用 `https://api.openai.com`。
-5. 重新上传并部署 `cloudfunctions/mockRecognize`。
+2. 添加环境变量 `DASHSCOPE_API_KEY`，值为阿里云百炼 / DashScope API Key。也可以使用 `QWEN_API_KEY`。
+3. 可选添加 `QWEN_VISION_MODEL` 或 `DASHSCOPE_VISION_MODEL`，默认使用 `qwen-vl-plus`。
+4. 可选添加 `QWEN_BASE_URL` 或 `DASHSCOPE_BASE_URL`，默认使用 `https://dashscope.aliyuncs.com/compatible-mode`。
+5. 建议把云函数“执行超时”调到 `30` 秒以上；真实视觉模型请求可能超过默认的 `3-15` 秒。
+6. 可选添加 `DASHSCOPE_REQUEST_TIMEOUT_MS` 或 `QWEN_REQUEST_TIMEOUT_MS`，默认 `25000`。这个值要小于云函数执行超时，方便代码先捕获失败并回退。
+7. 如果暂时只想用旧 OpenAI 配置，也可以保留 `OPENAI_API_KEY`、`OPENAI_VISION_MODEL`、`OPENAI_BASE_URL`，但优先级低于 Qwen 配置。
+8. 重新上传并部署 `cloudfunctions/mockRecognize`。
+
+如果日志里已经出现 `provider: 'qwen'`、`hasDashScopeKey: true`、`hasImageUrl: true`，但随后显示 `Invoking task timed out after 15 seconds`，说明配置已生效，问题是云函数执行超时太短。先把云函数执行超时改成 `30` 秒，并保留默认 `DASHSCOPE_REQUEST_TIMEOUT_MS=25000` 即可继续排查。
 
 不要把 API Key 写入代码或提交到 GitHub。仓库已忽略 `.env` 和 `.env.*`，但微信云函数推荐直接在云开发控制台配置环境变量。
 
-云函数会把微信云存储的 `cloud://` 图片转换成临时 HTTPS URL，再交给视觉模型。返回结构保持不变，页面代码不需要大改：
+云函数会先把微信云存储的 `cloud://` 图片转换成临时 HTTPS URL，再下载为 `data:image/...;base64,...` 交给视觉模型，减少外部模型再次拉取微信临时 URL 的等待。返回结构保持不变，页面代码不需要大改：
 
 ```js
 {
-  name: '西兰花',
+  foodName: '西兰花',
   confidence: 0.92,
   foodBaseId: 'broccoli'
 }

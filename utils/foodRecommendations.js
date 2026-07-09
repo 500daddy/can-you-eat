@@ -31,6 +31,37 @@ const stagePlans = [
   }
 ]
 
+function normalizeAllergens(value) {
+  if (Array.isArray(value)) return value.map((item) => String(item).trim()).filter(Boolean)
+  return String(value || '').split(/[、,，\s]/).map((item) => item.trim()).filter(Boolean)
+}
+
+function foodAllergenText(food) {
+  return [
+    food && food.name,
+    food && food.aliases,
+    food && food.category,
+    food && food.subCategory
+  ].flatMap((item) => Array.isArray(item) ? item : String(item || '').split(/[、,，\s]/))
+    .join(' ')
+}
+
+function matchesBabyAllergen(food, babyAllergens) {
+  const searchText = foodAllergenText(food)
+  return normalizeAllergens(babyAllergens).some((allergen) => searchText.includes(allergen))
+}
+
+function dateSeed(value = '') {
+  return String(value).split('').reduce((sum, char) => sum + char.charCodeAt(0), 0)
+}
+
+function rotateDaily(foods, today = '') {
+  const source = Array.isArray(foods) ? foods : []
+  if (source.length <= 1) return source
+  const offset = dateSeed(today) % source.length
+  return [...source.slice(offset), ...source.slice(0, offset)]
+}
+
 function getRecommendationStage(ageMonths = 0) {
   const months = Number(ageMonths) || 0
   return stagePlans.find((stage) => months >= stage.min) || stagePlans[stagePlans.length - 1]
@@ -45,7 +76,7 @@ function decorateRecommendation(food, stage, index) {
   }
 }
 
-function sortFoodsForBabyAge(foods, ageMonths = 0) {
+function sortFoodsForBabyAge(foods, ageMonths = 0, options = {}) {
   const source = Array.isArray(foods) ? foods : []
   const stage = getRecommendationStage(ageMonths)
   const byId = source.reduce((map, food) => {
@@ -66,7 +97,16 @@ function sortFoodsForBabyAge(foods, ageMonths = 0) {
     if (!used[food.id]) picked.push(food)
   })
 
-  return picked.map((food, index) => decorateRecommendation(food, stage, index))
+  const stagePicked = picked.slice(0, stage.ids.length)
+    .filter((food) => !matchesBabyAllergen(food, options.babyAllergens))
+  const fallbackPicked = picked.slice(stage.ids.length)
+    .filter((food) => !matchesBabyAllergen(food, options.babyAllergens))
+  const personalized = [
+    ...rotateDaily(stagePicked, options.today),
+    ...fallbackPicked
+  ]
+
+  return personalized.map((food, index) => decorateRecommendation(food, stage, index))
 }
 
 module.exports = {

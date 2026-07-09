@@ -1,6 +1,6 @@
 <view class="page with-tab">
   <view class="page-title">提醒中心</view>
-  <view class="subtitle">优先处理接近宝宝建议期的食材，订阅消息能力先预留。</view>
+  <view class="subtitle">优先处理接近宝宝建议期的食材，也可以开启微信提醒。</view>
 
   <view class="tabs">
     <view wx:for="{{tabs}}" wx:key="*this" class="tab {{active === index ? 'active' : ''}}" data-index="{{index}}" bindtap="switchTab">
@@ -24,13 +24,41 @@
       <text>临期前 1 天提醒</text>
       <switch checked="{{reminderEnabled}}" color="#55a85a" />
     </view>
-    <view class="setting-row">
-      <text>每日早上 8 点摘要</text>
-      <switch checked="{{dailyEnabled}}" color="#55a85a" />
+    <view class="setting-row daily-time-row">
+      <view>
+        <view>每日摘要</view>
+        <view class="setting-subtitle">当前 {{dailyTimeText}}</view>
+      </view>
+      <view class="setting-actions">
+        <view class="inline-edit-btn" bindtap="toggleDailyTimeEditor">修改</view>
+        <switch checked="{{dailyEnabled}}" color="#55a85a" />
+      </view>
+    </view>
+    <view class="inline-time-editor" wx:if="{{dailyEnabled && dailyTimeEditorVisible}}">
+      <view class="time-options">
+        <view
+          wx:for="{{dailyTimeOptions}}"
+          wx:key="value"
+          class="time-chip {{item.selected ? 'active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="selectDailyTimeOption"
+        >
+          {{item.label}}
+        </view>
+      </view>
+      <picker mode="time" value="{{dailyTime}}" bindchange="onDailyTimeChange">
+        <view class="time-picker-row">
+          <view>
+            <view class="setting-subtitle strong">自定义时间</view>
+            <view class="setting-subtitle">当前 {{dailyTime}}</view>
+          </view>
+          <view class="time-picker-value">选择</view>
+        </view>
+      </picker>
     </view>
     <view class="reminder-action-stack">
       <view class="pixel-btn ghost" bindtap="requestSubscribe">开启微信提醒</view>
-      <view class="pixel-btn secondary" bindtap="sendTestReminder">发送测试提醒</view>
+      <view wx:if="{{showTestReminder}}" class="pixel-btn secondary" bindtap="sendTestReminder">试发提醒</view>
     </view>
   </view>
 </view>

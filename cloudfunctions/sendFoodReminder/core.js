@@ -55,12 +55,16 @@ function normalizeReminderCandidate(record, today = todayString()) {
   }
 }
 
+function summarizeFoodNames(candidates) {
+  const names = candidates.map((candidate) => candidate.foodName).filter(Boolean)
+  if (names.length <= 1) return names[0] || '自定义食材'
+  if (names.length === 2) return `${names[0]}、${names[1]}`
+  return `${names[0]}、${names[1]}等${names.length}样`
+}
+
 function selectReminderCandidate(reminders = {}, today = todayString()) {
-  const records = [
-    ...(reminders.today || []),
-    ...(reminders.soon || []),
-    ...(reminders.overdue || [])
-  ]
+  const records = [reminders.today, reminders.soon, reminders.overdue]
+    .find((items) => Array.isArray(items) && items.length) || []
   if (!records.length) return null
   const candidates = records
     .map((record) => normalizeReminderCandidate(record, today))
@@ -76,7 +80,7 @@ function selectReminderCandidate(reminders = {}, today = todayString()) {
     Math.min(min, candidate.remainingDays)
   ), first.remainingDays)
   return {
-    foodName: candidates.length === 1 ? first.foodName : `${first.foodName}等${candidates.length}样`,
+    foodName: summarizeFoodNames(candidates),
     remainingDays,
     expireDate: earliest.expireDate
   }

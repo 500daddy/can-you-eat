@@ -46,6 +46,59 @@
   box-shadow: inset 0 4rpx 0 rgba(255, 255, 255, 0.24), 0 4rpx 0 #2f6c37;
 }
 
+.search-fallback {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin: -6rpx 0 24rpx;
+  padding: 14rpx 18rpx;
+  border: 3rpx dashed #8ebf7b;
+  border-radius: 18rpx;
+  background: #fbfff0;
+}
+
+.search-fallback-icon {
+  flex: 0 0 auto;
+  width: 38rpx;
+  height: 38rpx;
+}
+
+.search-fallback-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 10rpx;
+}
+
+.search-fallback-title {
+  color: #235b2b;
+  font-size: 24rpx;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.search-fallback-text {
+  color: #6f654e;
+  font-size: 22rpx;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.search-fallback-arrow {
+  color: #2f6c37;
+  font-size: 36rpx;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.show-all-action {
+  max-width: 210rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .category-card {
   margin-bottom: 22rpx;
   padding: 12rpx;
@@ -145,6 +198,20 @@
   background: #fffdf2;
 }
 
+.food-icon-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 76rpx;
+  width: 76rpx;
+  min-height: 76rpx;
+}
+
+.food-icon-img {
+  width: 68rpx;
+  height: 68rpx;
+}
+
 .recommendation-tip {
   margin: -4rpx 0 16rpx;
   padding: 14rpx 18rpx;
@@ -163,9 +230,18 @@
   font-weight: 900;
 }
 
-.result-icon {
-  width: 92rpx;
-  height: 92rpx;
+.profile-prompt {
+  display: inline-flex;
+  align-items: center;
+  margin: -4rpx 0 16rpx;
+  padding: 8rpx 16rpx;
+  border: 2rpx solid #8ebf7b;
+  border-radius: 999rpx;
+  background: #e7f4d8;
+  color: #2f6c37;
+  font-size: 22rpx;
+  font-weight: 900;
+  white-space: nowrap;
 }
 
 .result-main {

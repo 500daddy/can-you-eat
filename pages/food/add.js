@@ -1,5 +1,6 @@
 const { getFoodService } = require('../../utils/foodService')
 const { todayString } = require('../../utils/foodRules')
+const { decorateFoodIconDisplay } = require('../../utils/foodIconPolicy')
 
 const foodService = getFoodService()
 
@@ -103,6 +104,10 @@ function confirmAllergenWarning(matches, foodName) {
   })
 }
 
+function decorateSelectedFoodIcon(food) {
+  return decorateFoodIconDisplay([food || {}])[0]
+}
+
 Page({
   data: {
     assets: foodService.getAssets(),
@@ -121,7 +126,7 @@ Page({
     form: {
       foodId: 'broccoli',
       name: '西兰花',
-      icon: foodService.getAssets().food.broccoli,
+      icon: '',
       purchaseDate: todayString(),
       storageMethod: 'fridge',
       isBabyFood: true,
@@ -153,11 +158,11 @@ Page({
           ...this.data.form,
           foodId: food.id,
           name: food.name,
-          icon: food.icon,
+          icon: '',
           storageMethod: recommendedStorageMethod,
           remindText: buildRemindText(false, recommendedStorageMethod)
         },
-        selectedFood: food,
+        selectedFood: decorateSelectedFoodIcon(food),
         isCustomFood: false,
         selectedFoodHint: '已根据所选食材带入推荐信息',
         recommendedStorageMethod,
@@ -170,11 +175,11 @@ Page({
           ...this.data.form,
           foodId: 'custom',
           name,
-          icon: this.data.assets.food.customFood,
+          icon: '',
           storageMethod: 'fridge',
           remindText: buildRemindText(true, 'fridge')
         },
-        selectedFood: { name },
+        selectedFood: decorateSelectedFoodIcon({ name }),
         isCustomFood: true,
         selectedFoodHint: '自定义食材仅按保守周期提醒，不代表食材一定安全',
         recommendedStorageMethod: 'fridge',

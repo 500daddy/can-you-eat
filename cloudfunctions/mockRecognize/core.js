@@ -1,7 +1,13 @@
+const http = require('node:http')
 const https = require('node:https')
 
-const DEFAULT_MODEL = 'gpt-4.1-mini'
+const DEFAULT_PROVIDER = 'qwen'
+const DEFAULT_QWEN_MODEL = 'qwen-vl-plus'
+const DEFAULT_QWEN_BASE_URL = 'https://dashscope.aliyuncs.com/compatible-mode'
+const DEFAULT_OPENAI_MODEL = 'gpt-4.1-mini'
+const DEFAULT_OPENAI_BASE_URL = 'https://api.openai.com'
 const DEFAULT_MAX_RESULTS = 8
+const DEFAULT_REQUEST_TIMEOUT_MS = 25000
 
 const fallbackResults = [
   {
@@ -21,6 +27,16 @@ const fallbackResults = [
   }
 ]
 
+const visionAliasesByFoodId = {
+  greenPepper: ['黄椒', '红椒', '灯笼椒', '柿子椒', '黄色甜椒', '红色甜椒', '橙色甜椒', '黄色彩椒', '红色彩椒', 'bell pepper'],
+  tomato: ['小番茄', '圣女果', '小西红柿', '樱桃番茄', '车厘茄'],
+  cabbage: ['小青菜', '青江菜'],
+  potato: ['洋芋'],
+  sweetPotato: ['番薯'],
+  pumpkin: ['金瓜'],
+  corn: ['玉蜀黍']
+}
+
 function clampConfidence(value) {
   const confidence = Number(value)
   if (!Number.isFinite(confidence)) return 0
@@ -28,32 +44,110 @@ function clampConfidence(value) {
 }
 
 function normalizeText(value) {
-  return String(value || '').trim().toLowerCase()
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[\s,，、。.\-_/（）()【】\[\]{}]/g, '')
+}
+
+function collectVisionItems(payload) {
+  if (Array.isArray(payload)) return payload
+  if (!payload || typeof payload !== 'object') return []
+  const keys = ['foods', 'items', 'ingredients', 'results', 'objects', 'candidates']
+  for (const key of keys) {
+    if (Array.isArray(payload[key])) return payload[key]
+  }
+  return []
+}
+
+function candidateName(item) {
+  if (!item || typeof item !== 'object') return ''
+  const fields = ['foodBaseId', 'foodId', 'foodName', 'name', 'label', 'ingredient', 'food', 'item', 'object']
+  for (const field of fields) {
+    const value = String(item[field] || '').trim()
+    if (value) return value
+  }
+  return ''
+}
+
+function candidateConfidence(item) {
+  if (!item || typeof item !== 'object') return 0
+  return item.confidence !== undefined
+    ? item.confidence
+    : (item.score !== undefined ? item.score : item.probability)
 }
 
 function createFoodLookup(foodBase = []) {
-  const lookup = new Map()
+  const byKey = new Map()
+  const entries = []
+  function addName(name, food) {
+    const key = normalizeText(name)
+    if (!key) return
+    if (!byKey.has(key)) byKey.set(key, food)
+    entries.push({ key, food })
+  }
   foodBase.forEach((food) => {
-    const names = [food.id, food.name, ...(food.aliases || [])]
-    names.forEach((name) => {
-      const key = normalizeText(name)
-      if (key && !lookup.has(key)) lookup.set(key, food)
-    })
+    const names = [food.id, food.name, ...(food.aliases || []), ...(visionAliasesByFoodId[food.id] || [])]
+    names.forEach((name) => addName(name, food))
   })
-  return lookup
+  return { byKey, entries }
 }
 
 function matchFood(item, lookup) {
-  return lookup.get(normalizeText(item.foodBaseId)) ||
-    lookup.get(normalizeText(item.foodId)) ||
-    lookup.get(normalizeText(item.foodName)) ||
-    lookup.get(normalizeText(item.name))
+  const directKeys = [
+    normalizeText(item && item.foodBaseId),
+    normalizeText(item && item.foodId),
+    normalizeText(candidateName(item))
+  ].filter(Boolean)
+  for (const key of directKeys) {
+    const exact = lookup.byKey.get(key)
+    if (exact) return exact
+  }
+  for (const key of directKeys) {
+    if (key.length < 2) continue
+    const fuzzy = lookup.entries.find((entry) => {
+      if (entry.key.length < 2) return false
+      return key.includes(entry.key) || entry.key.includes(key)
+    })
+    if (fuzzy) return fuzzy.food
+  }
+  return null
+}
+
+function summarizeVisionCandidates(payload, options = {}) {
+  const maxItems = options.maxItems || 8
+  return collectVisionItems(payload)
+    .map(candidateName)
+    .filter(Boolean)
+    .slice(0, maxItems)
+}
+
+function summarizeUnmatchedVisionCandidates(payload, foodBase = [], options = {}) {
+  const maxItems = options.maxItems || DEFAULT_MAX_RESULTS
+  const lookup = createFoodLookup(foodBase)
+  const seen = new Set()
+  return collectVisionItems(payload)
+    .map((item) => {
+      if (matchFood(item, lookup)) return null
+      const foodName = candidateName(item)
+      const key = normalizeText(foodName)
+      if (!key || seen.has(key)) return null
+      seen.add(key)
+      return {
+        foodName,
+        confidence: clampConfidence(candidateConfidence(item)),
+        reason: String(item.reason || '').slice(0, 60)
+      }
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.confidence - a.confidence)
+    .slice(0, maxItems)
 }
 
 function normalizeVisionResults(payload, foodBase = [], options = {}) {
   const maxResults = options.maxResults || DEFAULT_MAX_RESULTS
   const lookup = createFoodLookup(foodBase)
-  const items = Array.isArray(payload) ? payload : (payload && payload.foods) || []
+  const items = collectVisionItems(payload)
   const seen = new Set()
 
   return items
@@ -66,7 +160,7 @@ function normalizeVisionResults(payload, foodBase = [], options = {}) {
       return {
         foodName: food.name,
         foodBaseId,
-        confidence: clampConfidence(item.confidence),
+        confidence: clampConfidence(candidateConfidence(item)),
         reason: String(item.reason || '').slice(0, 60)
       }
     })
@@ -98,10 +192,51 @@ function buildRecognitionPrompt(foodBase = [], options = {}) {
   ].join('\n')
 }
 
-function buildResponsesBody(imageUrl, foodBase = [], options = {}) {
+function buildQwenRecognitionPrompt(options = {}) {
+  const maxResults = options.maxResults || DEFAULT_MAX_RESULTS
+  return [
+    '你是一个谨慎的家庭食材图片识别助手。',
+    `请识别图片中清晰可见、可作为家庭食材的物品，最多返回 ${maxResults} 个。`,
+    '请使用常见中文食材名，例如番茄、洋葱、西兰花。不要返回餐具、包装、背景物或无法确认的物体。',
+    '只判断图片里可能是什么食材，不判断宝宝是否能吃，也不提供医疗或营养建议。',
+    '置信度 confidence 使用 0 到 1 的数字；遮挡、只露出局部、相似食材时请降低置信度。'
+  ].join('\n')
+}
+
+function buildQwenChatBody(imageUrl, foodBase = [], options = {}) {
   const maxResults = options.maxResults || DEFAULT_MAX_RESULTS
   return {
-    model: options.model || DEFAULT_MODEL,
+    model: options.model || DEFAULT_QWEN_MODEL,
+    messages: [{
+      role: 'user',
+      content: [
+        {
+          type: 'text',
+          text: [
+            buildQwenRecognitionPrompt({ maxResults }),
+            '',
+            '请只返回 JSON，不要输出 Markdown。格式：{"foods":[{"foodName":"番茄","confidence":0.92,"reason":"清晰可见"}]}'
+          ].join('\n')
+        },
+        {
+          type: 'image_url',
+          image_url: {
+            url: imageUrl
+          }
+        }
+      ]
+    }],
+    temperature: 0.1,
+    response_format: {
+      type: 'json_object'
+    }
+  }
+}
+
+function buildOpenAiResponsesBody(imageUrl, foodBase = [], options = {}) {
+  const maxResults = options.maxResults || DEFAULT_MAX_RESULTS
+  return {
+    model: options.model || DEFAULT_OPENAI_MODEL,
     input: [{
       role: 'user',
       content: [
@@ -146,6 +281,14 @@ function buildResponsesBody(imageUrl, foodBase = [], options = {}) {
   }
 }
 
+function buildVisionBody(imageUrl, foodBase = [], options = {}) {
+  const provider = options.provider || DEFAULT_PROVIDER
+  if (provider === 'openai') {
+    return buildOpenAiResponsesBody(imageUrl, foodBase, options)
+  }
+  return buildQwenChatBody(imageUrl, foodBase, options)
+}
+
 function extractOutputText(response) {
   if (!response) return ''
   if (typeof response.output_text === 'string') return response.output_text
@@ -160,7 +303,12 @@ function extractOutputText(response) {
     response.choices[0] &&
     response.choices[0].message &&
     response.choices[0].message.content
-  return typeof choiceText === 'string' ? choiceText : ''
+  if (typeof choiceText === 'string') return choiceText
+  if (Array.isArray(choiceText)) {
+    const textItem = choiceText.find((item) => item && (item.type === 'text' || item.type === 'output_text') && item.text)
+    return textItem ? textItem.text : ''
+  }
+  return ''
 }
 
 function parseVisionResponse(response) {
@@ -174,9 +322,23 @@ function parseVisionResponse(response) {
   }
 }
 
-function requestJson({ apiKey, baseUrl, body }) {
-  const url = new URL('/v1/responses', baseUrl || 'https://api.openai.com')
+function buildRequestUrl(baseUrl, path) {
+  const trimmedBase = String(baseUrl || '').replace(/\/+$/, '')
+  if (/\/v1\/(responses|chat\/completions)$/.test(trimmedBase)) {
+    return new URL(trimmedBase)
+  }
+  return new URL(`${trimmedBase}${path}`)
+}
+
+function requestJson({ apiKey, baseUrl, path = '/v1/chat/completions', body, timeoutMs = DEFAULT_REQUEST_TIMEOUT_MS }) {
+  const url = buildRequestUrl(baseUrl || DEFAULT_QWEN_BASE_URL, path)
   return new Promise((resolve, reject) => {
+    let settled = false
+    function settle(method, value) {
+      if (settled) return
+      settled = true
+      method(value)
+    }
     const req = https.request(url, {
       method: 'POST',
       headers: {
@@ -192,73 +354,189 @@ function requestJson({ apiKey, baseUrl, body }) {
         try {
           payload = raw ? JSON.parse(raw) : {}
         } catch (error) {
-          reject(new Error(`vision response is not JSON: ${raw.slice(0, 120)}`))
+          settle(reject, new Error(`vision response is not JSON: ${raw.slice(0, 120)}`))
           return
         }
         if (res.statusCode < 200 || res.statusCode >= 300) {
-          reject(new Error(payload.error && payload.error.message ? payload.error.message : `vision request failed: ${res.statusCode}`))
+          settle(reject, new Error(payload.error && payload.error.message ? payload.error.message : `vision request failed: ${res.statusCode}`))
           return
         }
-        resolve(payload)
+        settle(resolve, payload)
       })
     })
-    req.on('error', reject)
+    req.setTimeout(timeoutMs, () => {
+      req.destroy(new Error(`vision request timed out after ${timeoutMs}ms`))
+    })
+    req.on('error', (error) => settle(reject, error))
     req.write(JSON.stringify(body))
     req.end()
   })
 }
 
+function bufferToDataUrl(buffer, contentType = 'image/jpeg') {
+  return `data:${String(contentType || 'image/jpeg').split(';')[0]};base64,${buffer.toString('base64')}`
+}
+
+function downloadImage(imageUrl, options = {}) {
+  const timeoutMs = options.timeoutMs || 5000
+  const maxBytes = options.maxBytes || 2 * 1024 * 1024
+  const client = String(imageUrl).startsWith('http://') ? http : https
+  return new Promise((resolve, reject) => {
+    let settled = false
+    function settle(method, value) {
+      if (settled) return
+      settled = true
+      method(value)
+    }
+    const req = client.get(imageUrl, (res) => {
+      if (res.statusCode < 200 || res.statusCode >= 300) {
+        res.resume()
+        settle(reject, new Error(`image download failed: ${res.statusCode}`))
+        return
+      }
+      const chunks = []
+      let size = 0
+      res.on('data', (chunk) => {
+        size += chunk.length
+        if (size > maxBytes) {
+          req.destroy(new Error(`image exceeds ${maxBytes} bytes`))
+          return
+        }
+        chunks.push(chunk)
+      })
+      res.on('end', () => {
+        settle(resolve, {
+          buffer: Buffer.concat(chunks),
+          contentType: res.headers['content-type'] || 'image/jpeg'
+        })
+      })
+    })
+    req.setTimeout(timeoutMs, () => {
+      req.destroy(new Error(`image download timed out after ${timeoutMs}ms`))
+    })
+    req.on('error', (error) => settle(reject, error))
+  })
+}
+
 function createFoodRecognizer(options = {}) {
-  const apiKey = options.apiKey || ''
+  const qwenApiKey = options.qwenApiKey || options.dashscopeApiKey || ''
+  const openaiApiKey = options.openaiApiKey || options.apiKey || ''
+  const provider = options.provider || (qwenApiKey ? 'qwen' : (openaiApiKey ? 'openai' : DEFAULT_PROVIDER))
+  const apiKey = provider === 'openai' ? openaiApiKey : qwenApiKey
   const foodBase = options.foodBase || []
   const maxResults = options.maxResults || DEFAULT_MAX_RESULTS
   const fallback = options.fallbackResults || fallbackResults
   const callVision = options.requestJson || requestJson
+  const model = options.model || (provider === 'openai' ? DEFAULT_OPENAI_MODEL : DEFAULT_QWEN_MODEL)
+  const baseUrl = options.baseUrl || (provider === 'openai' ? DEFAULT_OPENAI_BASE_URL : DEFAULT_QWEN_BASE_URL)
+  const path = provider === 'openai' ? '/v1/responses' : '/v1/chat/completions'
+  const requestTimeoutMs = Number(options.requestTimeoutMs) > 0 ? Number(options.requestTimeoutMs) : DEFAULT_REQUEST_TIMEOUT_MS
+  const logger = options.logger || console
+
+  function warnFallback(reason, extra = {}) {
+    if (options.warnOnFallback === false || !logger || !logger.warn) return
+    logger.warn('vision recognition did not produce usable results', {
+      reason,
+      provider,
+      model,
+      hasApiKey: Boolean(apiKey),
+      ...extra
+    })
+  }
 
   return async function recognizeFood(event = {}) {
     const imageUrl = event.imageUrl || event.tempFileURL || event.imageData
-    if (!apiKey || !imageUrl) return fallback
+    if (!apiKey) {
+      warnFallback('missing_api_key', { hasImageUrl: Boolean(imageUrl) })
+      return fallback
+    }
+    if (!imageUrl) {
+      warnFallback('missing_image_url', { hasImageUrl: false })
+      return fallback
+    }
 
     try {
-      const body = buildResponsesBody(imageUrl, foodBase, {
+      if (logger && logger.info) {
+        logger.info('vision recognition requesting remote model', {
+          provider,
+          model,
+          baseUrl,
+          requestTimeoutMs,
+          hasImageUrl: true
+        })
+      }
+      const body = buildVisionBody(imageUrl, foodBase, {
         maxResults,
-        model: options.model
+        model,
+        provider
       })
       const response = await callVision({
         apiKey,
-        baseUrl: options.baseUrl,
+        baseUrl,
+        path,
+        timeoutMs: requestTimeoutMs,
         body
       })
-      const normalized = normalizeVisionResults(parseVisionResponse(response), foodBase, { maxResults })
-      return normalized.length ? normalized : fallback
-    } catch (error) {
-      if (options.warnOnFallback !== false && typeof console !== 'undefined' && console.warn) {
-        console.warn('vision recognition failed, fallback to mock results', error)
+      const parsed = parseVisionResponse(response)
+      const normalized = normalizeVisionResults(parsed, foodBase, { maxResults })
+      const unmatchedCandidates = summarizeUnmatchedVisionCandidates(parsed, foodBase, { maxItems: maxResults })
+      if (!normalized.length) {
+        warnFallback('empty_or_unmatched_model_result', {
+          hasImageUrl: true,
+          candidateNames: summarizeVisionCandidates(parsed)
+        })
       }
-      return fallback
+      if (options.includeUnmatchedCandidates) {
+        return {
+          results: normalized,
+          unmatchedCandidates
+        }
+      }
+      return normalized
+    } catch (error) {
+      warnFallback('remote_request_failed', {
+        hasImageUrl: true,
+        errorMessage: error && error.message ? error.message : String(error)
+      })
+      return []
     }
   }
 }
 
-async function resolveImageUrl(event = {}, cloudApi) {
+async function resolveImageUrl(event = {}, cloudApi, options = {}) {
   const imageUrl = event.imageUrl || event.tempFileURL || ''
-  if (!imageUrl || !imageUrl.startsWith('cloud://') || !cloudApi || !cloudApi.getTempFileURL) {
-    return imageUrl
+  let resolvedUrl = imageUrl
+  if (imageUrl && imageUrl.startsWith('cloud://') && cloudApi && cloudApi.getTempFileURL) {
+    const result = await cloudApi.getTempFileURL({
+      fileList: [imageUrl]
+    })
+    const file = result && result.fileList && result.fileList[0]
+    resolvedUrl = (file && file.tempFileURL) || imageUrl
   }
-  const result = await cloudApi.getTempFileURL({
-    fileList: [imageUrl]
-  })
-  const file = result && result.fileList && result.fileList[0]
-  return (file && file.tempFileURL) || imageUrl
+  if (!options.asDataUrl || !resolvedUrl || resolvedUrl.startsWith('data:')) {
+    return resolvedUrl
+  }
+  if (!/^https?:\/\//.test(resolvedUrl)) return resolvedUrl
+  const image = await (options.downloadImage || downloadImage)(resolvedUrl, options)
+  return bufferToDataUrl(image.buffer, image.contentType)
 }
 
 module.exports = {
+  bufferToDataUrl,
+  buildOpenAiResponsesBody,
+  buildQwenChatBody,
+  buildQwenRecognitionPrompt,
   buildRecognitionPrompt,
-  buildResponsesBody,
+  buildRequestUrl,
+  buildVisionBody,
   createFoodRecognizer,
+  DEFAULT_QWEN_MODEL,
+  downloadImage,
   fallbackResults,
   normalizeVisionResults,
   parseVisionResponse,
   requestJson,
-  resolveImageUrl
+  resolveImageUrl,
+  summarizeUnmatchedVisionCandidates,
+  summarizeVisionCandidates
 }

@@ -14,12 +14,6 @@
   box-shadow: 0 5rpx 0 rgba(84, 143, 75, 0.24);
 }
 
-.process-hero-icon {
-  flex: 0 0 82rpx;
-  width: 82rpx;
-  height: 82rpx;
-}
-
 .process-hero-main {
   flex: 1;
   min-width: 0;
@@ -69,16 +63,24 @@
   box-shadow: 0 4rpx 0 rgba(81, 53, 31, 0.08);
 }
 
-.food-icon {
-  flex: 0 0 76rpx;
-  width: 76rpx;
-  height: 76rpx;
-  image-rendering: pixelated;
-}
-
 .process-main {
   flex: 1;
   min-width: 0;
+}
+
+.food-icon-slot {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex: 0 0 76rpx;
+  width: 76rpx;
+  min-height: 76rpx;
+  padding-top: 2rpx;
+}
+
+.food-icon-img {
+  width: 68rpx;
+  height: 68rpx;
 }
 
 .process-head {
@@ -121,6 +123,27 @@
   font-size: 26rpx;
   font-weight: 900;
   line-height: 1.35;
+}
+
+.dish-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 12rpx;
+}
+
+.dish-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42rpx;
+  padding: 0 14rpx;
+  border: 2rpx solid #d8c99d;
+  border-radius: 14rpx;
+  background: #fff9e9;
+  color: #51351f;
+  font-size: 22rpx;
+  font-weight: 850;
+  line-height: 1.1;
 }
 
 .suggest-step {

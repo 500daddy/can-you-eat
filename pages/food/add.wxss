@@ -5,7 +5,6 @@
 .selected-food {
   display: flex;
   align-items: center;
-  gap: 18rpx;
   margin-top: 24rpx;
   padding: 18rpx;
   border: 3rpx solid #8ebf7b;
@@ -13,13 +12,16 @@
   background: #fffdf2;
 }
 
-.selected-icon {
-  width: 104rpx;
-  height: 104rpx;
-}
-
 .selected-main {
   flex: 1;
+  min-width: 0;
+}
+
+.selected-food-icon {
+  flex: 0 0 auto;
+  width: 74rpx;
+  height: 74rpx;
+  margin-right: 16rpx;
 }
 
 .selected-name {
@@ -42,6 +44,19 @@
   font-size: 28rpx;
   font-weight: 900;
   line-height: 1;
+}
+
+.readonly-food-icon {
+  flex: 0 0 auto;
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: 12rpx;
+}
+
+.readonly-food-name text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .date-trigger {

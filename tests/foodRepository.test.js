@@ -63,6 +63,32 @@ test('food base covers daily family ingredients with authority-aligned categorie
   }
 })
 
+test('food base normalizes duplicate second-level categories', () => {
+  const subCategories = new Set(foodBase.map((item) => item.subCategory))
+
+  assert.equal(subCategories.has('根茎薯芋类'), false)
+  assert.equal(subCategories.has('茄果瓜类'), false)
+  assert.equal(subCategories.has('菌藻类'), false)
+  assert.equal(subCategories.has('叶菜类'), false)
+  assert.equal(subCategories.has('莓果类'), false)
+  assert.equal(subCategories.has('根茎类'), true)
+  assert.equal(subCategories.has('茄果类'), true)
+  assert.equal(subCategories.has('菌菇类'), true)
+  assert.equal(subCategories.has('叶花菜类'), true)
+  assert.equal(subCategories.has('浆果类'), true)
+})
+
+test('food search covers common family aliases', () => {
+  const repo = createMemoryFoodRepository({ today: '2026-06-12' })
+  const resultIds = (keyword) => repo.searchFoods(keyword).map((item) => item.id)
+
+  assert.ok(resultIds('宝宝米粉').includes('riceNoodle'))
+  assert.ok(resultIds('小青菜').some((id) => ['cabbage', 'bokChoy'].includes(id)))
+  assert.ok(resultIds('鸡里脊').includes('chicken'))
+  assert.ok(resultIds('鱼柳').includes('fish'))
+  assert.ok(resultIds('红心火龙果').includes('dragonFruit'))
+})
+
 test('adds a food record and recalculates it for list/detail/reminders', () => {
   const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
   const created = repo.addFoodRecord({

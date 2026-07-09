@@ -13,14 +13,15 @@
   box-shadow: 0 6rpx 0 rgba(81, 53, 31, 0.1);
 }
 
-.detail-food {
-  width: 132rpx;
-  height: 132rpx;
-}
-
 .detail-main {
   flex: 1;
   min-width: 0;
+}
+
+.detail-food-icon {
+  flex: 0 0 auto;
+  width: 86rpx;
+  height: 86rpx;
 }
 
 .detail-name {
@@ -51,6 +52,39 @@
 
 .signs {
   margin-top: 16rpx;
+}
+
+.process-title {
+  margin-top: 12rpx;
+  color: #214d28;
+  font-size: 28rpx;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.dish-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 14rpx;
+}
+
+.dish-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42rpx;
+  padding: 0 14rpx;
+  border: 2rpx solid #d8c99d;
+  border-radius: 14rpx;
+  background: #fff9e9;
+  color: #51351f;
+  font-size: 22rpx;
+  font-weight: 850;
+  line-height: 1.1;
+}
+
+.process-tip {
+  border-left-color: #e4bf68;
 }
 
 .detail-actions {

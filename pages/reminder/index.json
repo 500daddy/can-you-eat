@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "提醒中心",
+  "navigationBarTitleText": "",
   "usingComponents": {
     "food-card": "/components/food-card/food-card"
   }
