@@ -5,6 +5,7 @@ project.private.config.json
 .env.*
 
 # Local private runtime config. Copy the matching *.example.js file when needed.
+utils/cloudConfig.local.js
 utils/subscribeConfig.local.js
 cloudfunctions/sendFoodReminder/subscribeConfig.local.js
 

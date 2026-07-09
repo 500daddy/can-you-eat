@@ -17,18 +17,18 @@
 
 1. 在微信开发者工具导入本项目。
 2. 后端服务选择“微信云开发”。
-3. 进入云开发控制台，选择当前开发环境 `cloud1`。
-4. 当前 [app.js](/Users/a500/Documents/宝宝食材小管家/app.js:6) 已配置环境 ID `cloud1-d2g659tkmf84d1d07`。
-5. 当前 [app.js](/Users/a500/Documents/宝宝食材小管家/app.js:7) 已将 `useCloudFoodApi` 设置为 `true`。
+3. 进入云开发控制台，创建或选择自己的云开发环境。
+4. 复制 [utils/cloudConfig.example.js](../utils/cloudConfig.example.js) 为 `utils/cloudConfig.local.js`。
+5. 在 `utils/cloudConfig.local.js` 中填入自己的环境 ID，并将 `useCloudFoodApi` 设置为 `true`。
 
 ```js
-globalData: {
-  cloudEnvId: 'cloud1-d2g659tkmf84d1d07',
+module.exports = {
+  cloudEnvId: 'cloud1-your-env-id',
   useCloudFoodApi: true
 }
 ```
 
-如果后续要临时回到本地模式，可以把 `useCloudFoodApi` 改成 `false`。如果 `cloudEnvId` 被改回 `cloud1-please-replace`，小程序会跳过 `wx.cloud.init`，这是为了避免开发者工具一直提示云环境占位错误。
+`utils/cloudConfig.local.js` 已加入 `.gitignore`，不会进入开源仓库。如果后续要临时回到本地模式，可以把 `useCloudFoodApi` 改成 `false`。如果 `cloudEnvId` 保持 `cloud1-please-replace`，小程序会跳过 `wx.cloud.init`，这是为了避免开发者工具一直提示云环境占位错误。
 
 ## 需要创建的数据库集合
 
@@ -84,9 +84,9 @@ const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
 
 正式接入时需要在微信公众平台配置订阅消息模板，然后：
 
-1. 复制 [utils/subscribeConfig.example.js](/Users/a500/Documents/宝宝食材小管家/utils/subscribeConfig.example.js) 为 `utils/subscribeConfig.local.js`。
+1. 复制 [utils/subscribeConfig.example.js](../utils/subscribeConfig.example.js) 为 `utils/subscribeConfig.local.js`。
 2. 把真实模板 ID 写入 `subscribeConfig.local.js`。
-3. 如果使用云函数发送订阅消息，也复制 [cloudfunctions/sendFoodReminder/subscribeConfig.example.js](/Users/a500/Documents/宝宝食材小管家/cloudfunctions/sendFoodReminder/subscribeConfig.example.js) 为同目录下的 `subscribeConfig.local.js`。
+3. 如果使用云函数发送订阅消息，也复制 [cloudfunctions/sendFoodReminder/subscribeConfig.example.js](../cloudfunctions/sendFoodReminder/subscribeConfig.example.js) 为同目录下的 `subscribeConfig.local.js`。
 4. 上传部署 `sendFoodReminder` 云函数。
 
 这些 `*.local.js` 文件已加入 `.gitignore`，不会进入开源仓库。未配置前，提醒页会提示“订阅模板未配置”，这不是代码错误。
@@ -140,7 +140,7 @@ const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
 
 先看控制台错误文本：
 
-- 云环境不存在：确认 [app.js](/Users/a500/Documents/宝宝食材小管家/app.js:6) 中的 `cloudEnvId` 是否仍是 `cloud1-d2g659tkmf84d1d07`，并确认开发者工具登录的是同一个 AppID。
+- 云环境不存在：确认 `utils/cloudConfig.local.js` 中的 `cloudEnvId` 是否是你自己的真实云环境 ID，并确认开发者工具登录的是同一个 AppID。
 - `collection not exists`：说明数据库集合还没创建。
 - `function not found`：说明对应云函数还没上传部署。
 - `permission denied`：说明集合权限或云函数调用权限需要调整。
@@ -152,7 +152,7 @@ const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
 
 ## 上线前检查
 
-- `cloudEnvId` 已替换真实环境 ID。
+- `utils/cloudConfig.local.js` 已填入真实环境 ID。
 - `useCloudFoodApi` 已按上线目标设置。
 - 三个云函数已部署。
 - 五个集合已创建。

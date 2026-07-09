@@ -109,12 +109,18 @@ test('literal page navigation targets are declared in app.json', () => {
   }
 })
 
-test('app.js uses the configured cloud development environment', () => {
+test('app uses local cloud config for private deployments', () => {
   const appJs = readText('app.js')
+  const cloudConfigExample = readText('utils/cloudConfig.example.js')
 
-  assert.match(appJs, /cloudEnvId:\s*'cloud1-d2g659tkmf84d1d07'/)
-  assert.match(appJs, /useCloudFoodApi:\s*true/)
-  assert.doesNotMatch(appJs, /cloudEnvId:\s*'cloud1-please-replace'/)
+  assert.equal(projectConfig.appid, 'touristappid')
+  assert.match(appJs, /require\('\.\/utils\/cloudConfig\.local'\)/)
+  assert.match(appJs, /require\('\.\/utils\/cloudConfig\.example'\)/)
+  assert.match(appJs, /cloudEnvId:\s*cloudConfig\.cloudEnvId/)
+  assert.match(appJs, /useCloudFoodApi:\s*cloudConfig\.useCloudFoodApi === true/)
+  assert.match(cloudConfigExample, /cloud1-please-replace/)
+  assert.doesNotMatch(appJs, /cloud1-[a-z0-9]{16,}/)
+  assert.doesNotMatch(JSON.stringify(projectConfig), /wx[0-9a-f]{16}/)
 })
 
 test('user-facing pages avoid development and configuration copy', () => {

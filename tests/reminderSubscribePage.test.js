@@ -244,11 +244,11 @@ test('reminder page hides test reminder action from normal users by default', ()
   assert.match(markup, /wx:if="\{\{showTestReminder\}\}"[^>]*bindtap="sendTestReminder"[^>]*>试发提醒/)
 })
 
-test('reminder page keeps test reminder available outside release builds', () => {
+test('reminder page keeps test reminder available only in development builds', () => {
   global.wx = {
-    getAccountInfoSync: () => ({ miniProgram: { envVersion: 'trial' } })
+    getAccountInfoSync: () => ({ miniProgram: { envVersion: 'develop' } })
   }
-  const page = createPageInstance(loadPage('pages/reminder/index', {
+  const developPage = createPageInstance(loadPage('pages/reminder/index', {
     foodService: {
       getReminders: async () => ({ today: [], soon: [], overdue: [] }),
       getSettings: async () => ({ reminderEnabled: true, dailySummaryEnabled: true })
@@ -256,10 +256,24 @@ test('reminder page keeps test reminder available outside release builds', () =>
     subscribeService: {}
   }))
 
-  page.onShow()
+  developPage.onShow()
+
+  global.wx = {
+    getAccountInfoSync: () => ({ miniProgram: { envVersion: 'trial' } })
+  }
+  const trialPage = createPageInstance(loadPage('pages/reminder/index', {
+    foodService: {
+      getReminders: async () => ({ today: [], soon: [], overdue: [] }),
+      getSettings: async () => ({ reminderEnabled: true, dailySummaryEnabled: true })
+    },
+    subscribeService: {}
+  }))
+
+  trialPage.onShow()
 
   delete global.wx
-  assert.equal(page.data.showTestReminder, true)
+  assert.equal(developPage.data.showTestReminder, true)
+  assert.equal(trialPage.data.showTestReminder, false)
 })
 
 test('reminder page saves inline daily summary time changes', async () => {
@@ -341,6 +355,42 @@ test('reminder page sends a test subscribe message through cloud function', asyn
   assert.deepEqual(toasts, [{ title: '提醒已发送', icon: 'success' }])
 })
 
+test('reminder page asks for subscribe permission before sending a test reminder', async () => {
+  const modals = []
+  const calls = []
+  global.wx = {
+    showLoading: () => {},
+    hideLoading: () => {},
+    showToast: () => {},
+    showModal: (input) => modals.push(input),
+    cloud: {
+      callFunction: async (input) => {
+        calls.push(input)
+        return { result: { ok: true } }
+      }
+    }
+  }
+  const page = createPageInstance(loadPage('pages/reminder/index', {
+    foodService: {
+      getReminders: async () => ({ today: [], soon: [], overdue: [] }),
+      getSettings: async () => ({ reminderEnabled: true, dailySummaryEnabled: true })
+    },
+    subscribeService: {
+      requestFoodExpireSubscribe: async () => ({ status: 'reject', accepted: false })
+    }
+  }))
+
+  await page.sendTestReminder()
+
+  delete global.wx
+  assert.deepEqual(calls, [])
+  assert.deepEqual(modals, [{
+    title: '未开启本次提醒',
+    content: '需要先允许微信提醒，才能发送试发消息。',
+    showCancel: false
+  }])
+})
+
 test('reminder page shows cloud function error when test reminder fails', async () => {
   const modals = []
   global.wx = {
@@ -368,6 +418,37 @@ test('reminder page shows cloud function error when test reminder fails', async 
   assert.deepEqual(modals, [{
     title: '提醒发送失败',
     content: 'template_not_configured',
+    showCancel: false
+  }])
+})
+
+test('reminder page explains refused subscribe message send clearly', async () => {
+  const modals = []
+  global.wx = {
+    showLoading: () => {},
+    hideLoading: () => {},
+    showToast: () => {},
+    showModal: (input) => modals.push(input),
+    cloud: {
+      callFunction: async () => ({ result: { ok: false, error: 'subscribe_message_refused' } })
+    }
+  }
+  const page = createPageInstance(loadPage('pages/reminder/index', {
+    foodService: {
+      getReminders: async () => ({ today: [], soon: [], overdue: [] }),
+      getSettings: async () => ({ reminderEnabled: true, dailySummaryEnabled: true })
+    },
+    subscribeService: {
+      requestFoodExpireSubscribe: async () => ({ status: 'accept', accepted: true })
+    }
+  }))
+
+  await page.sendTestReminder()
+
+  delete global.wx
+  assert.deepEqual(modals, [{
+    title: '提醒发送失败',
+    content: '微信还没有拿到本次提醒授权。请重新点试发提醒，并在弹窗里选择允许。',
     showCancel: false
   }])
 })

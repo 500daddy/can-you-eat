@@ -11,9 +11,12 @@ function showTestReminderError(error) {
   const rawContent = typeof error === 'string'
     ? error
     : (error && (error.error || error.errMsg || error.message)) || '请查看云函数日志'
-  const content = /-604101|no permission to call this API/.test(rawContent)
-    ? '云函数缺少订阅消息发送权限。请重新上传 sendFoodReminder 云函数后再试。'
-    : rawContent
+  let content = rawContent
+  if (/subscribe_message_refused|43101|user refuse to accept the msg/.test(rawContent)) {
+    content = '微信还没有拿到本次提醒授权。请重新点试发提醒，并在弹窗里选择允许。'
+  } else if (/-604101|no permission to call this API/.test(rawContent)) {
+    content = '云函数缺少订阅消息发送权限。请重新上传 sendFoodReminder 云函数后再试。'
+  }
   if (wx.showModal) {
     wx.showModal({
       title: '提醒发送失败',
@@ -29,7 +32,7 @@ function canShowTestReminder() {
   if (typeof wx === 'undefined' || !wx.getAccountInfoSync) return false
   const info = wx.getAccountInfoSync()
   const envVersion = info && info.miniProgram && info.miniProgram.envVersion
-  return envVersion === 'develop' || envVersion === 'trial'
+  return envVersion === 'develop'
 }
 
 Page({
@@ -127,6 +130,19 @@ Page({
   async sendTestReminder() {
     if (!wx.cloud || !wx.cloud.callFunction) {
       wx.showToast({ title: '云函数不可用', icon: 'none' })
+      return
+    }
+    const subscribeResult = await subscribeService.requestFoodExpireSubscribe()
+    if (!subscribeResult.accepted) {
+      if (wx.showModal) {
+        wx.showModal({
+          title: '未开启本次提醒',
+          content: '需要先允许微信提醒，才能发送试发消息。',
+          showCancel: false
+        })
+      } else {
+        wx.showToast({ title: '未开启本次提醒', icon: 'none' })
+      }
       return
     }
     wx.showLoading({ title: '发送中' })

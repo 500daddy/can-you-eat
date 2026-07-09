@@ -1,6 +1,6 @@
 # 宝宝食材小管家
 
-原生微信小程序 MVP。当前阶段已从静态 UI 骨架进入业务闭环开发，页面默认使用本地 `utils/foodRepository.js` 保存记录，并预留 `foodApi` 云函数用于后续切换到云数据库。
+原生微信小程序，用来记录宝宝食材、保存方式和提醒处理时间。项目默认可用本地数据跑通流程，也支持接入微信云开发保存真实用户数据。
 
 ## 当前已完成
 
@@ -24,10 +24,10 @@
 
 1. 用微信开发者工具打开本目录。
 2. AppID 可先使用测试号或游客模式。
-3. 当前已配置开发环境 `cloud1-d2g659tkmf84d1d07`，导入时可以选择“微信云开发”继续联调。
-4. 如果只是查看 UI 或本地试流程，也可以临时把 `app.js` 中的 `globalData.useCloudFoodApi` 改回 `false`。
+3. 如果只是查看 UI 或本地试流程，可以不打开云开发。
+4. 如果要联调云开发，复制 `utils/cloudConfig.example.js` 为 `utils/cloudConfig.local.js`，填入自己的云环境 ID，并把 `useCloudFoodApi` 设为 `true`。
 
-完整云开发联调步骤见 [docs/cloud-setup.md](/Users/a500/Documents/宝宝食材小管家/docs/cloud-setup.md)。
+完整云开发联调步骤见 [docs/cloud-setup.md](docs/cloud-setup.md)。
 
 ## 云函数 foodApi
 
@@ -57,10 +57,9 @@ wx.cloud.callFunction({
 })
 ```
 
-当前页面通过 `utils/foodService.js` 访问数据，已切到微信云开发环境 `cloud1-d2g659tkmf84d1d07`。
-部署 `foodApi` 和 `mockRecognize` 后，页面会优先调用云函数；如果云函数失败，会自动回退本地数据，方便调试不中断。拍照识别会优先上传到云存储并调用 `mockRecognize`，云函数配置 `DASHSCOPE_API_KEY` 或 `QWEN_API_KEY` 后会把图片交给 Qwen 视觉模型识别，未配置或调用失败时回退本地模拟识别。
+当前页面通过 `utils/foodService.js` 访问数据。配置 `utils/cloudConfig.local.js` 并部署 `foodApi` 后，页面会优先调用云函数；如果云函数失败，会自动回退本地数据，方便调试不中断。拍照识别会优先上传到云存储并调用 `mockRecognize`，云函数配置 `DASHSCOPE_API_KEY` 或 `QWEN_API_KEY` 后会把图片交给 Qwen 视觉模型识别，未配置或调用失败时回退本地模拟识别。
 反馈和识别日志也会在云模式下写入 `feedback`、`recognition_logs` 集合。
-数据库集合、初始化入口、红色叹号排查和订阅模板配置都整理在 [docs/cloud-setup.md](/Users/a500/Documents/宝宝食材小管家/docs/cloud-setup.md)。
+数据库集合、初始化入口、红色叹号排查和订阅模板配置都整理在 [docs/cloud-setup.md](docs/cloud-setup.md)。
 
 订阅消息模板 ID 默认使用占位值，真实 ID 不写入仓库：
 
@@ -75,9 +74,20 @@ const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
 ## 本地验证
 
 ```bash
-node --test tests/appConfig.test.js tests/assetPaths.test.js tests/babyAge.test.js tests/subscribeService.test.js tests/reminderSubscribePage.test.js tests/recognitionService.test.js tests/homePage.test.js tests/foodCardComponent.test.js tests/foodAddPage.test.js tests/foodEditPage.test.js tests/feedbackPage.test.js tests/recognizePage.test.js tests/pageQuery.test.js tests/foodService.test.js tests/cloudStore.test.js tests/foodApiCore.test.js tests/foodRepository.test.js tests/foodRules.test.js
+node --test tests/*.test.js
 find app.js utils components pages cloudfunctions custom-tab-bar tests -name '*.js' -print0 | xargs -0 -n1 node --check
 ```
+
+## 开源与私有配置
+
+仓库不提交真实云环境 ID、订阅消息模板 ID 或模型 API Key：
+
+- `utils/cloudConfig.local.js`：本地云环境配置，复制 `utils/cloudConfig.example.js` 创建。
+- `utils/subscribeConfig.local.js`：小程序端订阅消息模板 ID。
+- `cloudfunctions/sendFoodReminder/subscribeConfig.local.js`：云函数端订阅消息模板 ID。
+- 模型 API Key 请配置在微信云函数环境变量中，不要写入代码。
+
+这些 `*.local.js` 和 `.env*` 文件已加入 `.gitignore`。
 
 ## 下一步
 

@@ -1,6 +1,6 @@
 {
   "description": "宝宝食材小管家微信小程序",
-  "appid": "wx4437435eea3de150",
+  "appid": "touristappid",
   "projectname": "宝宝食材小管家",
   "miniprogramRoot": "./",
   "cloudfunctionRoot": "cloudfunctions/",

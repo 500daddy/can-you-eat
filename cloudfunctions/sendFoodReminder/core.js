@@ -101,6 +101,14 @@ function buildReminderMessagePayload(options = {}) {
   }
 }
 
+function normalizeSendError(error) {
+  const message = String((error && (error.errMsg || error.errmsg || error.message)) || error || '')
+  if (/43101|user refuse to accept the msg/.test(message)) {
+    return 'subscribe_message_refused'
+  }
+  return message || 'subscribe_message_failed'
+}
+
 function createSendFoodReminder(options = {}) {
   const getOpenId = options.getOpenId || (() => '')
   const sendSubscribeMessage = options.sendSubscribeMessage
@@ -133,12 +141,20 @@ function createSendFoodReminder(options = {}) {
       expireDate: event.expireDate || (reminderCandidate && reminderCandidate.expireDate),
       miniprogramState: event.miniprogramState
     })
-    const response = await sendSubscribeMessage(payload)
+    let response
+    try {
+      response = await sendSubscribeMessage(payload)
+    } catch (error) {
+      return {
+        ok: false,
+        error: normalizeSendError(error)
+      }
+    }
     const errCode = response && (response.errCode ?? response.errcode ?? 0)
     if (errCode) {
       return {
         ok: false,
-        error: response.errMsg || response.errmsg || `subscribe message failed: ${errCode}`,
+        error: normalizeSendError(response.errMsg || response.errmsg || `subscribe message failed: ${errCode}`),
         data: response
       }
     }

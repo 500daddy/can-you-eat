@@ -93,6 +93,21 @@ test('sends a test reminder to current openid', async () => {
   assert.deepEqual(calls[0].data.thing6, { value: '西兰花' })
 })
 
+test('returns a readable error when user has not accepted the subscribe message', async () => {
+  const sendFoodReminder = createSendFoodReminder({
+    getOpenId: () => 'openid-test',
+    templateId: 'tmpl_private_food_expire',
+    sendSubscribeMessage: async () => {
+      throw new Error('errCode: 43101 errMsg: openapi.subscribeMessage.send:fail user refuse to accept the msg')
+    }
+  })
+
+  const result = await sendFoodReminder({ test: true })
+
+  assert.equal(result.ok, false)
+  assert.equal(result.error, 'subscribe_message_refused')
+})
+
 test('uses the current reminder candidate when no explicit food is provided', async () => {
   const calls = []
   const sendFoodReminder = createSendFoodReminder({

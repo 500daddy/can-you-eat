@@ -1,12 +1,22 @@
 const LOGGED_OUT_KEY = 'baby_food_logged_out_v1'
 
+function loadCloudConfig() {
+  try {
+    return require('./utils/cloudConfig.local')
+  } catch (error) {
+    return require('./utils/cloudConfig.example')
+  }
+}
+
+const cloudConfig = loadCloudConfig()
+
 App({
   globalData: {
     babyName: '小芽贝',
     babyAgeText: '8个月',
     babyMode: true,
-    cloudEnvId: 'cloud1-d2g659tkmf84d1d07',
-    useCloudFoodApi: true,
+    cloudEnvId: cloudConfig.cloudEnvId || 'cloud1-please-replace',
+    useCloudFoodApi: cloudConfig.useCloudFoodApi === true,
     loggedOut: false
   },
 
