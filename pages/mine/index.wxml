@@ -32,28 +32,6 @@
     </view>
   </view>
 
-  <view class="paper-card ai-lab-card {{aiLabExpanded ? 'expanded' : 'collapsed'}}">
-    <view class="ai-lab-head" bindtap="toggleAiLab">
-      <view class="ai-lab-heading">
-        <view class="section-title">AI功能实验室</view>
-      </view>
-      <view class="ai-lab-head-actions">
-        <view class="ai-lab-badge">体验中</view>
-        <view class="ai-lab-toggle">{{aiLabExpanded ? '收起' : '展开'}} {{aiLabExpanded ? '⌃' : '⌄'}}</view>
-      </view>
-    </view>
-    <view wx:if="{{aiLabExpanded}}" class="ai-lab-list">
-      <view class="ai-lab-item {{item.status === '可用' ? 'available' : 'pending'}}" wx:for="{{aiLabItems}}" wx:key="id" data-id="{{item.id}}" bindtap="goAiLabItem">
-        <image class="ai-lab-icon" src="{{assets.actions.camera}}" mode="aspectFit" />
-        <view class="ai-lab-main">
-          <view class="ai-lab-title">{{item.title}}</view>
-          <view class="ai-lab-desc">{{item.desc}}</view>
-        </view>
-        <view class="ai-lab-status">{{item.status}}</view>
-      </view>
-    </view>
-  </view>
-
   <view class="paper-card">
     <view class="list-cell" bindtap="goFeedback">
       <text>意见反馈</text>

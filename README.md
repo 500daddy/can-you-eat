@@ -1,24 +1,17 @@
 # 宝宝食材小管家
 
-原生微信小程序，用来记录宝宝食材、保存方式和提醒处理时间。项目默认可用本地数据跑通流程，也支持接入微信云开发保存真实用户数据。
+原生微信小程序，用来记录宝宝食材、保存方式和临期提醒，帮助家长更轻松地判断“今天先处理什么”。项目默认可用本地数据跑通流程，也支持接入微信云开发保存真实用户数据。
 
-## 当前已完成
+## 功能亮点
 
-- 根级小程序入口：`app.js`、`app.json`、`app.wxss`
-- 页面：首页、食材搜索、添加食材、拍照识别、食材详情、编辑食材、提醒中心、我的、宝宝模式设置、提醒设置
-- 公共组件：状态标签、食材卡片、空状态
-- 像素素材：引用 `/assets/sprites/` 下的原创 sprite 切图
-- 本地业务层：食材基础库、状态计算、添加/编辑/完成/提醒/统计
-- 自动化测试：`tests/foodRules.test.js`、`tests/foodRepository.test.js`、`tests/foodApiCore.test.js`
-- 云函数：`login`、`mockRecognize`、`foodApi`
-- 数据访问层：`utils/foodService.js` 默认本地，云模式优先调用 `foodApi`
-- 识别访问层：`utils/recognitionService.js` 默认本地模拟，云模式上传图片并调用 `mockRecognize`；云函数配置 `DASHSCOPE_API_KEY` 或 `QWEN_API_KEY` 后会优先用 Qwen 视觉模型识别多食材
-- 反馈页：`pages/feedback/index`，通过 `foodService.submitFeedback` 写入本地/云端反馈
-- 识别记录：选择识别结果时记录日志，“我的”页展示识别次数
-- 识别记录页：`pages/recognition-log/index`，可查看历史识别选择并继续添加食材
-- 关于页：`pages/about/index`，展示版本、能力说明、云模式和订阅模板状态
-- 宝宝月龄：根据宝宝生日自动计算，本地和 `foodApi` 云端设置保持一致
-- 提醒订阅：`utils/subscribeService.js` 封装微信订阅消息请求，未配置模板 ID 时给出明确提示
+- 食材库存：记录购买日期、保存方式和处理状态。
+- 今日处理：按宝宝建议期、成人参考期和过敏源信息排序提醒。
+- 食材搜索：支持常见别名搜索、分类筛选和自定义食材兜底。
+- 采购计划：先记录待买食材，买到后再转为库存提醒。
+- 宝宝信息：根据生日自动计算月龄，可维护过敏源。
+- 提醒中心：查看今日建议处理、即将过期和已过期食材。
+- 像素风 UI：使用原创 sprite 切图，偏温暖厨房与食材小管家风格。
+- 本地优先：不配置云开发也能在开发者工具里体验主要流程。
 
 ## 开发者工具打开方式
 
@@ -29,7 +22,7 @@
 
 完整云开发联调步骤见 [docs/cloud-setup.md](docs/cloud-setup.md)。
 
-## 云函数 foodApi
+## 云开发配置
 
 `cloudfunctions/foodApi` 是单入口云函数，使用 `action` 参数分发：
 
@@ -46,7 +39,7 @@
 - `logRecognition`
 - `getRecognitionLogs`
 
-开发阶段建议先在开发者工具里上传并部署 `foodApi`，然后调用：
+第一次部署云端数据时，在开发者工具里上传并部署 `foodApi`，然后调用一次初始化：
 
 ```js
 wx.cloud.callFunction({
@@ -78,6 +71,21 @@ node --test tests/*.test.js
 find app.js utils components pages cloudfunctions custom-tab-bar tests -name '*.js' -print0 | xargs -0 -n1 node --check
 ```
 
+## 项目结构
+
+```text
+.
+├── app.js / app.json / app.wxss
+├── pages/                  # 小程序页面
+├── components/             # 公共组件
+├── custom-tab-bar/         # 自定义底部导航
+├── utils/                  # 业务规则、数据访问、配置示例
+├── cloudfunctions/         # 微信云函数
+├── assets/sprites/         # 原创像素素材切图
+├── docs/                   # 云开发、审核、发布说明
+└── tests/                  # Node.js 自动化测试
+```
+
 ## 开源与私有配置
 
 仓库不提交真实云环境 ID、订阅消息模板 ID 或模型 API Key：
@@ -89,8 +97,14 @@ find app.js utils components pages cloudfunctions custom-tab-bar tests -name '*.
 
 这些 `*.local.js` 和 `.env*` 文件已加入 `.gitignore`。
 
-## 下一步
+## 部署前检查
 
-- 在开发者工具里创建并验证 `food_base`、`user_food_records`、`user_settings`、`feedback` 集合权限。
-- 部署 `foodApi` 和 `mockRecognize`，做真机/模拟器云数据联调。
-- 在云函数环境变量里配置 `DASHSCOPE_API_KEY` 或 `QWEN_API_KEY`，上传部署 `mockRecognize`，验证真实多食材识别。
+- 已复制本地私有配置文件，且没有提交真实环境 ID、模板 ID 或 API Key。
+- 已部署 `foodApi`，并调用过 `initFoodBase` 初始化食材基础库。
+- 已按 [docs/cloud-setup.md](docs/cloud-setup.md) 检查数据库集合和权限。
+- 已在微信开发者工具中完成预览、真机测试和代码上传。
+- 已确认页面里没有“暂未开放”“即将上线”等审核容易误判的占位内容。
+
+## 免责声明
+
+本项目提供食材保存提醒和宝宝食用建议参考，不能替代食品安全、医疗或营养专业建议。新食材、易过敏食材和状态异常食材，请结合实际情况并咨询医生或专业人士。

@@ -144,7 +144,14 @@ test('user-facing pages avoid development and configuration copy', () => {
     /模拟识别/,
     /模拟结果/,
     /Beta/,
-    /实验功能/
+    /实验功能/,
+    /暂未开放/,
+    /上线后/,
+    /体验中/,
+    /即将上线/,
+    /敬请期待/,
+    /AI功能实验室/,
+    /辅食安全问答/
   ]
   const files = walkFiles('pages')
     .filter((file) => /\.(wxml|js)$/.test(file))
