@@ -3,7 +3,6 @@
   <view class="subtitle">修改后会重新计算宝宝建议期和提醒时间。</view>
 
   <view class="selected-food">
-    <image class="selected-icon" src="{{form.icon}}" mode="aspectFit" />
     <view>
       <view class="selected-name">{{form.name}}</view>
       <view class="subtitle">{{form.statusText}}</view>

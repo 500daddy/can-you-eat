@@ -1,8 +1,10 @@
 const { getFoodService } = require('../../utils/foodService')
 const { getSubscribeService } = require('../../utils/subscribeService')
+const { buildDailySummaryTimeState } = require('../../utils/reminderTime')
 
 const foodService = getFoodService()
 const subscribeService = getSubscribeService()
+const defaultDailyTimeState = buildDailySummaryTimeState()
 
 Page({
   data: {
@@ -10,8 +12,7 @@ Page({
     beforeDays: '1天前',
     todayEnabled: true,
     dailyEnabled: true,
-    dailyTime: '08:00',
-    initFoodBaseText: '本地食材库已内置'
+    ...defaultDailyTimeState
   },
 
   async onLoad() {
@@ -21,7 +22,7 @@ Page({
       beforeDays: `${settings.remindBeforeDays}天前`,
       todayEnabled: settings.todayReminderEnabled,
       dailyEnabled: settings.dailySummaryEnabled,
-      dailyTime: settings.dailySummaryTime
+      ...buildDailySummaryTimeState(settings.dailySummaryTime)
     })
   },
 
@@ -37,6 +38,14 @@ Page({
     this.setData({ dailyEnabled: e.detail.value })
   },
 
+  selectDailyTimeOption(e) {
+    this.setData(buildDailySummaryTimeState(e.currentTarget.dataset.value))
+  },
+
+  onDailyTimeChange(e) {
+    this.setData(buildDailySummaryTimeState(e.detail.value))
+  },
+
   async save() {
     await foodService.updateSettings({
       reminderEnabled: this.data.reminderEnabled,
@@ -50,7 +59,7 @@ Page({
   async requestSubscribe() {
     const result = await subscribeService.requestFoodExpireSubscribe()
     if (result.status === 'not_configured') {
-      wx.showToast({ title: '请配置订阅模板ID', icon: 'none' })
+      wx.showToast({ title: '微信提醒暂不可用', icon: 'none' })
       return
     }
     if (result.status === 'failed') {
@@ -63,18 +72,6 @@ Page({
     wx.showToast({
       title: result.accepted ? '已开启微信提醒' : '未开启订阅',
       icon: result.accepted ? 'success' : 'none'
-    })
-  },
-
-  async initFoodBase() {
-    const result = await foodService.initFoodBase()
-    const text = result.localOnly
-      ? '本地食材库已内置'
-      : `云端食材库：新增 ${result.inserted || 0} 条`
-    this.setData({ initFoodBaseText: text })
-    wx.showToast({
-      title: result.localOnly ? '本地已可用' : '云端初始化完成',
-      icon: 'none'
     })
   }
 })

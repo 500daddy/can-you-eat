@@ -1,16 +1,14 @@
-const assets = require('./assets')
-
 const foodNameMap = {
-  西兰花: { foodId: 'broccoli', icon: assets.food.broccoli },
-  胡萝卜: { foodId: 'carrot', icon: assets.food.carrot },
-  南瓜: { foodId: 'pumpkin', icon: assets.food.pumpkin },
-  红薯: { foodId: 'sweetPotato', icon: assets.food.sweetPotato }
+  西兰花: { foodId: 'broccoli' },
+  胡萝卜: { foodId: 'carrot' },
+  南瓜: { foodId: 'pumpkin' },
+  红薯: { foodId: 'sweetPotato' }
 }
 
 const localResults = [
-  { foodId: 'carrot', foodName: '胡萝卜', confidence: 0.92, percent: 92, icon: assets.food.carrot },
-  { foodId: 'pumpkin', foodName: '南瓜', confidence: 0.64, percent: 64, icon: assets.food.pumpkin },
-  { foodId: 'sweetPotato', foodName: '红薯', confidence: 0.51, percent: 51, icon: assets.food.sweetPotato }
+  { foodId: 'carrot', foodName: '胡萝卜', confidence: 0.92, percent: 92 },
+  { foodId: 'pumpkin', foodName: '南瓜', confidence: 0.64, percent: 64 },
+  { foodId: 'sweetPotato', foodName: '红薯', confidence: 0.51, percent: 51 }
 ]
 
 const localLogs = []
@@ -74,21 +72,82 @@ function defaultCallFoodApi(data) {
   })
 }
 
+function clampPercent(value) {
+  const percent = Number(value)
+  if (!Number.isFinite(percent)) return 0
+  return Math.max(0, Math.min(100, Math.round(percent)))
+}
+
+function buildConfidenceMeta(percent) {
+  if (percent >= 75) {
+    return {
+      confidenceLevel: 'high',
+      confidenceLabel: '把握较高'
+    }
+  }
+  if (percent >= 55) {
+    return {
+      confidenceLevel: 'medium',
+      confidenceLabel: '还需确认'
+    }
+  }
+  return {
+    confidenceLevel: 'low',
+    confidenceLabel: '谨慎参考'
+  }
+}
+
+function normalizeReason(value) {
+  return String(value || '').trim().slice(0, 36)
+}
+
 function normalizeResults(results) {
   return (results || []).map((item) => {
     const mapped = foodNameMap[item.foodName] || {
-      foodId: item.foodId || item.foodBaseId || 'custom',
-      icon: assets.food.babyPuree
+      foodId: item.foodId || item.foodBaseId || 'custom'
     }
     const confidence = Number(item.confidence || 0)
     const foodId = item.foodId || item.foodBaseId || mapped.foodId
+    const percent = clampPercent(item.percent !== undefined ? item.percent : confidence * 100)
     return {
       ...item,
       foodId,
-      percent: item.percent || Math.round(confidence * 100),
-      icon: item.icon || assets.food[foodId] || mapped.icon
+      confidence,
+      percent,
+      ...buildConfidenceMeta(percent),
+      reason: normalizeReason(item.reason)
     }
   })
+}
+
+function normalizeUnmatchedCandidates(candidates) {
+  return (candidates || []).map((item) => {
+    const confidence = Number(item.confidence || 0)
+    const percent = clampPercent(item.percent !== undefined ? item.percent : confidence * 100)
+    return {
+      ...item,
+      foodName: String(item.foodName || item.name || '').trim(),
+      confidence,
+      percent,
+      ...buildConfidenceMeta(percent),
+      reason: normalizeReason(item.reason),
+      isUnmatched: true
+    }
+  }).filter((item) => item.foodName)
+}
+
+function normalizeRecognizePayload(payload) {
+  if (Array.isArray(payload)) {
+    return {
+      results: normalizeResults(payload),
+      unmatchedCandidates: []
+    }
+  }
+  const data = payload && typeof payload === 'object' ? payload : {}
+  return {
+    results: normalizeResults(data.results || []),
+    unmatchedCandidates: normalizeUnmatchedCandidates(data.unmatchedCandidates || data.candidates || [])
+  }
 }
 
 function createRecognitionService(options = {}) {
@@ -108,24 +167,33 @@ function createRecognitionService(options = {}) {
 
   async function recognizeImage(imagePath) {
     if (resolveUseCloud(options.useCloud)) {
+      let imageUrl = imagePath
       try {
         const uploadResult = await uploadFile(imagePath)
-        const imageUrl = uploadResult.fileID || uploadResult.imageUrl || imagePath
-        const results = await callRecognize({ imageUrl })
+        imageUrl = uploadResult.fileID || uploadResult.imageUrl || imagePath
+        const recognized = normalizeRecognizePayload(await callRecognize({ imageUrl }))
         return {
           imageUrl,
-          results: normalizeResults(results)
+          ...recognized
         }
       } catch (error) {
         if (options.warnOnCloudFallback !== false && typeof console !== 'undefined' && console.warn) {
-          console.warn('mockRecognize failed, fallback to local recognition', error)
+          console.warn('mockRecognize failed after upload', error)
+        }
+        if (imageUrl !== imagePath) {
+          return {
+            imageUrl,
+            results: [],
+            unmatchedCandidates: []
+          }
         }
       }
     }
 
     return {
       imageUrl: imagePath,
-      results: normalizeResults(localResults)
+      results: normalizeResults(localResults),
+      unmatchedCandidates: []
     }
   }
 
@@ -186,5 +254,7 @@ module.exports = {
   createRecognitionService,
   getRecognitionService,
   localResults,
-  normalizeResults
+  normalizeRecognizePayload,
+  normalizeResults,
+  normalizeUnmatchedCandidates
 }

@@ -1,3 +1,7 @@
+.detail-page {
+  padding-bottom: 260rpx;
+}
+
 .detail-header {
   display: flex;
   align-items: center;
@@ -9,14 +13,15 @@
   box-shadow: 0 6rpx 0 rgba(81, 53, 31, 0.1);
 }
 
-.detail-food {
-  width: 132rpx;
-  height: 132rpx;
-}
-
 .detail-main {
   flex: 1;
   min-width: 0;
+}
+
+.detail-food-icon {
+  flex: 0 0 auto;
+  width: 86rpx;
+  height: 86rpx;
 }
 
 .detail-name {
@@ -49,9 +54,64 @@
   margin-top: 16rpx;
 }
 
+.process-title {
+  margin-top: 12rpx;
+  color: #214d28;
+  font-size: 28rpx;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.dish-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 14rpx;
+}
+
+.dish-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42rpx;
+  padding: 0 14rpx;
+  border: 2rpx solid #d8c99d;
+  border-radius: 14rpx;
+  background: #fff9e9;
+  color: #51351f;
+  font-size: 22rpx;
+  font-weight: 850;
+  line-height: 1.1;
+}
+
+.process-tip {
+  border-left-color: #e4bf68;
+}
+
 .detail-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 18rpx;
   margin-top: 28rpx;
+}
+
+.fixed-action-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14rpx;
+  padding: 18rpx 24rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  border-top: 3rpx solid #e2d2a4;
+  background: rgba(255, 249, 233, 0.96);
+  box-shadow: 0 -6rpx 0 rgba(81, 53, 31, 0.08);
+}
+
+.fixed-action-dock .pixel-btn {
+  height: 64rpx;
+  min-height: 64rpx;
+  font-size: 25rpx;
 }

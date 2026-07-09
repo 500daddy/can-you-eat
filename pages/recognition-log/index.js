@@ -16,7 +16,7 @@ Page({
       logs: logs.map((item) => ({
         ...item,
         displayName: item.selectedFoodName || item.foodName || '未命名食材',
-        displayTime: item.createdAt || '本地模拟记录',
+        displayTime: item.createdAt || '刚刚记录',
         confidenceText: item.confidence ? `${Math.round(Number(item.confidence) * 100)}%` : '参考'
       }))
     })

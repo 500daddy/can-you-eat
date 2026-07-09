@@ -10,8 +10,157 @@
     "enhance": true,
     "postcss": true,
     "minified": true,
-    "compileHotReLoad": true
+    "compileHotReLoad": true,
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
   },
   "compileType": "miniprogram",
-  "libVersion": "3.8.0"
+  "libVersion": "3.8.0",
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "design-demos"
+      },
+      {
+        "type": "folder",
+        "value": "docs"
+      },
+      {
+        "type": "folder",
+        "value": "cloudfunctions"
+      },
+      {
+        "type": "folder",
+        "value": "scripts"
+      },
+      {
+        "type": "folder",
+        "value": "tests"
+      },
+      {
+        "type": "folder",
+        "value": "_knowledge_base"
+      },
+      {
+        "type": "folder",
+        "value": "宝宝食材小管家_sprite_assets"
+      },
+      {
+        "type": "folder",
+        "value": "assets/sprites/source"
+      },
+      {
+        "type": "folder",
+        "value": "food_icon_generation_pack"
+      },
+      {
+        "type": "folder",
+        "value": "宝宝食材小管家_缺失食材icon生成包_给Codex"
+      },
+      {
+        "type": "folder",
+        "value": "icon_supplement_pack"
+      },
+      {
+        "type": "folder",
+        "value": "strict_icon_regen_pack"
+      },
+      {
+        "type": "folder",
+        "value": "宝宝食材小管家_sprite_assets"
+      },
+      {
+        "type": "file",
+        "value": "assets/sprites/asset_manifest.json"
+      },
+      {
+        "type": "file",
+        "value": "assets/sprites/asset_preview.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/sprites/ui_asset_preview.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/sprites/ui/ui_banner_village.png"
+      },
+      {
+        "type": "file",
+        "value": "food_icon_manifest.json"
+      },
+      {
+        "type": "file",
+        "value": ".DS_Store"
+      },
+      {
+        "type": "file",
+        "value": "utils/.subscribeService.js.swp"
+      },
+      {
+        "type": "file",
+        "value": "assets/sprites/README.md"
+      },
+      {
+        "type": "file",
+        "value": "1.png"
+      },
+      {
+        "type": "file",
+        "value": "宝宝食材小管家_Codex开发说明.md"
+      },
+      {
+        "type": "file",
+        "value": "宝宝食材小管家_sprite切图说明_给Codex.md"
+      },
+      {
+        "type": "file",
+        "value": "宝宝食材小管家_sprite素材包_给Codex.zip"
+      },
+      {
+        "type": "file",
+        "value": "宝宝食材小管家_缺失食材icon生成包_给Codex.zip"
+      },
+      {
+        "type": "file",
+        "value": "宝宝食材小管家_缺失食材icon重生成_严格旧风格_给Codex.zip"
+      },
+      {
+        "type": "file",
+        "value": "icon补充.zip"
+      },
+      {
+        "type": "file",
+        "value": "宝宝食材小管家_像素厨房首页底图.png"
+      },
+      {
+        "type": "file",
+        "value": "宝宝食材小管家_清像素风_sprite_sheet_original.png"
+      },
+      {
+        "type": "file",
+        "value": "README.md"
+      }
+    ],
+    "include": []
+  },
+  "editorSetting": {}
 }

@@ -17,18 +17,18 @@
 
 1. 在微信开发者工具导入本项目。
 2. 后端服务选择“微信云开发”。
-3. 进入云开发控制台，选择当前开发环境 `cloud1`。
-4. 当前 [app.js](/Users/a500/Documents/宝宝食材小管家/app.js:6) 已配置环境 ID `cloud1-d2g659tkmf84d1d07`。
-5. 当前 [app.js](/Users/a500/Documents/宝宝食材小管家/app.js:7) 已将 `useCloudFoodApi` 设置为 `true`。
+3. 进入云开发控制台，创建或选择自己的云开发环境。
+4. 复制 [utils/cloudConfig.example.js](../utils/cloudConfig.example.js) 为 `utils/cloudConfig.local.js`。
+5. 在 `utils/cloudConfig.local.js` 中填入自己的环境 ID，并将 `useCloudFoodApi` 设置为 `true`。
 
 ```js
-globalData: {
-  cloudEnvId: 'cloud1-d2g659tkmf84d1d07',
+module.exports = {
+  cloudEnvId: 'cloud1-your-env-id',
   useCloudFoodApi: true
 }
 ```
 
-如果后续要临时回到本地模式，可以把 `useCloudFoodApi` 改成 `false`。如果 `cloudEnvId` 被改回 `cloud1-please-replace`，小程序会跳过 `wx.cloud.init`，这是为了避免开发者工具一直提示云环境占位错误。
+`utils/cloudConfig.local.js` 已加入 `.gitignore`，不会进入开源仓库。如果后续要临时回到本地模式，可以把 `useCloudFoodApi` 改成 `false`。如果 `cloudEnvId` 保持 `cloud1-please-replace`，小程序会跳过 `wx.cloud.init`，这是为了避免开发者工具一直提示云环境占位错误。
 
 ## 需要创建的数据库集合
 
@@ -76,33 +76,59 @@ wx.cloud.callFunction({
 
 ## 订阅消息模板
 
-当前订阅消息模板还是占位值：
+订阅消息模板默认使用占位值，真实模板 ID 不写入仓库：
 
 ```js
 const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
 ```
 
-正式接入时需要在微信公众平台配置订阅消息模板，再替换 [utils/subscribeService.js](/Users/a500/Documents/宝宝食材小管家/utils/subscribeService.js:1) 里的模板 ID。未替换前，提醒页会提示“订阅模板未配置”，这不是代码错误。
+正式接入时需要在微信公众平台配置订阅消息模板，然后：
+
+1. 复制 [utils/subscribeConfig.example.js](../utils/subscribeConfig.example.js) 为 `utils/subscribeConfig.local.js`。
+2. 把真实模板 ID 写入 `subscribeConfig.local.js`。
+3. 如果使用云函数发送订阅消息，也复制 [cloudfunctions/sendFoodReminder/subscribeConfig.example.js](../cloudfunctions/sendFoodReminder/subscribeConfig.example.js) 为同目录下的 `subscribeConfig.local.js`。
+4. 上传部署 `sendFoodReminder` 云函数。
+
+这些 `*.local.js` 文件已加入 `.gitignore`，不会进入开源仓库。未配置前，提醒页会提示“订阅模板未配置”，这不是代码错误。
 
 ## 拍照识别
 
-当前 `mockRecognize` 是模拟识别函数，适合先验证流程：
+当前 `mockRecognize` 已保留原函数名，方便前端调用链稳定：
 
 - 上传图片。
-- 返回候选食材。
+- 如果云函数配置了 `DASHSCOPE_API_KEY` 或 `QWEN_API_KEY`，会优先调用 Qwen 视觉模型识别图片里的多种食材。
+- 如果只保留旧的 `OPENAI_API_KEY`，仍会走 OpenAI 兼容兜底。
+- 如果没有配置密钥，开发联调时会使用模拟候选食材；如果真实模型超时或调用失败，会返回空结果，让页面提示重试或搜索添加，避免把模拟食材误当成识别成功。
 - 用户选择识别结果。
 - 进入添加食材页。
 - 写入识别记录。
 
-后续替换真实识别服务时，建议继续返回当前结构，页面代码就不需要大改：
+真实识别的配置方式：
+
+1. 在云开发控制台打开 `mockRecognize` 云函数。
+2. 添加环境变量 `DASHSCOPE_API_KEY`，值为阿里云百炼 / DashScope API Key。也可以使用 `QWEN_API_KEY`。
+3. 可选添加 `QWEN_VISION_MODEL` 或 `DASHSCOPE_VISION_MODEL`，默认使用 `qwen-vl-plus`。
+4. 可选添加 `QWEN_BASE_URL` 或 `DASHSCOPE_BASE_URL`，默认使用 `https://dashscope.aliyuncs.com/compatible-mode`。
+5. 建议把云函数“执行超时”调到 `30` 秒以上；真实视觉模型请求可能超过默认的 `3-15` 秒。
+6. 可选添加 `DASHSCOPE_REQUEST_TIMEOUT_MS` 或 `QWEN_REQUEST_TIMEOUT_MS`，默认 `25000`。这个值要小于云函数执行超时，方便代码先捕获失败并回退。
+7. 如果暂时只想用旧 OpenAI 配置，也可以保留 `OPENAI_API_KEY`、`OPENAI_VISION_MODEL`、`OPENAI_BASE_URL`，但优先级低于 Qwen 配置。
+8. 重新上传并部署 `cloudfunctions/mockRecognize`。
+
+如果日志里已经出现 `provider: 'qwen'`、`hasDashScopeKey: true`、`hasImageUrl: true`，但随后显示 `Invoking task timed out after 15 seconds`，说明配置已生效，问题是云函数执行超时太短。先把云函数执行超时改成 `30` 秒，并保留默认 `DASHSCOPE_REQUEST_TIMEOUT_MS=25000` 即可继续排查。
+
+不要把 API Key 写入代码或提交到 GitHub。仓库已忽略 `.env` 和 `.env.*`，但微信云函数推荐直接在云开发控制台配置环境变量。
+
+云函数会先把微信云存储的 `cloud://` 图片转换成临时 HTTPS URL，再下载为 `data:image/...;base64,...` 交给视觉模型，减少外部模型再次拉取微信临时 URL 的等待。返回结构保持不变，页面代码不需要大改：
 
 ```js
 {
-  name: '西兰花',
+  foodName: '西兰花',
   confidence: 0.92,
   foodBaseId: 'broccoli'
 }
 ```
+
+为了避免误导用户，识别结果只作为“可能是这些食材”的候选，不直接给出宝宝食用判断。用户仍需点“添加”后确认保存日期和方式。
 
 ## 常见问题
 
@@ -114,7 +140,7 @@ const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
 
 先看控制台错误文本：
 
-- 云环境不存在：确认 [app.js](/Users/a500/Documents/宝宝食材小管家/app.js:6) 中的 `cloudEnvId` 是否仍是 `cloud1-d2g659tkmf84d1d07`，并确认开发者工具登录的是同一个 AppID。
+- 云环境不存在：确认 `utils/cloudConfig.local.js` 中的 `cloudEnvId` 是否是你自己的真实云环境 ID，并确认开发者工具登录的是同一个 AppID。
 - `collection not exists`：说明数据库集合还没创建。
 - `function not found`：说明对应云函数还没上传部署。
 - `permission denied`：说明集合权限或云函数调用权限需要调整。
@@ -126,7 +152,7 @@ const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
 
 ## 上线前检查
 
-- `cloudEnvId` 已替换真实环境 ID。
+- `utils/cloudConfig.local.js` 已填入真实环境 ID。
 - `useCloudFoodApi` 已按上线目标设置。
 - 三个云函数已部署。
 - 五个集合已创建。

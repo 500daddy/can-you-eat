@@ -1,13 +1,13 @@
 <view class="page">
   <view class="page-title">识别记录</view>
-  <view class="subtitle">这里记录你从拍照识别结果里选择过的食材，方便后续回看和继续添加。</view>
+  <view class="subtitle">看过的食材会留在这里，方便下次再添加。</view>
 
   <block wx:if="{{logs.length}}">
     <view wx:for="{{logs}}" wx:key="id" class="paper-card log-card">
       <view class="log-main">
         <view>
           <view class="section-title">{{item.displayName}}</view>
-          <view class="subtitle">{{item.displayTime}}｜置信度：{{item.confidenceText}}</view>
+          <view class="subtitle">{{item.displayTime}}｜识别参考：{{item.confidenceText}}</view>
         </view>
         <view class="mini-add" data-id="{{item.selectedFoodBaseId}}" bindtap="goAdd">再添加</view>
       </view>
@@ -17,7 +17,7 @@
   <view wx:else class="paper-card empty-log">
     <image class="empty-img" src="{{assets.mascot.emptyNotFound}}" mode="aspectFit" />
     <view class="section-title">还没有识别记录</view>
-    <view class="subtitle">拍照识别并选择一个结果后，会自动出现在这里。</view>
+    <view class="subtitle">拍照选择食材后，会自动出现在这里。</view>
     <view class="pixel-btn save-btn" bindtap="goRecognize">去拍照识别</view>
   </view>
 </view>

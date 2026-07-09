@@ -1,0 +1,73 @@
+<view class="page purchase-plan-page">
+  <view class="page-title">计划采购</view>
+  <view class="subtitle">先想好要买什么和怎么保存。计划采购不计算过期，买到后再转为库存提醒。</view>
+
+  <view class="paper-card yellow">
+    <view class="section-title">新增采购计划</view>
+    <view class="field">
+      <text class="label">计划购买食材 <text class="required">*</text></text>
+      <input class="input" value="{{form.foodName}}" bindinput="onFoodNameInput" placeholder="例如：西兰花、鸡胸肉、蓝莓" />
+    </view>
+
+    <view class="chip-row recommend-row">
+      <view wx:for="{{quickFoods}}" wx:key="id" class="chip" data-id="{{item.id}}" bindtap="selectFood">
+        {{item.name}}
+      </view>
+    </view>
+
+    <view class="field">
+      <text class="label">预计购买日</text>
+      <picker mode="date" value="{{form.plannedDate}}" bindchange="onDateChange">
+        <view class="picker-box">{{form.plannedDate}}</view>
+      </picker>
+      <view class="field-helper">这是采购提醒日期，不会用于计算库存保存期。</view>
+    </view>
+
+    <view class="field">
+      <text class="label">参考保存方式</text>
+      <view class="plan-guide">{{storageGuide}}</view>
+    </view>
+
+    <view class="field field-grid">
+      <view>
+        <text class="label">数量</text>
+        <input class="input" value="{{form.quantity}}" bindinput="onQuantityInput" type="number" />
+      </view>
+      <view>
+        <text class="label">单位</text>
+        <input class="input" value="{{form.unit}}" bindinput="onUnitInput" placeholder="份 / 盒 / 袋" />
+      </view>
+    </view>
+
+    <view class="pixel-btn save-btn {{saving ? 'disabled' : ''}}" bindtap="addPlan">{{saving ? '保存中...' : '加入计划'}}</view>
+  </view>
+
+  <view class="section-head">
+    <view class="section-title">待采购</view>
+    <view class="section-more">{{plans.length}} 个</view>
+  </view>
+
+  <block wx:if="{{plans.length}}">
+    <view class="plan-card" wx:for="{{plans}}" wx:key="id">
+      <view wx:if="{{item.reserveFoodIconSlot}}" class="food-icon-slot">
+        <image wx:if="{{item.showFoodIcon}}" class="food-icon-img" src="{{item.displayFoodIcon}}" mode="aspectFit" />
+      </view>
+      <view class="plan-main">
+        <view class="plan-name">{{item.name}}</view>
+        <view class="plan-meta">预计购买：{{item.plannedDate}}｜{{item.storageText}}</view>
+        <view class="plan-meta">数量：{{item.quantity || '-'}} {{item.unit || ''}}</view>
+      </view>
+      <view class="plan-actions">
+        <view class="choose-btn" data-id="{{item.id}}" bindtap="convertToFoodRecord">转库存</view>
+        <view class="delete-btn" data-id="{{item.id}}" data-name="{{item.name}}" bindtap="deletePlan">删除</view>
+      </view>
+    </view>
+  </block>
+
+  <view wx:else class="paper-card">
+    <view class="section-title">还没有采购计划</view>
+    <view class="subtitle">可以先把准备买的宝宝食材记下来，买到后再转为库存提醒。</view>
+  </view>
+
+  <view class="disclaimer">采购计划只辅助购买决策，不代表食材适合宝宝食用。新食材、易过敏食材和不确定食材，请少量购买并结合医生或专业人士建议判断。</view>
+</view>

@@ -1,6 +1,5 @@
 <view class="page">
-  <view class="page-title">拍照识别</view>
-  <view class="subtitle">MVP 阶段先做模拟识别。我猜可能是这些食材，请选择后查看宝宝食用建议。</view>
+  <view class="subtitle">拍一张食材照片，选中结果后再确认保存信息。</view>
 
   <view class="camera-card">
     <view class="camera-frame" bindtap="chooseImage">
@@ -9,29 +8,77 @@
         <image class="camera-icon" src="{{assets.actions.camera}}" mode="aspectFit" />
         <view class="camera-text">拍照或从相册选择</view>
       </block>
+      <view wx:if="{{recognizing}}" class="recognition-overlay">
+        <view class="scan-line"></view>
+        <view class="scan-panel">
+          <view class="scan-dots">
+            <view class="scan-dot"></view>
+            <view class="scan-dot delay-1"></view>
+            <view class="scan-dot delay-2"></view>
+          </view>
+          <view class="scan-copy">图片已选择，正在上传识别</view>
+        </view>
+      </view>
       <view class="corner lt"></view>
       <view class="corner rt"></view>
       <view class="corner lb"></view>
       <view class="corner rb"></view>
     </view>
-    <view class="recognize-state">
+    <view class="recognize-state {{recognizing ? 'active' : ''}}">
       <image class="tiny-baby" src="{{assets.mascot.babyHappy}}" mode="aspectFit" />
-      <text>{{recognizing ? '识别中...' : '识别结果仅供参考，请以实际为准'}}</text>
+      <text>{{recognizing ? '正在上传并识别，请稍候' : '结果仅供参考，请以实际食材为准'}}</text>
     </view>
   </view>
 
   <view class="paper-card" wx:if="{{results.length}}">
-    <view class="section-title">识别结果（可能是）</view>
-    <view class="result-row" wx:for="{{results}}" wx:key="foodId" data-id="{{item.foodId}}" bindtap="chooseResult">
-      <image class="result-icon" src="{{item.icon}}" mode="aspectFit" />
+    <view class="section-title">选择最接近的食材</view>
+    <view class="result-helper">选中后，再确认保存日期和方式。</view>
+    <view class="result-card {{item.confidenceLevel}}" wx:for="{{results}}" wx:key="foodId" data-id="{{item.foodId}}" bindtap="chooseResult">
       <view class="result-main">
+        <view class="result-topline">
+          <view class="result-label">可能是</view>
+          <view class="confidence-tag">{{item.confidenceLabel}}</view>
+        </view>
         <view class="result-name">{{item.foodName}}</view>
+        <view wx:if="{{item.reason}}" class="result-reason">{{item.reason}}</view>
         <view class="confidence-bar"><view class="confidence-fill" style="width: {{item.percent}}%;"></view></view>
+        <view class="confidence-copy">参考把握：{{item.percent}}%</view>
       </view>
-      <text class="confidence-text">{{item.percent}}%</text>
+      <view class="result-action">添加</view>
     </view>
   </view>
 
-  <view class="pixel-btn secondary manual-btn" bindtap="manualSearch">手动搜索</view>
-  <view class="disclaimer">不要把识别结果视为准确判断，添加前请确认食材名称。</view>
+  <view class="paper-card unmatched-card" wx:elif="{{unmatchedCandidates.length}}">
+    <view class="section-title">AI 识别到了这些名称</view>
+    <view class="result-helper">暂时没有匹配到食材库，可以按名称添加，保存时再确认食材信息。</view>
+    <view class="candidate-card {{item.confidenceLevel}}" wx:for="{{unmatchedCandidates}}" wx:key="foodName" data-name="{{item.foodName}}" bindtap="chooseUnmatchedCandidate">
+      <view class="result-main">
+        <view class="result-topline">
+          <view class="result-label">模型返回</view>
+          <view class="confidence-tag">{{item.confidenceLabel}}</view>
+        </view>
+        <view class="result-name">{{item.foodName}}</view>
+        <view wx:if="{{item.reason}}" class="result-reason">{{item.reason}}</view>
+        <view class="confidence-bar"><view class="confidence-fill" style="width: {{item.percent}}%;"></view></view>
+        <view class="confidence-copy">参考把握：{{item.percent}}%</view>
+      </view>
+      <view class="result-action">按名称添加</view>
+    </view>
+    <view class="empty-actions">
+      <view class="pixel-btn retry-btn" bindtap="chooseImage">重新选择</view>
+      <view class="pixel-btn secondary retry-btn" bindtap="manualSearch">搜索添加</view>
+    </view>
+  </view>
+
+  <view class="paper-card empty-recognition-card" wx:elif="{{hasImage && !recognizing}}">
+    <view class="section-title">没识别出合适食材</view>
+    <view class="result-helper">可以换一张光线更清楚、食材更完整的照片，或直接用搜索添加。</view>
+    <view class="empty-actions">
+      <view class="pixel-btn retry-btn" bindtap="chooseImage">重新选择</view>
+      <view class="pixel-btn secondary retry-btn" bindtap="manualSearch">搜索添加</view>
+    </view>
+  </view>
+
+  <view class="pixel-btn secondary manual-btn" bindtap="manualSearch">搜索添加</view>
+  <view class="disclaimer">没有合适结果时，可以用搜索或分类添加。</view>
 </view>

@@ -1,0 +1,52 @@
+<view class="page name-search-page">
+  <view class="subtitle">输入食材名称，找到后再确认保存日期和方式。</view>
+
+  <view class="search-box">
+    <image class="search-icon" src="{{assets.actions.search}}" mode="aspectFit" />
+    <input class="search-input" placeholder="搜索食材名称，如：西兰花" value="{{keyword}}" focus="{{searchFocus}}" bindinput="onInput" confirm-type="search" bindconfirm="search" />
+    <view class="search-btn" bindtap="search">搜索</view>
+  </view>
+
+  <view class="section-head">
+    <view class="section-title">{{resultTitle}}</view>
+    <view wx:if="{{results.length}}" class="section-more">{{results.length}} 个</view>
+  </view>
+  <view wx:if="{{recommendationHint && !hasSearched}}" class="recommendation-tip">
+    <text>{{recommendationSummary.babyAgeText}} · {{recommendationSummary.stageLabel}}</text>
+    {{recommendationHint}}
+  </view>
+  <view wx:if="{{needsBabyProfilePrompt && !hasSearched}}" class="profile-prompt" bindtap="goBabySettings">
+    完善宝宝信息，推荐更准
+  </view>
+
+  <block wx:if="{{results.length}}">
+    <view class="result-card" wx:for="{{results}}" wx:key="id" data-id="{{item.id}}" bindtap="chooseFood">
+      <view wx:if="{{item.reserveFoodIconSlot}}" class="food-icon-slot">
+        <image wx:if="{{item.showFoodIcon}}" class="food-icon-img" src="{{item.displayFoodIcon}}" mode="aspectFit" />
+      </view>
+      <view class="result-main">
+        <view class="result-name">{{item.name}}</view>
+        <view wx:if="{{item.recommendationStage}}" class="result-reason">适配 {{item.recommendationStage}} 宝宝</view>
+        <view class="result-meta">{{item.category}}｜别名：{{item.aliases}}</view>
+        <view class="result-meta">推荐保存：{{item.defaultStorage === 'room' ? '常温' : item.defaultStorage === 'freezer' ? '冷冻' : '冷藏'}}｜宝宝建议期：{{item.babyDays}}</view>
+      </view>
+      <view class="choose-btn">选择</view>
+    </view>
+  </block>
+
+  <view wx:if="{{!hasSearched && recentFoods.length}}" class="quick-section history-section">
+    <view class="quick-section-title">历史记录</view>
+    <view class="recent-chip-row">
+      <view class="recent-chip" wx:for="{{recentFoods}}" wx:key="id" data-id="{{item.id}}" bindtap="chooseFood">
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{hasSearched && !results.length}}" class="paper-card empty-card">
+    <image class="not-found" src="{{assets.mascot.emptyNotFound}}" mode="aspectFit" />
+    <view class="section-title">暂时没找到这个食材</view>
+    <view class="subtitle">可以换个常见叫法再试；也可以先创建自定义食材，小管家会按更保守的保存期提醒。</view>
+    <view class="pixel-btn ghost custom-btn" bindtap="goAdd">创建自定义食材</view>
+  </view>
+</view>

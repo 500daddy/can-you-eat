@@ -1,17 +1,23 @@
 <view class="page with-tab">
-  <view class="profile-card">
-    <image class="profile-avatar" src="{{assets.mascot.babyFront}}" mode="aspectFit" />
+  <view class="profile-card" bindtap="goBaby">
+    <image class="profile-avatar" src="{{settings.babyAvatarImage || assets.mascot.babyFront}}" mode="aspectFill" />
     <view class="profile-main">
       <view class="profile-name">{{settings.babyName || '新手村村民'}}</view>
       <view class="subtitle">宝宝月龄：{{settings.babyAgeText}}</view>
     </view>
-    <text class="profile-level">Lv.3</text>
+    <view class="profile-side">
+      <text class="profile-stage">{{settings.babyStageText || '辅食探索'}}</text>
+      <text class="profile-edit">编辑 ›</text>
+    </view>
+    <view wx:if="{{settings.babyStageDescription}}" class="profile-stage-desc">{{settings.babyStageDescription}}</view>
   </view>
 
   <view class="stats-grid">
-    <view class="stat-card" wx:for="{{stats}}" wx:key="label">
+    <view class="stat-card {{item.action === 'score' ? 'info' : 'tappable'}}" wx:for="{{stats}}" wx:key="label" data-action="{{item.action}}" data-tab="{{item.tab}}" bindtap="handleStatTap">
       <view class="stat-value">{{item.value}}</view>
       <view class="stat-label">{{item.label}}</view>
+      <view wx:if="{{item.action === 'score'}}" class="stat-info">?</view>
+      <view wx:elif="{{item.action}}" class="stat-arrow">›</view>
     </view>
   </view>
 
@@ -24,9 +30,27 @@
       <text>提醒设置</text>
       <text class="cell-note">{{settings.dailySummaryTime}} ›</text>
     </view>
-    <view class="list-cell" bindtap="goRecognitionLog">
-      <text>识别记录</text>
-      <text class="cell-note">{{recognitionCount || 0}} 次 ›</text>
+  </view>
+
+  <view class="paper-card ai-lab-card {{aiLabExpanded ? 'expanded' : 'collapsed'}}">
+    <view class="ai-lab-head" bindtap="toggleAiLab">
+      <view class="ai-lab-heading">
+        <view class="section-title">AI功能实验室</view>
+      </view>
+      <view class="ai-lab-head-actions">
+        <view class="ai-lab-badge">体验中</view>
+        <view class="ai-lab-toggle">{{aiLabExpanded ? '收起' : '展开'}} {{aiLabExpanded ? '⌃' : '⌄'}}</view>
+      </view>
+    </view>
+    <view wx:if="{{aiLabExpanded}}" class="ai-lab-list">
+      <view class="ai-lab-item {{item.status === '可用' ? 'available' : 'pending'}}" wx:for="{{aiLabItems}}" wx:key="id" data-id="{{item.id}}" bindtap="goAiLabItem">
+        <image class="ai-lab-icon" src="{{assets.actions.camera}}" mode="aspectFit" />
+        <view class="ai-lab-main">
+          <view class="ai-lab-title">{{item.title}}</view>
+          <view class="ai-lab-desc">{{item.desc}}</view>
+        </view>
+        <view class="ai-lab-status">{{item.status}}</view>
+      </view>
     </view>
   </view>
 
@@ -37,7 +61,7 @@
     </view>
     <view class="list-cell" bindtap="goAbout">
       <text>关于小程序</text>
-      <text class="cell-note">MVP 0.1 ›</text>
+      <text class="cell-note">安心版 0.1 ›</text>
     </view>
   </view>
 </view>

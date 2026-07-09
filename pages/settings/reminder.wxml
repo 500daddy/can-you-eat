@@ -1,6 +1,6 @@
 <view class="page">
   <view class="page-title">提醒设置</view>
-  <view class="subtitle">先做小程序内提醒列表，微信订阅消息模板 ID 后续配置。</view>
+  <view class="subtitle">设置食材临期提醒和每日摘要时间，减少遗漏。</view>
 
   <view class="paper-card">
     <view class="setting-row">
@@ -20,22 +20,38 @@
     <view class="setting-row">
       <view>
         <view class="setting-title">每日摘要</view>
-        <view class="subtitle">每天 {{dailyTime}} 汇总食材情况</view>
+        <view class="subtitle">每天 {{dailyTimeText}} 汇总食材情况</view>
       </view>
       <switch checked="{{dailyEnabled}}" color="#55a85a" bindchange="onDailySwitch" />
+    </view>
+    <view class="time-setting" wx:if="{{dailyEnabled}}">
+      <view class="time-options">
+        <view
+          wx:for="{{dailyTimeOptions}}"
+          wx:key="value"
+          class="time-chip {{item.selected ? 'active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="selectDailyTimeOption"
+        >
+          {{item.label}}
+        </view>
+      </view>
+      <picker mode="time" value="{{dailyTime}}" bindchange="onDailyTimeChange">
+        <view class="time-picker-row">
+          <view>
+            <view class="setting-title compact">自定义时间</view>
+            <view class="subtitle">当前 {{dailyTime}}</view>
+          </view>
+          <view class="time-picker-value">修改</view>
+        </view>
+      </picker>
     </view>
   </view>
 
   <view class="paper-card yellow">
-    <view class="section-title">微信提醒预留</view>
-    <view class="subtitle">TEMPLATE_ID_FOOD_EXPIRE = 请替换为实际订阅消息模板ID</view>
+    <view class="section-title">微信提醒</view>
+    <view class="subtitle">开启后，可在微信里收到食材临期提醒。</view>
     <view class="pixel-btn ghost" bindtap="requestSubscribe">开启微信提醒</view>
-  </view>
-
-  <view class="paper-card green">
-    <view class="section-title">开发联调</view>
-    <view class="subtitle">{{initFoodBaseText}}</view>
-    <view class="pixel-btn ghost" bindtap="initFoodBase">初始化食材库</view>
   </view>
 
   <view class="pixel-btn save-btn" bindtap="save">保存设置</view>

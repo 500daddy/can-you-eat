@@ -1,6 +1,23 @@
-const { getFoodRepository } = require('./foodRepository')
-const { calculateBabyAgeText } = require('./babyAge')
+const {
+  defaultSettings,
+  FEEDBACK_KEY,
+  getFoodRepository,
+  PURCHASE_PLAN_KEY,
+  resetFoodRepository,
+  SETTINGS_KEY,
+  STORAGE_KEY
+} = require('./foodRepository')
+const {
+  calculateBabyAgeMonths,
+  calculateBabyAgeText,
+  formatBabyAgeFromMonths,
+  normalizeBabyAgeMonths
+} = require('./babyAge')
 const { todayString } = require('./foodRules')
+const { getRecommendationStage, sortFoodsForBabyAge } = require('./foodRecommendations')
+const { decorateBabyProfile } = require('./babyProfile')
+
+const LOGGED_OUT_KEY = 'baby_food_logged_out_v1'
 
 function unwrapCloudResult(result) {
   const payload = result && result.result !== undefined ? result.result : result
@@ -8,6 +25,58 @@ function unwrapCloudResult(result) {
     throw new Error(payload.error || 'foodApi failed')
   }
   return payload && payload.data !== undefined ? payload.data : payload
+}
+
+function readLoggedOutFlag(value) {
+  if (typeof value === 'boolean') return value
+  if (typeof getApp === 'function') {
+    const app = getApp()
+    if (app && app.globalData && typeof app.globalData.loggedOut === 'boolean') {
+      return app.globalData.loggedOut
+    }
+  }
+  if (typeof wx !== 'undefined' && wx.getStorageSync) {
+    return Boolean(wx.getStorageSync(LOGGED_OUT_KEY))
+  }
+  return false
+}
+
+function markLoggedOut() {
+  if (typeof getApp === 'function') {
+    const app = getApp()
+    if (app && app.globalData) {
+      app.globalData.loggedOut = true
+      app.globalData.useCloudFoodApi = false
+    }
+  }
+  if (typeof wx !== 'undefined' && wx.setStorageSync) {
+    wx.setStorageSync(LOGGED_OUT_KEY, true)
+    wx.setStorageSync(STORAGE_KEY, [])
+    wx.setStorageSync(PURCHASE_PLAN_KEY, [])
+    wx.setStorageSync(FEEDBACK_KEY, [])
+    wx.setStorageSync(SETTINGS_KEY, {
+      ...defaultSettings,
+      babyName: '未登录',
+      babyAgeMonths: 0,
+      babyMode: false
+    })
+  }
+}
+
+function markLoggedIn() {
+  if (typeof getApp === 'function') {
+    const app = getApp()
+    if (app && app.globalData) {
+      app.globalData.loggedOut = false
+    }
+  }
+  if (typeof wx !== 'undefined') {
+    if (wx.removeStorageSync) {
+      wx.removeStorageSync(LOGGED_OUT_KEY)
+    } else if (wx.setStorageSync) {
+      wx.setStorageSync(LOGGED_OUT_KEY, false)
+    }
+  }
 }
 
 function defaultCallCloud(data) {
@@ -29,6 +98,10 @@ function resolveUseCloud(value) {
   return false
 }
 
+function needsBabyProfilePrompt(settings) {
+  return !settings || !settings.babyProfileUpdatedAt
+}
+
 function createFoodService(options = {}) {
   const repo = options.repo || getFoodRepository()
   const callCloud = options.callCloud || defaultCallCloud
@@ -38,16 +111,53 @@ function createFoodService(options = {}) {
     return typeof today === 'function' ? today() : today
   }
 
+  function isLoggedOut() {
+    return readLoggedOutFlag(options.loggedOut)
+  }
+
+  function loggedOutSettings() {
+    return withComputedBabyAge({
+      ...defaultSettings,
+      babyName: '未登录',
+      babyAgeMonths: 0,
+      babyAvatarUrl: '',
+      babyAllergens: [],
+      babyMode: false,
+      babyProfileUpdatedAt: undefined
+    })
+  }
+
   function withComputedBabyAge(settings) {
-    if (!settings || !settings.babyBirthday) return settings
-    return {
+    if (!settings) return settings
+    let nextSettings = settings
+    if (settings.babyAgeMonths !== undefined && settings.babyAgeMonths !== null) {
+      const babyAgeMonths = normalizeBabyAgeMonths(settings.babyAgeMonths)
+      nextSettings = {
+        ...settings,
+        babyAgeMonths,
+        babyAgeText: formatBabyAgeFromMonths(babyAgeMonths)
+      }
+      return decorateBabyProfile(nextSettings, repo.getAssets())
+    }
+    if (!settings.babyBirthday) return decorateBabyProfile(settings, repo.getAssets())
+    const babyAgeMonths = normalizeBabyAgeMonths(calculateBabyAgeMonths(settings.babyBirthday, currentToday()))
+    nextSettings = {
       ...settings,
+      babyAgeMonths,
       babyAgeText: calculateBabyAgeText(settings.babyBirthday, currentToday())
     }
+    return decorateBabyProfile(nextSettings, repo.getAssets())
+  }
+
+  function settingsAgeMonths(settings) {
+    if (settings && settings.babyAgeMonths !== undefined && settings.babyAgeMonths !== null) {
+      return normalizeBabyAgeMonths(settings.babyAgeMonths)
+    }
+    return calculateBabyAgeMonths(settings && settings.babyBirthday, currentToday())
   }
 
   async function cloudOrLocal(action, data, localHandler) {
-    if (resolveUseCloud(options.useCloud)) {
+    if (!isLoggedOut() && resolveUseCloud(options.useCloud)) {
       try {
         return await callCloud({ action, ...data })
       } catch (error) {
@@ -90,7 +200,7 @@ function createFoodService(options = {}) {
     },
 
     async getFoodBase() {
-      return cloudOrLocal('searchFoods', { keyword: '' }, () => repo.getFoodBase())
+      return cloudOrLocal('getFoodBase', {}, () => repo.getFoodBase())
     },
 
     async getFoodBaseById(id) {
@@ -102,8 +212,42 @@ function createFoodService(options = {}) {
       return cloudOrLocal('searchFoods', { keyword }, () => repo.searchFoods(keyword))
     },
 
+    async getRecommendedFoods() {
+      const settings = await this.getSettings()
+      const foodBase = await this.getFoodBase()
+      const ageMonths = settingsAgeMonths(settings)
+      return sortFoodsForBabyAge(foodBase, ageMonths, {
+        babyAllergens: settings && settings.babyAllergens,
+        today: currentToday()
+      })
+    },
+
+    async getRecommendationSummary() {
+      const settings = await this.getSettings()
+      const ageMonths = settingsAgeMonths(settings)
+      const stage = getRecommendationStage(ageMonths)
+      return {
+        babyAgeText: settings && settings.babyAgeText,
+        stageLabel: stage.label,
+        hint: stage.hint,
+        needsBabyProfilePrompt: needsBabyProfilePrompt(settings)
+      }
+    },
+
     async addFoodRecord(input) {
       return cloudOrLocal('addFoodRecord', input, () => repo.addFoodRecord(input))
+    },
+
+    async addPurchasePlan(input) {
+      return repo.addPurchasePlan(input)
+    },
+
+    async getPurchasePlans() {
+      return repo.getPurchasePlans()
+    },
+
+    async finishPurchasePlan(input) {
+      return repo.finishPurchasePlan(input)
     },
 
     async getFoodRecords() {
@@ -146,7 +290,7 @@ function createFoodService(options = {}) {
     },
 
     async getStats() {
-      if (resolveUseCloud(options.useCloud)) {
+      if (!isLoggedOut() && resolveUseCloud(options.useCloud)) {
         const records = await this.getFoodRecords()
         return statsFromRecords(records)
       }
@@ -154,14 +298,21 @@ function createFoodService(options = {}) {
     },
 
     async getSettings() {
+      if (isLoggedOut()) return loggedOutSettings()
       const settings = await cloudOrLocal('getUserSettings', {}, () => repo.getSettings())
       return withComputedBabyAge(settings)
     },
 
     async updateSettings(input) {
+      const hasAgeMonths = input.babyAgeMonths !== undefined && input.babyAgeMonths !== null
+      const babyAgeMonths = hasAgeMonths ? normalizeBabyAgeMonths(input.babyAgeMonths) : undefined
       const nextInput = {
         ...input,
-        babyAgeText: input.babyBirthday ? calculateBabyAgeText(input.babyBirthday, currentToday()) : input.babyAgeText
+        babyAgeMonths: hasAgeMonths ? babyAgeMonths : input.babyAgeMonths,
+        babyBirthday: hasAgeMonths ? undefined : input.babyBirthday,
+        babyAgeText: hasAgeMonths
+          ? formatBabyAgeFromMonths(babyAgeMonths)
+          : (input.babyBirthday ? calculateBabyAgeText(input.babyBirthday, currentToday()) : input.babyAgeText)
       }
       const settings = await cloudOrLocal('updateUserSettings', nextInput, () => repo.updateSettings(nextInput))
       return withComputedBabyAge(settings)
@@ -182,8 +333,17 @@ function getFoodService() {
   return singleton
 }
 
+function resetFoodService() {
+  singleton = null
+  resetFoodRepository()
+}
+
 module.exports = {
   createFoodService,
   getFoodService,
+  LOGGED_OUT_KEY,
+  markLoggedIn,
+  markLoggedOut,
+  resetFoodService,
   unwrapCloudResult
 }

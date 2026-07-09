@@ -67,7 +67,30 @@ function leftText(days, overdueText) {
   return overdueText
 }
 
-function noteForStatus(status) {
+function normalizeAllergens(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean)
+  }
+  return String(value || '').split(/[、,，\s]/).map((item) => item.trim()).filter(Boolean)
+}
+
+function foodAllergenText(food) {
+  return [
+    food && food.name,
+    food && food.aliases,
+    food && food.category,
+    food && food.subCategory
+  ].flatMap((item) => Array.isArray(item) ? item : String(item || '').split(/[、,，\s]/))
+    .join(' ')
+}
+
+function getMatchedAllergens(food, babyAllergens) {
+  const searchText = foodAllergenText(food)
+  return normalizeAllergens(babyAllergens).filter((allergen) => searchText.includes(allergen))
+}
+
+function noteForStatus(status, matchedAllergens = []) {
+  if (matchedAllergens.length) return `包含宝宝过敏源：${matchedAllergens.join('、')}，请不要给宝宝食用。`
   if (status === 'baby_today') return '今天优先做熟食用'
   if (status === 'adult_only') return '可留给大人结合状态判断'
   if (status === 'expired') return '已超过参考期，建议谨慎处理'
@@ -92,7 +115,8 @@ function calculateRecordState(options) {
     storageMethod = food && food.defaultStorage ? food.defaultStorage : 'fridge',
     status,
     today = todayString(),
-    remindBeforeDays = 1
+    remindBeforeDays = 1,
+    babyAllergens = []
   } = options
   const range = resolveRange(food, storageMethod)
   const babyExpireDate = addDays(purchaseDate, range.babyDaysMax)
@@ -101,11 +125,14 @@ function calculateRecordState(options) {
   const daysToBaby = daysBetween(today, babyExpireDate)
   const daysToAdult = daysBetween(today, adultExpireDate)
   let nextStatus = status
+  const matchedAllergens = getMatchedAllergens(food, babyAllergens)
 
   if (nextStatus === 'adult_only') {
     nextStatus = daysToAdult >= 0 ? 'adult_only' : 'expired'
   } else if (!manualStatusSet.has(nextStatus)) {
-    if (daysToBaby >= 2) {
+    if (matchedAllergens.length) {
+      nextStatus = 'not_recommended'
+    } else if (daysToBaby >= 2) {
       nextStatus = 'baby_ok'
     } else if (daysToBaby >= 0) {
       nextStatus = 'baby_today'
@@ -131,7 +158,8 @@ function calculateRecordState(options) {
     babyLeft: leftText(daysToBaby, '已超过宝宝建议期'),
     adultLeft: leftText(daysToAdult, '已超过参考期'),
     group: statusGroupMap[nextStatus] || '新鲜食材',
-    note: noteForStatus(nextStatus)
+    note: noteForStatus(nextStatus, matchedAllergens),
+    riskNote: matchedAllergens.length ? noteForStatus(nextStatus, matchedAllergens) : ''
   }
 }
 

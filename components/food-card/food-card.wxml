@@ -1,19 +1,24 @@
 <view class="food-card {{food.status}}" bindtap="goDetail">
-  <image class="food-icon" src="{{food.icon}}" mode="aspectFit" />
+  <view wx:if="{{food.reserveFoodIconSlot}}" class="food-icon-slot">
+    <image wx:if="{{food.showFoodIcon}}" class="food-icon-img" src="{{food.displayFoodIcon}}" mode="aspectFit" />
+  </view>
   <view class="food-main">
     <view class="food-head">
       <text class="food-name">{{food.name}}</text>
       <status-tag status="{{food.status}}" />
     </view>
     <view class="food-meta">{{food.storageText}}｜购买：{{food.purchaseDate}}</view>
-    <view class="food-note">{{food.note}}</view>
+    <view wx:if="{{food.note && food.note !== food.statusText}}" class="food-note">{{food.note}}</view>
     <view class="food-days">
       <text>宝宝建议期：{{food.babyLeft}}</text>
       <text>成人参考期：{{food.adultLeft}}</text>
     </view>
     <view wx:if="{{showActions}}" class="food-actions" catchtap="noop">
+      <view wx:if="{{food.status === 'baby_today' || food.status === 'adult_only'}}" class="mini-action process" bindtap="goProcessAdvice">
+        <text>处理建议</text>
+      </view>
       <view class="mini-action finish" bindtap="markFinished">
-        <text>已吃掉</text>
+        <text>已处理</text>
       </view>
       <view class="mini-action detail" bindtap="goDetail">
         <text>看详情</text>

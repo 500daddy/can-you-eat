@@ -1,0 +1,443 @@
+[
+  {
+    "filename": "food_pear.png",
+    "food_name": "梨",
+    "category": "水果",
+    "priority": "P0",
+    "output_path": "miniprogram/assets/sprites/food/food_pear.png"
+  },
+  {
+    "filename": "food_yam.png",
+    "food_name": "山药",
+    "category": "蔬菜",
+    "priority": "P0",
+    "output_path": "miniprogram/assets/sprites/food/food_yam.png"
+  },
+  {
+    "filename": "food_taro.png",
+    "food_name": "芋头",
+    "category": "蔬菜",
+    "priority": "P0",
+    "output_path": "miniprogram/assets/sprites/food/food_taro.png"
+  },
+  {
+    "filename": "food_radish.png",
+    "food_name": "白萝卜",
+    "category": "蔬菜",
+    "priority": "P0",
+    "output_path": "miniprogram/assets/sprites/food/food_radish.png"
+  },
+  {
+    "filename": "food_cauliflower.png",
+    "food_name": "花菜",
+    "category": "蔬菜",
+    "priority": "P0",
+    "output_path": "miniprogram/assets/sprites/food/food_cauliflower.png"
+  },
+  {
+    "filename": "food_bok_choy.png",
+    "food_name": "上海青",
+    "category": "蔬菜",
+    "priority": "P0",
+    "output_path": "miniprogram/assets/sprites/food/food_bok_choy.png"
+  },
+  {
+    "filename": "food_napa_cabbage.png",
+    "food_name": "大白菜",
+    "category": "蔬菜",
+    "priority": "P0",
+    "output_path": "miniprogram/assets/sprites/food/food_napa_cabbage.png"
+  },
+  {
+    "filename": "food_grape.png",
+    "food_name": "葡萄",
+    "category": "水果",
+    "priority": "P0",
+    "output_path": "miniprogram/assets/sprites/food/food_grape.png"
+  },
+  {
+    "filename": "food_watermelon.png",
+    "food_name": "西瓜",
+    "category": "水果",
+    "priority": "P0",
+    "output_path": "miniprogram/assets/sprites/food/food_watermelon.png"
+  },
+  {
+    "filename": "food_peach.png",
+    "food_name": "桃子",
+    "category": "水果",
+    "priority": "P0",
+    "output_path": "miniprogram/assets/sprites/food/food_peach.png"
+  },
+  {
+    "filename": "food_pork.png",
+    "food_name": "猪里脊",
+    "category": "肉禽水产",
+    "priority": "P0",
+    "output_path": "miniprogram/assets/sprites/food/food_pork.png"
+  },
+  {
+    "filename": "food_salmon.png",
+    "food_name": "三文鱼",
+    "category": "肉禽水产",
+    "priority": "P0",
+    "output_path": "miniprogram/assets/sprites/food/food_salmon.png"
+  },
+  {
+    "filename": "food_yogurt.png",
+    "food_name": "酸奶",
+    "category": "蛋奶豆制品",
+    "priority": "P0",
+    "output_path": "miniprogram/assets/sprites/food/food_yogurt.png"
+  },
+  {
+    "filename": "food_millet.png",
+    "food_name": "小米",
+    "category": "主食辅食",
+    "priority": "P0",
+    "output_path": "miniprogram/assets/sprites/food/food_millet.png"
+  },
+  {
+    "filename": "food_rice_noodle.png",
+    "food_name": "米粉",
+    "category": "主食辅食",
+    "priority": "P0",
+    "output_path": "miniprogram/assets/sprites/food/food_rice_noodle.png"
+  },
+  {
+    "filename": "food_lettuce.png",
+    "food_name": "生菜",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_lettuce.png"
+  },
+  {
+    "filename": "food_cabbage_head.png",
+    "food_name": "卷心菜",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_cabbage_head.png"
+  },
+  {
+    "filename": "food_celery.png",
+    "food_name": "芹菜",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_celery.png"
+  },
+  {
+    "filename": "food_asparagus.png",
+    "food_name": "芦笋",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_asparagus.png"
+  },
+  {
+    "filename": "food_amaranth.png",
+    "food_name": "苋菜",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_amaranth.png"
+  },
+  {
+    "filename": "food_pea_shoots.png",
+    "food_name": "豌豆苗",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_pea_shoots.png"
+  },
+  {
+    "filename": "food_bamboo_shoot.png",
+    "food_name": "竹笋",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_bamboo_shoot.png"
+  },
+  {
+    "filename": "food_zucchini.png",
+    "food_name": "西葫芦",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_zucchini.png"
+  },
+  {
+    "filename": "food_wax_gourd.png",
+    "food_name": "冬瓜",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_wax_gourd.png"
+  },
+  {
+    "filename": "food_bitter_melon.png",
+    "food_name": "苦瓜",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_bitter_melon.png"
+  },
+  {
+    "filename": "food_loofah.png",
+    "food_name": "丝瓜",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_loofah.png"
+  },
+  {
+    "filename": "food_pea.png",
+    "food_name": "豌豆",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_pea.png"
+  },
+  {
+    "filename": "food_green_bean.png",
+    "food_name": "四季豆",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_green_bean.png"
+  },
+  {
+    "filename": "food_shiitake.png",
+    "food_name": "香菇",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_shiitake.png"
+  },
+  {
+    "filename": "food_enoki.png",
+    "food_name": "金针菇",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_enoki.png"
+  },
+  {
+    "filename": "food_oyster_mushroom.png",
+    "food_name": "平菇",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_oyster_mushroom.png"
+  },
+  {
+    "filename": "food_kelp.png",
+    "food_name": "海带",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_kelp.png"
+  },
+  {
+    "filename": "food_laver.png",
+    "food_name": "紫菜",
+    "category": "蔬菜",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_laver.png"
+  },
+  {
+    "filename": "food_cantaloupe.png",
+    "food_name": "哈密瓜",
+    "category": "水果",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_cantaloupe.png"
+  },
+  {
+    "filename": "food_mango.png",
+    "food_name": "芒果",
+    "category": "水果",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_mango.png"
+  },
+  {
+    "filename": "food_papaya.png",
+    "food_name": "木瓜",
+    "category": "水果",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_papaya.png"
+  },
+  {
+    "filename": "food_dragon_fruit.png",
+    "food_name": "火龙果",
+    "category": "水果",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_dragon_fruit.png"
+  },
+  {
+    "filename": "food_cherry.png",
+    "food_name": "樱桃",
+    "category": "水果",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_cherry.png"
+  },
+  {
+    "filename": "food_plum.png",
+    "food_name": "李子",
+    "category": "水果",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_plum.png"
+  },
+  {
+    "filename": "food_grapefruit.png",
+    "food_name": "柚子",
+    "category": "水果",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_grapefruit.png"
+  },
+  {
+    "filename": "food_pineapple.png",
+    "food_name": "菠萝",
+    "category": "水果",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_pineapple.png"
+  },
+  {
+    "filename": "food_pomegranate.png",
+    "food_name": "石榴",
+    "category": "水果",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_pomegranate.png"
+  },
+  {
+    "filename": "food_raspberry.png",
+    "food_name": "树莓",
+    "category": "水果",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_raspberry.png"
+  },
+  {
+    "filename": "food_lamb.png",
+    "food_name": "羊肉",
+    "category": "肉禽水产",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_lamb.png"
+  },
+  {
+    "filename": "food_duck.png",
+    "food_name": "鸭肉",
+    "category": "肉禽水产",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_duck.png"
+  },
+  {
+    "filename": "food_turkey.png",
+    "food_name": "火鸡肉",
+    "category": "肉禽水产",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_turkey.png"
+  },
+  {
+    "filename": "food_bass.png",
+    "food_name": "鲈鱼",
+    "category": "肉禽水产",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_bass.png"
+  },
+  {
+    "filename": "food_hairtail.png",
+    "food_name": "带鱼",
+    "category": "肉禽水产",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_hairtail.png"
+  },
+  {
+    "filename": "food_scallop.png",
+    "food_name": "扇贝",
+    "category": "肉禽水产",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_scallop.png"
+  },
+  {
+    "filename": "food_clam.png",
+    "food_name": "蛤蜊",
+    "category": "肉禽水产",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_clam.png"
+  },
+  {
+    "filename": "food_quail_egg.png",
+    "food_name": "鹌鹑蛋",
+    "category": "蛋奶豆制品",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_quail_egg.png"
+  },
+  {
+    "filename": "food_soy_milk.png",
+    "food_name": "豆浆",
+    "category": "蛋奶豆制品",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_soy_milk.png"
+  },
+  {
+    "filename": "food_dried_tofu.png",
+    "food_name": "豆干",
+    "category": "蛋奶豆制品",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_dried_tofu.png"
+  },
+  {
+    "filename": "food_edamame.png",
+    "food_name": "毛豆",
+    "category": "蛋奶豆制品",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_edamame.png"
+  },
+  {
+    "filename": "food_oat.png",
+    "food_name": "燕麦",
+    "category": "主食辅食",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_oat.png"
+  },
+  {
+    "filename": "food_black_rice.png",
+    "food_name": "黑米",
+    "category": "主食辅食",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_black_rice.png"
+  },
+  {
+    "filename": "food_quinoa.png",
+    "food_name": "藜麦",
+    "category": "主食辅食",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_quinoa.png"
+  },
+  {
+    "filename": "food_buckwheat.png",
+    "food_name": "荞麦",
+    "category": "主食辅食",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_buckwheat.png"
+  },
+  {
+    "filename": "food_wheat_flour.png",
+    "food_name": "面粉",
+    "category": "主食辅食",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_wheat_flour.png"
+  },
+  {
+    "filename": "food_steamed_bun.png",
+    "food_name": "馒头",
+    "category": "主食辅食",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_steamed_bun.png"
+  },
+  {
+    "filename": "food_dumpling.png",
+    "food_name": "饺子",
+    "category": "主食辅食",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_dumpling.png"
+  },
+  {
+    "filename": "food_egg_custard.png",
+    "food_name": "蒸蛋羹",
+    "category": "主食辅食",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_egg_custard.png"
+  },
+  {
+    "filename": "food_meat_puree.png",
+    "food_name": "肉泥",
+    "category": "主食辅食",
+    "priority": "P1",
+    "output_path": "miniprogram/assets/sprites/food/food_meat_puree.png"
+  }
+]

@@ -2,40 +2,84 @@
   <view class="village-hero">
     <image class="hero-bg" src="{{assets.ui.bannerKitchenHome}}" mode="aspectFill" />
     <view class="hero-content">
-      <view class="baby-row">
-        <image class="baby-avatar" src="{{assets.mascot.babyHappy}}" mode="aspectFit" />
-        <view class="baby-info">
-          <view class="pixel-title">养娃新手村</view>
-          <view class="subtitle">宝宝月龄：{{babyAgeText}}</view>
-        </view>
-      </view>
       <view class="hero-card">
-        <view class="page-title">今天先给宝宝吃这些</view>
-        <view class="subtitle">根据购买时间、保存方式和宝宝建议期，为你优先排序</view>
+        <view class="page-title">今天优先处理这些食材</view>
+        <view class="subtitle">先吃快到期的，少浪费，也更安心</view>
       </view>
     </view>
   </view>
 
   <view class="button-row">
-    <button class="pixel-btn" bindtap="goAdd">
-      <text class="btn-symbol">+</text>
-      <text>添加食材</text>
+    <button class="pixel-btn main-action-btn main-search-btn" bindtap="goAdd">
+      <image class="main-action-icon" src="{{assets.actions.search}}" mode="aspectFit" />
+      <text class="main-action-title">搜索添加</text>
+      <text class="main-action-desc">知道名字，直接找</text>
     </button>
-    <button class="pixel-btn secondary" bindtap="goRecognize">
-      <image class="btn-icon" src="{{assets.actions.camera}}" mode="aspectFit" />拍照识别
+    <button class="pixel-btn main-action-btn secondary main-category-btn" bindtap="goCategory">
+      <image class="main-action-icon" src="{{assets.food.broccoli}}" mode="aspectFit" />
+      <text class="main-action-title">按分类找</text>
+      <text class="main-action-desc">蔬菜水果，慢慢选</text>
     </button>
   </view>
 
-  <block wx:if="{{records.length}}">
-    <block wx:for="{{sections}}" wx:key="title">
-      <view class="section-head">
-        <view class="section-title">{{item.title}}</view>
-        <view class="section-more">{{item.items.length}} 个</view>
+  <view class="secondary-action-row">
+    <button class="pixel-btn ghost secondary-action-btn" bindtap="goPurchasePlan">
+      <image class="secondary-action-icon" src="{{assets.actions.cart}}" mode="aspectFit" />
+      <text>计划采购</text>
+    </button>
+    <button class="pixel-btn ghost secondary-action-btn" bindtap="goQuickProcess">
+      <image class="secondary-action-icon" src="{{assets.actions.cookware}}" mode="aspectFit" />
+      <text>今天怎么处理</text>
+    </button>
+  </view>
+
+  <view wx:if="{{homeGuideVisible}}" class="home-guide-card">
+    <view class="home-guide-copy">
+      <text class="home-guide-strong">小提示：</text>
+      <text>买之前用计划采购，快到期看今天怎么处理。</text>
+    </view>
+    <view class="home-guide-close" catchtap="dismissHomeGuide">知道了</view>
+  </view>
+
+  <scroll-view wx:if="{{records.length}}" class="status-filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="status-filter-row">
+      <view
+        wx:for="{{statusFilters}}"
+        wx:key="key"
+        class="status-chip {{activeStatusFilter === item.key ? 'active' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="chooseStatusFilter"
+      >
+        <text>{{item.label}}</text>
+        <text class="status-count">{{item.count}}</text>
       </view>
-      <block wx:for="{{item.items}}" wx:key="id" wx:for-item="food">
-        <food-card food="{{food}}" bindfinished="refreshRecords" />
+    </view>
+  </scroll-view>
+
+  <block wx:if="{{records.length}}">
+    <block wx:if="{{sections.length}}">
+      <block wx:for="{{sections}}" wx:key="title">
+        <view class="section-head">
+          <view class="section-title">{{item.title}}</view>
+          <view class="section-more">{{item.totalCount || item.items.length}} 个</view>
+        </view>
+        <block wx:for="{{item.items}}" wx:key="id" wx:for-item="food">
+          <food-card food="{{food}}" bindfinished="refreshRecords" />
+        </block>
+        <view
+          wx:if="{{item.collapsedCount}}"
+          class="collapsed-risk-card {{item.collapsedExpanded ? 'expanded' : ''}}"
+          bindtap="toggleCollapsedRisk"
+        >
+          <view class="collapsed-risk-copy">
+            <view class="collapsed-risk-title">{{item.collapsedTitle}}</view>
+            <view class="collapsed-risk-desc">{{item.collapsedDesc}}</view>
+          </view>
+          <view class="collapsed-risk-action">{{item.collapsedAction}}</view>
+        </view>
       </block>
     </block>
+    <view wx:else class="filtered-empty">这个分类暂时没有食材</view>
   </block>
 
   <pixel-empty wx:else show-actions="{{false}}" />

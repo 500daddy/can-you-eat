@@ -1,5 +1,9 @@
 @import "../food/add.wxss";
 
+.settings-page {
+  padding-bottom: calc(174rpx + env(safe-area-inset-bottom));
+}
+
 .baby-card {
   display: flex;
   align-items: center;
@@ -9,4 +13,179 @@
 .baby-img {
   width: 126rpx;
   height: 126rpx;
+}
+
+.avatar-editor {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  padding: 18rpx;
+  border: 3rpx solid #ead590;
+  border-radius: 22rpx;
+  background: #fffdf3;
+}
+
+.avatar-preview {
+  flex: 0 0 128rpx;
+  width: 128rpx;
+  height: 128rpx;
+  border: 3rpx solid #51351f;
+  border-radius: 24rpx;
+  background: #fff9e9;
+  box-shadow: 0 4rpx 0 rgba(81, 53, 31, 0.16);
+}
+
+.avatar-actions {
+  flex: 1;
+  min-width: 0;
+}
+
+.avatar-action-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.avatar-upload {
+  min-width: 156rpx;
+}
+
+.avatar-secondary {
+  min-width: 150rpx;
+}
+
+.avatar-helper {
+  margin-top: 12rpx;
+  color: #8a806d;
+  font-size: 23rpx;
+  line-height: 1.45;
+}
+
+.allergen-input-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.allergen-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.add-allergen-btn {
+  flex: 0 0 104rpx;
+}
+
+.button-primary,
+.button-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72rpx;
+  padding: 0 24rpx;
+  border-radius: 18rpx;
+  font-size: 26rpx;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+.button-primary {
+  border: 3rpx solid #2f6c37;
+  background: linear-gradient(180deg, #68c96e, #45a24b);
+  color: #fff;
+  box-shadow: inset 0 4rpx 0 rgba(255, 255, 255, 0.28), 0 5rpx 0 #2f6c37;
+}
+
+.button-secondary {
+  border: 3rpx solid #c8aa55;
+  background: linear-gradient(180deg, #fffdf1, #ffe8a7);
+  color: #6f5424;
+  box-shadow: inset 0 4rpx 0 rgba(255, 255, 255, 0.7), 0 5rpx 0 #c8aa55;
+}
+
+.button-compact {
+  min-height: 60rpx;
+  padding: 0 18rpx;
+  border-radius: 16rpx;
+  font-size: 24rpx;
+}
+
+.allergen-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 14rpx;
+}
+
+.allergen-chip {
+  padding: 8rpx 14rpx;
+  border: 2rpx solid #e4bf68;
+  border-radius: 999rpx;
+  background: #fff0b8;
+  color: #8b5414;
+  font-size: 23rpx;
+  font-weight: 900;
+}
+
+.logout-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  margin-top: 22rpx;
+  padding: 22rpx;
+  border: 3rpx solid #e2c9ad;
+  border-radius: 22rpx;
+  background: #fffaf0;
+}
+
+.logout-title {
+  color: #51351f;
+  font-size: 26rpx;
+  font-weight: 900;
+}
+
+.logout-helper {
+  margin-top: 8rpx;
+  color: #8a806d;
+  font-size: 22rpx;
+  line-height: 1.35;
+}
+
+.logout-btn {
+  flex: 0 0 auto;
+  min-width: 144rpx;
+  padding: 16rpx 18rpx;
+  border: 3rpx solid #b36a54;
+  border-radius: 16rpx;
+  background: #fff3ec;
+  color: #9a4338;
+  font-size: 24rpx;
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+}
+
+.sticky-save-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  padding: 18rpx 24rpx calc(18rpx + env(safe-area-inset-bottom));
+  border-top: 3rpx solid rgba(216, 201, 157, 0.85);
+  background: linear-gradient(180deg, rgba(251, 246, 223, 0.72), #fff9e9 42%, #fff6dc);
+  box-shadow: 0 -8rpx 20rpx rgba(81, 53, 31, 0.12);
+  backdrop-filter: blur(8px);
+}
+
+.save-action {
+  width: 100%;
+  min-height: 82rpx;
+  border-radius: 20rpx;
+  font-size: 30rpx;
+  box-shadow: inset 0 4rpx 0 rgba(255, 255, 255, 0.28), 0 7rpx 0 #2f6c37;
 }

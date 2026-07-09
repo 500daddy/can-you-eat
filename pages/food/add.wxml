@@ -1,58 +1,58 @@
 <view class="page">
   <view class="page-title">添加食材</view>
-  <view class="subtitle">先记录关键字段，宝宝建议期会按食材和保存方式保守计算。</view>
+  <view class="subtitle">填好日期和保存方式，我来提醒你及时处理。</view>
 
   <view class="selected-food">
-    <image class="selected-icon" src="{{form.icon}}" mode="aspectFit" />
+    <image wx:if="{{selectedFood.showFoodIcon}}" class="selected-food-icon" src="{{selectedFood.displayFoodIcon}}" mode="aspectFit" />
     <view class="selected-main">
       <view class="selected-name">{{form.name}}</view>
       <view class="subtitle">{{selectedFoodHint}}</view>
     </view>
-    <view class="change-btn" bindtap="goSearch">更换</view>
   </view>
 
   <view wx:if="{{isCustomFood}}" class="custom-tip">
-    <view class="custom-tip-title">自定义食材</view>
-    <view class="subtitle">先记录名称、保存方式和购买日期，小程序会按保守周期提醒处理。</view>
+    <view class="custom-tip-title">安全提醒</view>
+    <view class="subtitle">自定义食材会按保守时间提醒。给宝宝前，请先看外观、闻气味、摸质地。</view>
   </view>
 
   <view class="form-card">
-    <view class="field">
+    <view wx:if="{{isCustomFood}}" class="field">
       <text class="label">食材名称 <text class="required">*</text></text>
       <input class="input" value="{{form.name}}" bindinput="onNameInput" placeholder="请输入食材名称" />
     </view>
 
+    <view wx:else class="field">
+      <text class="label">已选食材</text>
+      <view class="readonly-food-name">
+        <image wx:if="{{selectedFood.showFoodIcon}}" class="readonly-food-icon" src="{{selectedFood.displayFoodIcon}}" mode="aspectFit" />
+        <text>{{form.name}}</text>
+      </view>
+    </view>
+
     <view class="field">
-      <text class="label">购买日期 <text class="required">*</text></text>
-      <picker mode="date" value="{{form.purchaseDate}}" bindchange="onDateChange">
-        <view class="picker-box">{{form.purchaseDate}}</view>
-      </picker>
+      <text class="label">开始保存日期 <text class="required">*</text></text>
+      <view class="picker-box date-trigger" bindtap="openDatePicker">
+        <text>{{form.purchaseDate}}</text>
+        <text class="date-trigger-arrow">选择</text>
+      </view>
+      <view class="field-helper">按购买、开封或分装当天填写。</view>
     </view>
 
     <view class="field">
       <text class="label">保存方式 <text class="required">*</text></text>
+      <view class="field-helper storage-helper">{{storageRecommendationText}}</view>
       <view class="segmented">
         <view wx:for="{{storageOptions}}" wx:key="key" class="segment {{form.storageMethod === item.key ? 'active' : ''}}" data-key="{{item.key}}" bindtap="chooseStorage">
-          {{item.text}}
+          <text>{{item.text}}</text>
+          <text wx:if="{{!isCustomFood && recommendedStorageMethod === item.key}}" class="recommend-badge">推荐</text>
         </view>
-      </view>
-    </view>
-
-    <view class="field field-grid">
-      <view>
-        <text class="label">数量</text>
-        <input class="input" value="{{form.quantity}}" bindinput="onQuantityInput" type="number" />
-      </view>
-      <view>
-        <text class="label">单位</text>
-        <input class="input" value="{{form.unit}}" bindinput="onUnitInput" />
       </view>
     </view>
 
     <view class="switch-row">
       <view>
         <view class="label no-margin">宝宝食材</view>
-        <view class="subtitle">开启后会优先使用宝宝建议期</view>
+        <view class="subtitle">{{isCustomFood ? '按更保守时间提醒' : '按宝宝建议期提醒'}}</view>
       </view>
       <switch checked="{{form.isBabyFood}}" color="#55a85a" bindchange="onBabySwitch" />
     </view>
@@ -65,6 +65,25 @@
     <view class="remind-box">{{form.remindText}}</view>
   </view>
 
-  <view class="pixel-btn save-btn {{saving ? 'disabled' : ''}}" bindtap="save">{{saving ? '保存中...' : '保存'}}</view>
-  <view class="disclaimer">保存后仍需结合食材实际外观、气味和宝宝身体情况判断。</view>
+  <view class="disclaimer">使用提醒：保存建议仅供参考。给宝宝前，请结合食材状态和宝宝情况判断。</view>
+
+  <view class="save-dock">
+    <view class="save-dock-text">确认日期和保存方式后保存</view>
+    <view class="pixel-btn save-btn {{saving ? 'disabled' : ''}}" bindtap="save">{{saving ? '保存中...' : '保存'}}</view>
+  </view>
+
+  <view wx:if="{{showDateSheet}}" class="date-sheet-mask" bindtap="closeDatePicker">
+    <view class="date-sheet" catchtap="noop">
+      <view class="date-sheet-head">
+        <view class="date-sheet-action muted" bindtap="closeDatePicker">取消</view>
+        <view class="date-sheet-title">选择开始保存日期</view>
+        <view class="date-sheet-action" bindtap="confirmSaveDate">确定</view>
+      </view>
+      <picker-view class="date-picker-view" value="{{datePickerValue}}" bindchange="onDatePickerChange">
+        <picker-view-column>
+          <view wx:for="{{availableSaveDates}}" wx:key="value" class="date-option">{{item.label}}</view>
+        </picker-view-column>
+      </picker-view>
+    </view>
+  </view>
 </view>
