@@ -14,11 +14,13 @@ test('creates a default family and owner membership for a new user', async () =>
   assert.equal(family.data.family.name, '宝宝的小厨房')
   assert.equal(family.data.members[0].openId, 'user-a')
   assert.equal(family.data.members[0].role, 'owner')
+  assert.equal(family.data.membership.role, 'owner')
 })
 
 test('uses three role permissions for family operations', () => {
   assert.equal(roleCan('owner', 'manage_members'), true)
   assert.equal(roleCan('admin', 'invite_members'), true)
+  assert.equal(roleCan('admin', 'manage_members'), false)
   assert.equal(roleCan('member', 'edit_food_records'), true)
   assert.equal(roleCan('member', 'manage_members'), false)
   assert.equal(roleCan('admin', 'edit_baby_settings'), false)

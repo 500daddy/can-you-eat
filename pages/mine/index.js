@@ -62,6 +62,10 @@ Page({
     wx.navigateTo({ url: '/pages/settings/reminder' })
   },
 
+  goFamily() {
+    wx.navigateTo({ url: '/pages/family/index' })
+  },
+
   goFeedback() {
     wx.navigateTo({ url: '/pages/feedback/index' })
   },

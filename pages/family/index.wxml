@@ -1,0 +1,40 @@
+<view class="page">
+  <view class="page-title">家庭共享</view>
+  <view class="subtitle">让家人共用一套食材库，谁添加、谁处理都会留下记录。</view>
+
+  <view class="paper-card green family-card">
+    <view class="family-main">
+      <view>
+        <view class="family-name">{{family.name || '宝宝的小厨房'}}</view>
+        <view class="subtitle">当前身份：{{membership.role === 'owner' ? '创建者' : membership.role === 'admin' ? '管理员' : '成员'}}</view>
+      </view>
+      <view class="member-count">{{members.length}}人</view>
+    </view>
+    <view class="button-row">
+      <button class="pixel-btn" bindtap="createInvite" disabled="{{!canInvite}}">邀请家人</button>
+      <button class="pixel-btn ghost" bindtap="goMemberManage">成员管理</button>
+    </view>
+  </view>
+
+  <view wx:if="{{invite}}" class="paper-card yellow invite-card">
+    <view class="section-title">邀请已生成</view>
+    <view class="invite-code">{{invite.inviteId}}</view>
+    <view class="subtitle">有效期至 {{invite.expiresAt}}，可以复制后发给家人。</view>
+    <button class="pixel-btn secondary" bindtap="copyInvite">复制邀请</button>
+  </view>
+
+  <view class="paper-card">
+    <view class="card-head">
+      <view class="section-title">家庭成员</view>
+      <view class="cell-note">{{canManageMembers ? '可调整身份' : '仅查看'}}</view>
+    </view>
+    <view class="member-row" wx:for="{{members}}" wx:key="openId">
+      <view class="member-avatar">{{item.avatarText}}</view>
+      <view class="member-info">
+        <view class="member-name">{{item.nickname || '家庭成员'}}</view>
+        <view class="subtitle">{{item.openId}}</view>
+      </view>
+      <view class="role-badge {{item.role}}">{{item.roleText}}</view>
+    </view>
+  </view>
+</view>

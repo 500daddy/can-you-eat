@@ -1,0 +1,23 @@
+<view class="page">
+  <view class="page-title">成员管理</view>
+  <view class="subtitle">创建者可以调整家人的身份；成员和管理员仍可一起记录食材。</view>
+
+  <view wx:if="{{!canManageMembers}}" class="paper-card yellow">
+    <view class="section-title">仅可查看</view>
+    <view class="subtitle">成员身份由家庭创建者维护。</view>
+  </view>
+
+  <view class="paper-card member-manage-card">
+    <view class="member-manage-row" wx:for="{{members}}" wx:key="openId">
+      <view class="member-info">
+        <view class="member-name">{{item.nickname || '家庭成员'}}</view>
+        <view class="subtitle">{{item.roleText}}</view>
+      </view>
+      <view class="role-actions" wx:if="{{!item.isOwner}}">
+        <button class="role-btn {{item.role === 'member' ? 'active' : ''}}" data-openid="{{item.openId}}" data-role="member" bindtap="updateRole">成员</button>
+        <button class="role-btn {{item.role === 'admin' ? 'active' : ''}}" data-openid="{{item.openId}}" data-role="admin" bindtap="updateRole">管理员</button>
+      </view>
+      <view wx:else class="role-owner">创建者</view>
+    </view>
+  </view>
+</view>

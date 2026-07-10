@@ -4,7 +4,7 @@ function makeId(prefix) {
 
 const rolePermissions = {
   owner: new Set(['edit_food_records', 'manage_purchase_plans', 'invite_members', 'manage_members', 'edit_baby_settings', 'dissolve_family']),
-  admin: new Set(['edit_food_records', 'manage_purchase_plans', 'invite_members', 'manage_members']),
+  admin: new Set(['edit_food_records', 'manage_purchase_plans', 'invite_members']),
   member: new Set(['edit_food_records', 'manage_purchase_plans'])
 }
 
@@ -135,9 +135,9 @@ function createFamilyApi({ store, userId, today = '2026-07-09' }) {
     async handle(event = {}) {
       try {
         if (event.action === 'getMyFamily') {
-          const { family } = await ensureDefaultFamily(store, userId, today, event)
+          const { family, membership } = await ensureDefaultFamily(store, userId, today, event)
           const members = await listItems(store, 'family_members', (item) => item.familyId === family.familyId && item.status === 'active')
-          return { ok: true, data: { family, members } }
+          return { ok: true, data: { family, members, membership } }
         }
 
         if (event.action === 'createInvite') {

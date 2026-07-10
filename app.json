@@ -16,7 +16,9 @@
     "pages/about/index",
     "pages/settings/baby",
     "pages/avatar-crop/index",
-    "pages/settings/reminder"
+    "pages/settings/reminder",
+    "pages/family/index",
+    "pages/family/member"
   ],
   "window": {
     "navigationBarTitleText": "宝宝食材小管家",

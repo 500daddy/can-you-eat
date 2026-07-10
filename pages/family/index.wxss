@@ -1,0 +1,102 @@
+.family-card {
+  margin-top: 22rpx;
+}
+
+.family-main,
+.card-head,
+.member-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.family-name {
+  color: var(--green-900);
+  font-size: 36rpx;
+  font-weight: 900;
+}
+
+.member-count {
+  min-width: 86rpx;
+  padding: 12rpx 16rpx;
+  border: 2rpx solid #8ebf7b;
+  border-radius: 18rpx;
+  background: #fffdf2;
+  color: var(--green-800);
+  font-size: 28rpx;
+  font-weight: 900;
+  text-align: center;
+}
+
+.invite-card .pixel-btn {
+  margin-top: 18rpx;
+}
+
+.invite-code {
+  margin-top: 18rpx;
+  padding: 18rpx;
+  border: 3rpx dashed #d8b65c;
+  border-radius: 18rpx;
+  background: #fffdf2;
+  color: var(--brown-900);
+  font-size: 28rpx;
+  font-weight: 900;
+  word-break: break-all;
+}
+
+.member-row {
+  min-height: 108rpx;
+  border-bottom: 2rpx solid rgba(216, 201, 157, 0.5);
+}
+
+.member-row:last-child {
+  border-bottom: 0;
+}
+
+.member-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+  border: 2rpx solid #8ebf7b;
+  border-radius: 18rpx;
+  background: #e7f4d8;
+  color: var(--green-900);
+  font-size: 26rpx;
+  font-weight: 900;
+}
+
+.member-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.member-name {
+  color: var(--ink);
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.role-badge {
+  padding: 8rpx 14rpx;
+  border: 2rpx solid #d8c99d;
+  border-radius: 14rpx;
+  background: #fff9e9;
+  color: var(--muted);
+  font-size: 22rpx;
+  font-weight: 900;
+}
+
+.role-badge.owner {
+  border-color: #e4bf68;
+  background: #fff0b8;
+  color: #9a5c12;
+}
+
+.role-badge.admin {
+  border-color: #8ebf7b;
+  background: #e7f4d8;
+  color: var(--green-800);
+}

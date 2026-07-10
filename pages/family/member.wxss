@@ -1,0 +1,60 @@
+.member-manage-card {
+  padding-top: 8rpx;
+  padding-bottom: 8rpx;
+}
+
+.member-manage-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  min-height: 118rpx;
+  border-bottom: 2rpx solid rgba(216, 201, 157, 0.5);
+}
+
+.member-manage-row:last-child {
+  border-bottom: 0;
+}
+
+.member-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.member-name {
+  color: var(--ink);
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.role-actions {
+  display: flex;
+  gap: 10rpx;
+}
+
+.role-btn {
+  min-width: 112rpx;
+  height: 58rpx;
+  border: 2rpx solid #d8c99d;
+  border-radius: 16rpx;
+  background: #fffdf2;
+  color: var(--muted);
+  font-size: 23rpx;
+  font-weight: 900;
+}
+
+.role-btn.active {
+  border-color: #8ebf7b;
+  background: #e7f4d8;
+  color: var(--green-800);
+}
+
+.role-owner {
+  padding: 10rpx 16rpx;
+  border: 2rpx solid #e4bf68;
+  border-radius: 16rpx;
+  background: #fff0b8;
+  color: #9a5c12;
+  font-size: 23rpx;
+  font-weight: 900;
+}
