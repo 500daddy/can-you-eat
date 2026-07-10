@@ -309,6 +309,27 @@ test('updates settings and submits feedback', async () => {
   assert.equal(feedback.data.userId, 'user-a')
 })
 
+test('only family owner can update baby settings', async () => {
+  const store = createMemoryStore()
+  const ownerFamily = createFamilyApi({ store, userId: 'owner', today: '2026-07-09' })
+  const memberFamily = createFamilyApi({ store, userId: 'member-a', today: '2026-07-09' })
+  await ownerFamily.handle({ action: 'getMyFamily' })
+  const invite = await ownerFamily.handle({ action: 'createInvite' })
+  await memberFamily.handle({ action: 'joinFamilyByInvite', inviteId: invite.data.inviteId })
+
+  const ownerFood = createFoodApi({ store, userId: 'owner', today: '2026-07-09' })
+  const memberFood = createFoodApi({ store, userId: 'member-a', today: '2026-07-09' })
+
+  const ownerUpdate = await ownerFood.handle({ action: 'updateUserSettings', babyName: '小米粒' })
+  const memberUpdate = await memberFood.handle({ action: 'updateUserSettings', babyName: '不应该成功' })
+  const memberSettings = await memberFood.handle({ action: 'getUserSettings' })
+
+  assert.equal(ownerUpdate.ok, true)
+  assert.equal(memberUpdate.ok, false)
+  assert.equal(memberSettings.data.babyName, '小米粒')
+  assert.equal(memberSettings.data.canEditBabySettings, false)
+})
+
 test('computes baby age text when updating cloud settings', async () => {
   const api = createFoodApi({ store: createMemoryStore(), userId: 'user-a', today: '2026-06-16' })
 
@@ -374,7 +395,7 @@ test('cloud api update payloads do not persist undefined fields', async () => {
   })
 
   const rawRecord = (await store.list('user_food_records'))[0]
-  const rawSettings = (await store.list('user_settings'))[0]
+  const rawSettings = (await store.list('family_settings'))[0]
 
   assert.equal(Object.prototype.hasOwnProperty.call(rawRecord, 'status'), false)
   assert.equal(Object.prototype.hasOwnProperty.call(rawSettings, 'action'), false)

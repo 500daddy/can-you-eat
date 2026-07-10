@@ -15,6 +15,18 @@
   height: 126rpx;
 }
 
+.permission-note {
+  margin-top: 18rpx;
+  padding: 18rpx 22rpx;
+  border: 3rpx solid #9fc783;
+  border-radius: 18rpx;
+  background: #f2fbdf;
+  color: #2f6c37;
+  font-size: 24rpx;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
 .avatar-editor {
   display: flex;
   align-items: center;

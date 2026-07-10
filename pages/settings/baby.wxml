@@ -1,6 +1,7 @@
 <view class="page settings-page">
   <view class="page-title">宝宝模式设置</view>
   <view class="subtitle">告诉我们宝宝的大致情况，后面添加食材时会更贴近宝宝当前阶段。</view>
+  <view wx:if="{{canEditBabySettings === false}}" class="permission-note">宝宝资料由家庭创建者维护</view>
 
   <view class="paper-card green baby-card">
     <image class="baby-img" src="{{assets.mascot.babyBasket}}" mode="aspectFit" />

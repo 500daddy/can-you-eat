@@ -100,6 +100,7 @@ Page({
     ageOptions,
     babyGender: '',
     babyMode: true,
+    canEditBabySettings: true,
     allergenInput: '',
     allergens: [],
     genderOptions: [
@@ -123,7 +124,8 @@ Page({
       babyGender: settings.babyGender || '',
       babyMode: settings.babyMode,
       babyAgeText: settings.babyAgeText,
-      allergens: normalizeAllergens(settings.babyAllergens)
+      allergens: normalizeAllergens(settings.babyAllergens),
+      canEditBabySettings: settings.canEditBabySettings !== false
     })
   },
 
@@ -219,6 +221,10 @@ Page({
   },
 
   async save() {
+    if (this.data.canEditBabySettings === false) {
+      wx.showToast({ title: '宝宝资料由家庭创建者维护', icon: 'none' })
+      return
+    }
     markLoggedIn()
     await foodService.updateSettings({
       babyName: this.data.nickname,

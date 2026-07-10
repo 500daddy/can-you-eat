@@ -124,6 +124,38 @@ test('baby settings page leaves nickname empty when profile is logged out', asyn
   assert.equal(page.data.babyAgeText, '0个月')
 })
 
+test('baby settings page blocks saving when current member cannot edit baby settings', async () => {
+  const updates = []
+  const toasts = []
+  const pageDefinition = loadBabySettingsPage({
+    getAssets: () => ({ mascot: { babyBasket: '/baby.png' } }),
+    getSettings: async () => ({
+      babyName: '小米粒',
+      babyAgeMonths: 11,
+      babyAgeText: '11个月',
+      babyMode: true,
+      canEditBabySettings: false
+    }),
+    updateSettings: async (input) => {
+      updates.push(input)
+      return input
+    }
+  })
+  const page = createPageInstance(pageDefinition)
+  global.wx = {
+    showToast: (input) => toasts.push(input)
+  }
+
+  await page.onLoad()
+  await page.save()
+
+  delete global.wx
+  assert.equal(page.data.canEditBabySettings, false)
+  assert.deepEqual(updates, [])
+  assert.deepEqual(toasts, [{ title: '宝宝资料由家庭创建者维护', icon: 'none' }])
+  assert.equal(pageDefinition.__markLoggedInCalled(), false)
+})
+
 test('baby settings page opens a custom cropper before accepting uploaded avatar', async () => {
   const updates = []
   const navigations = []
@@ -188,6 +220,8 @@ test('baby settings page shows gender and allergen controls', () => {
   assert.match(markup, /avatar-helper/)
   assert.match(markup, /sticky-save-bar/)
   assert.match(markup, /退出登录/)
+  assert.match(markup, /宝宝资料由家庭创建者维护/)
+  assert.match(markup, /canEditBabySettings/)
   assert.match(markup, /bindtap="logout"/)
   assert.match(markup, /logout-card/)
   assert.match(markup, /button-primary/)

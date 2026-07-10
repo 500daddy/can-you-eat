@@ -357,9 +357,18 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
   }
 
   async function getSettings() {
-    const settings = await store.get('user_settings', (item) => item.userId === userId)
+    const { familyId } = await getFamilyContext()
+    const settings = await store.get('family_settings', (item) => item.familyId === familyId)
     if (settings) return settings
-    return store.add('user_settings', { id: `settings_${userId}`, userId, ...defaultSettings })
+    return store.add('family_settings', { id: `settings_${familyId}`, familyId, ...defaultSettings })
+  }
+
+  async function withSettingsPermission(settings) {
+    const { membership } = await getFamilyContext()
+    return {
+      ...settings,
+      canEditBabySettings: membership.role === 'owner'
+    }
   }
 
   async function getFood(foodBaseId) {
@@ -430,7 +439,7 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
           const babyAgeMonths = normalizeBabyAgeMonths(calculateBabyAgeMonths(settings.babyBirthday, today))
           data = { ...settings, babyAgeMonths, babyAgeText: calculateBabyAgeText(settings.babyBirthday, today) }
         }
-        return { ok: true, data }
+        return { ok: true, data: await withSettingsPermission(data) }
       }
 
       if (action === 'addFoodRecord') {
@@ -547,12 +556,16 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
       }
 
       if (action === 'updateUserSettings') {
+        const { familyId, membership } = await getFamilyContext()
+        if (membership.role !== 'owner') {
+          return { ok: false, error: '宝宝资料由家庭创建者维护' }
+        }
         const settings = await getSettings()
         const nextSettings = compactObject({
           ...settings,
           ...event,
           action: undefined,
-          userId,
+          familyId,
           updatedAt: today
         })
         if (nextSettings.babyBirthday) {
@@ -566,8 +579,15 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
           nextSettings.babyAgeText = formatBabyAgeFromMonths(nextSettings.babyAgeMonths)
           nextSettings.babyBirthday = undefined
         }
-        const data = await store.update('user_settings', (item) => item.userId === userId, nextSettings)
-        return { ok: true, data }
+        const data = await store.update('family_settings', (item) => item.familyId === familyId, nextSettings)
+        await writeAuditLog({
+          action: 'baby_settings_updated',
+          targetType: 'baby_settings',
+          targetId: familyId,
+          summary: '修改了宝宝资料',
+          after: nextSettings
+        })
+        return { ok: true, data: await withSettingsPermission(data) }
       }
 
       if (action === 'submitFeedback') {
