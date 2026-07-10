@@ -23,6 +23,15 @@
     <button class="pixel-btn secondary" bindtap="copyInvite">复制邀请</button>
   </view>
 
+  <view class="paper-card join-card">
+    <view class="section-title">收到家人邀请？</view>
+    <view class="subtitle">输入邀请码后，会切换到家人的共享食材库。</view>
+    <view class="join-row">
+      <input class="input join-input" value="{{inviteCode}}" placeholder="输入邀请码" bindinput="onInviteCodeInput" />
+      <button class="pixel-btn ghost join-btn" bindtap="joinByInvite">加入</button>
+    </view>
+  </view>
+
   <view class="paper-card">
     <view class="card-head">
       <view class="section-title">家庭成员</view>

@@ -18,6 +18,7 @@ Page({
     members: [],
     membership: {},
     invite: null,
+    inviteCode: '',
     canInvite: false,
     canManageMembers: false
   },
@@ -75,6 +76,25 @@ Page({
         data: text,
         success: () => wx.showToast({ title: '邀请已复制', icon: 'success' })
       })
+    }
+  },
+
+  onInviteCodeInput(e) {
+    this.setData({ inviteCode: String(e.detail.value || '').trim() })
+  },
+
+  async joinByInvite() {
+    if (!this.data.inviteCode) {
+      wx.showToast({ title: '请输入邀请码', icon: 'none' })
+      return
+    }
+    try {
+      await familyService.joinFamilyByInvite({ inviteId: this.data.inviteCode })
+      wx.showToast({ title: '已加入家庭', icon: 'success' })
+      this.setData({ inviteCode: '', invite: null })
+      await this.loadFamily()
+    } catch (error) {
+      wx.showToast({ title: error && error.message ? error.message : '加入失败', icon: 'none' })
     }
   },
 

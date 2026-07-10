@@ -94,6 +94,36 @@ test('family page loads members and creates an invite', async () => {
   assert.match(clipboards[0], /invite-a/)
 })
 
+test('family page lets invited user join by invite code', async () => {
+  const calls = []
+  const page = createPageInstance(loadPage('pages/family/index', {
+    getMyFamily: async () => ({
+      family: { familyId: 'family-a', name: '宝宝的小厨房' },
+      membership: { role: 'owner' },
+      members: []
+    }),
+    createInvite: async () => ({ inviteId: 'invite-a' }),
+    joinFamilyByInvite: async (input) => {
+      calls.push(input)
+      return { familyId: 'family-a' }
+    }
+  }))
+  const toasts = []
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    navigateTo: () => {}
+  }
+
+  page.onInviteCodeInput({ detail: { value: ' invite-a ' } })
+  await page.joinByInvite()
+
+  delete global.wx
+  assert.deepEqual(calls, [{ inviteId: 'invite-a' }])
+  assert.equal(toasts[0].title, '已加入家庭')
+  assert.match(readText('pages/family/index.wxml'), /收到家人邀请/)
+  assert.match(readText('pages/family/index.wxml'), /joinByInvite/)
+})
+
 test('member page only lets owner manage member roles', async () => {
   const page = createPageInstance(loadPage('pages/family/member', {
     getMyFamily: async () => ({

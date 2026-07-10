@@ -73,6 +73,15 @@ async function updateItem(store, collection, predicate, patch) {
   }
 }
 
+async function moveUserFamilyData(store, userId, fromFamilyId, toFamilyId) {
+  const records = await listItems(store, 'user_food_records', (item) => item.familyId === fromFamilyId && item.userId === userId)
+  for (const record of records) {
+    await updateItem(store, 'user_food_records', (item) => item._id === record._id || item.id === record.id, {
+      familyId: toFamilyId
+    })
+  }
+}
+
 function roleCan(role, permission) {
   return Boolean(rolePermissions[role] && rolePermissions[role].has(permission))
 }
@@ -163,7 +172,21 @@ function createFamilyApi({ store, userId, today = '2026-07-09' }) {
           }
           const existing = await getActiveMembership(store, userId)
           if (existing && existing.familyId === invite.familyId) return { ok: true, data: existing }
-          if (existing) return { ok: false, error: '请先退出当前家庭' }
+          if (existing) {
+            const existingMembers = await listItems(store, 'family_members', (item) => item.familyId === existing.familyId && item.status === 'active')
+            if (existing.role !== 'owner' || existingMembers.length > 1) {
+              return { ok: false, error: '请先退出当前家庭' }
+            }
+            await moveUserFamilyData(store, userId, existing.familyId, invite.familyId)
+            await updateItem(store, 'family_members', (item) => item._id === existing._id || item.id === existing.id, {
+              status: 'left',
+              updatedAt: today
+            })
+            await updateItem(store, 'families', (item) => item.familyId === existing.familyId, {
+              status: 'archived',
+              updatedAt: today
+            })
+          }
           const member = await addItem(store, 'family_members', {
             id: makeId('member'),
             familyId: invite.familyId,
@@ -209,6 +232,7 @@ module.exports = {
   createFamilyApi,
   ensureDefaultFamily,
   getActiveMembership,
+  moveUserFamilyData,
   requireMembership,
   requirePermission,
   roleCan

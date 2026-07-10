@@ -40,6 +40,28 @@ test('owner can invite a member and invited user can join the family', async () 
   assert.equal(family.data.members.some((item) => item.openId === 'member-a'), true)
 })
 
+test('invited user can replace an empty default family and keep own food records', async () => {
+  const store = createMemoryStore()
+  const owner = createFamilyApi({ store, userId: 'owner', today: '2026-07-09' })
+  const invited = createFamilyApi({ store, userId: 'member-a', today: '2026-07-09' })
+  const ownerFamily = await owner.handle({ action: 'getMyFamily' })
+  const defaultFamily = await invited.handle({ action: 'getMyFamily' })
+  await store.add('user_food_records', {
+    id: 'record-a',
+    userId: 'member-a',
+    familyId: defaultFamily.data.family.familyId,
+    foodBaseId: 'carrot'
+  })
+
+  const invite = await owner.handle({ action: 'createInvite' })
+  const joined = await invited.handle({ action: 'joinFamilyByInvite', inviteId: invite.data.inviteId })
+  const records = await store.list('user_food_records', (item) => item.id === 'record-a')
+
+  assert.equal(joined.ok, true)
+  assert.equal(joined.data.familyId, ownerFamily.data.family.familyId)
+  assert.equal(records[0].familyId, ownerFamily.data.family.familyId)
+})
+
 test('owner can promote a member to admin but admin cannot modify owner', async () => {
   const store = createMemoryStore()
   const owner = createFamilyApi({ store, userId: 'owner', today: '2026-07-09' })
