@@ -1,4 +1,9 @@
 const { seedFoodBase } = require('./seedFoodBase')
+const {
+  ensureDefaultFamily,
+  getActiveMembership,
+  requirePermission
+} = require('../familyApi/core')
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -283,24 +288,35 @@ function createMemoryStore() {
     user_food_records: [],
     user_settings: [],
     feedback: [],
-    recognition_logs: []
+    recognition_logs: [],
+    families: [],
+    family_members: [],
+    family_invites: [],
+    family_audit_logs: [],
+    family_settings: [],
+    purchase_plans: []
+  }
+
+  function collectionItems(collection) {
+    if (!data[collection]) data[collection] = []
+    return data[collection]
   }
 
   return {
     async list(collection, predicate = () => true) {
-      return clone(data[collection].filter(predicate))
+      return clone(collectionItems(collection).filter(predicate))
     },
     async get(collection, predicate) {
-      return clone(data[collection].find(predicate) || null)
+      return clone(collectionItems(collection).find(predicate) || null)
     },
     async add(collection, doc) {
       const next = { ...clone(doc), _id: doc._id || doc.id || makeId(collection) }
-      data[collection].push(next)
+      collectionItems(collection).push(next)
       return clone(next)
     },
     async update(collection, predicate, patch) {
       let updated = null
-      data[collection] = data[collection].map((doc) => {
+      data[collection] = collectionItems(collection).map((doc) => {
         if (!predicate(doc)) return doc
         updated = mergeWithUndefinedRemoval(doc, patch)
         return updated
@@ -311,6 +327,35 @@ function createMemoryStore() {
 }
 
 function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
+  async function getFamilyContext() {
+    const existing = await getActiveMembership(store, userId)
+    const context = existing
+      ? { membership: existing }
+      : await ensureDefaultFamily(store, userId, today)
+    const membership = context.membership
+    return {
+      familyId: membership.familyId,
+      membership
+    }
+  }
+
+  async function writeAuditLog(input) {
+    const { familyId } = await getFamilyContext()
+    return store.add('family_audit_logs', {
+      id: makeId('audit'),
+      familyId,
+      actorOpenId: userId,
+      actorName: input.actorName || '家人',
+      action: input.action,
+      targetType: input.targetType,
+      targetId: input.targetId,
+      summary: input.summary,
+      before: input.before || null,
+      after: input.after || null,
+      createdAt: today
+    })
+  }
+
   async function getSettings() {
     const settings = await store.get('user_settings', (item) => item.userId === userId)
     if (settings) return settings
@@ -324,7 +369,8 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
 
   async function listCalculatedRecords(includeHandled = false) {
     const settings = await getSettings()
-    const records = await store.list('user_food_records', (item) => item.userId === userId)
+    const { familyId } = await getFamilyContext()
+    const records = await store.list('user_food_records', (item) => item.familyId === familyId || (!item.familyId && item.userId === userId))
     const calculated = []
     for (const record of records) {
       const food = await getFood(record.foodBaseId || record.foodName) ||
@@ -388,11 +434,14 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
       }
 
       if (action === 'addFoodRecord') {
+        const { familyId } = await getFamilyContext()
+        await requirePermission(store, userId, 'edit_food_records')
         const foundFood = await getFood(event.foodBaseId || event.foodName)
         const food = foundFood || createCustomFood(event.foodName, event.storageMethod)
         const record = await store.add('user_food_records', {
           id: makeId('record'),
           userId,
+          familyId,
           foodBaseId: foundFood ? food.id : 'custom',
           customFoodName: foundFood ? '' : event.foodName || '自定义食材',
           purchaseDate: event.purchaseDate || today,
@@ -405,6 +454,18 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
           ...(event.status === 'not_recommended' ? { status: 'not_recommended' } : {}),
           createdAt: today,
           updatedAt: today
+        })
+        await writeAuditLog({
+          action: 'food_record_created',
+          targetType: 'food_record',
+          targetId: record.id,
+          summary: `新增了「${food.name}」`,
+          after: {
+            foodBaseId: record.foodBaseId,
+            customFoodName: record.customFoodName,
+            purchaseDate: record.purchaseDate,
+            storageMethod: record.storageMethod
+          }
         })
         return { ok: true, data: calculateRecord({ record, food, settings: await getSettings(), today }) }
       }
@@ -424,6 +485,8 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
       }
 
       if (action === 'updateFoodRecord') {
+        const { familyId } = await getFamilyContext()
+        await requirePermission(store, userId, 'edit_food_records')
         const patch = compactObject({
           purchaseDate: event.purchaseDate,
           storageMethod: event.storageMethod,
@@ -434,19 +497,41 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
           updatedAt: today
         })
         patch.status = undefined
-        await store.update('user_food_records', (item) => item.userId === userId && (item.id === event.recordId || item._id === event.recordId), patch)
+        await store.update('user_food_records', (item) => item.familyId === familyId && (item.id === event.recordId || item._id === event.recordId), patch)
+        await writeAuditLog({
+          action: 'food_record_updated',
+          targetType: 'food_record',
+          targetId: event.recordId,
+          summary: '编辑了这条食材记录',
+          after: patch
+        })
         const detail = await this.handle({ action: 'getFoodDetail', recordId: event.recordId })
         return { ok: true, data: detail.data.record }
       }
 
       if (action === 'finishFoodRecord') {
+        const { familyId } = await getFamilyContext()
+        await requirePermission(store, userId, 'edit_food_records')
         const finishAction = ['finished', 'adult_only', 'deleted'].includes(event.finishAction) ? event.finishAction : 'finished'
-        await store.update('user_food_records', (item) => item.userId === userId && (item.id === event.recordId || item._id === event.recordId), {
+        await store.update('user_food_records', (item) => item.familyId === familyId && (item.id === event.recordId || item._id === event.recordId), {
           status: finishAction,
           updatedAt: today
         })
+        await writeAuditLog({
+          action: 'food_record_finished',
+          targetType: 'food_record',
+          targetId: event.recordId,
+          summary: finishAction === 'deleted' ? '删除了这条食材记录' : '处理了这条食材记录',
+          after: { status: finishAction }
+        })
         const detail = await this.handle({ action: 'getFoodDetail', recordId: event.recordId })
         return { ok: true, data: detail.data.record }
+      }
+
+      if (action === 'getRecordAuditLogs') {
+        const { familyId } = await getFamilyContext()
+        const logs = await store.list('family_audit_logs', (item) => item.familyId === familyId && item.targetType === 'food_record' && item.targetId === event.recordId)
+        return { ok: true, data: logs.slice(-10).reverse() }
       }
 
       if (action === 'getReminders') {

@@ -6,6 +6,7 @@ const {
   createMemoryStore,
   seedFoodBase
 } = require('../cloudfunctions/foodApi/core')
+const { createFamilyApi } = require('../cloudfunctions/familyApi/core')
 
 test('initializes food base once and searches by alias', async () => {
   const api = createFoodApi({ store: createMemoryStore(), userId: 'user-a', today: '2026-06-12' })
@@ -197,6 +198,37 @@ test('keeps user records isolated and handles finish action', async () => {
 
   assert.equal((await userA.handle({ action: 'getFoodRecords' })).data.length, 0)
   assert.equal((await userA.handle({ action: 'getFoodDetail', recordId: added.data.id })).data.record.status, 'finished')
+})
+
+test('family members share food records by family id', async () => {
+  const store = createMemoryStore()
+  const ownerFamily = createFamilyApi({ store, userId: 'owner', today: '2026-07-09' })
+  const memberFamily = createFamilyApi({ store, userId: 'member-a', today: '2026-07-09' })
+  await ownerFamily.handle({ action: 'getMyFamily' })
+  const invite = await ownerFamily.handle({ action: 'createInvite' })
+  await memberFamily.handle({ action: 'joinFamilyByInvite', inviteId: invite.data.inviteId })
+
+  const ownerFood = createFoodApi({ store, userId: 'owner', today: '2026-07-09' })
+  const memberFood = createFoodApi({ store, userId: 'member-a', today: '2026-07-09' })
+  const outsiderFood = createFoodApi({ store, userId: 'outsider', today: '2026-07-09' })
+
+  const added = await ownerFood.handle({ action: 'addFoodRecord', foodBaseId: 'carrot', purchaseDate: '2026-07-09' })
+
+  assert.equal((await memberFood.handle({ action: 'getFoodRecords' })).data[0].id, added.data.id)
+  assert.equal((await outsiderFood.handle({ action: 'getFoodRecords' })).data.length, 0)
+})
+
+test('food edits write family audit logs with actor information', async () => {
+  const store = createMemoryStore()
+  const api = createFoodApi({ store, userId: 'owner', today: '2026-07-09' })
+  const added = await api.handle({ action: 'addFoodRecord', foodBaseId: 'carrot', purchaseDate: '2026-07-09' })
+  await api.handle({ action: 'updateFoodRecord', recordId: added.data.id, note: '已经切块密封' })
+
+  const logs = await api.handle({ action: 'getRecordAuditLogs', recordId: added.data.id })
+
+  assert.equal(logs.data[0].targetId, added.data.id)
+  assert.match(logs.data[0].summary, /编辑/)
+  assert.equal(logs.data[0].actorOpenId, 'owner')
 })
 
 test('preserves manual cloud adult_only status', async () => {
