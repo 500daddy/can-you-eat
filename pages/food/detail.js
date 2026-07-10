@@ -36,23 +36,41 @@ function confirmFinish(foodName) {
   })
 }
 
+const auditActionTextMap = {
+  food_record_created: '新增',
+  food_record_updated: '编辑',
+  food_record_finished: '处理'
+}
+
+function formatAuditLogs(logs = []) {
+  return logs.map((item) => ({
+    ...item,
+    actionText: auditActionTextMap[item.action] || '更新',
+    actorText: item.actorName || '家人',
+    timeText: item.createdAt || '',
+    summaryText: item.summary || auditActionTextMap[item.action] || '更新了记录'
+  }))
+}
+
 Page({
   data: {
     assets: foodService.getAssets(),
     record: {},
     base: {},
     statusInfo: {},
-    processAdvice: {}
+    processAdvice: {},
+    auditLogs: []
   },
 
   onLoad(query = {}) {
-    this.loadDetail(query.id)
+    return this.loadDetail(query.id)
   },
 
   onShow() {
     if (this.data.record.id) {
-      this.loadDetail(this.data.record.id)
+      return this.loadDetail(this.data.record.id)
     }
+    return Promise.resolve()
   },
 
   async loadDetail(id) {
@@ -62,6 +80,14 @@ Page({
       setTimeout(() => wx.navigateBack(), 500)
       return
     }
+    let auditLogs = []
+    if (typeof foodService.getRecordAuditLogs === 'function') {
+      try {
+        auditLogs = await foodService.getRecordAuditLogs(id)
+      } catch (error) {
+        auditLogs = []
+      }
+    }
     const displayRecord = decorateFoodIconDisplay([record])[0]
     this.setData({
       record: displayRecord,
@@ -70,7 +96,8 @@ Page({
       processAdvice: buildProcessAdvice({
         ...base,
         ...displayRecord
-      })
+      }),
+      auditLogs: formatAuditLogs(auditLogs)
     })
   },
 
@@ -111,5 +138,6 @@ Page({
 })
 
 module.exports = {
+  formatAuditLogs,
   normalizeBase
 }

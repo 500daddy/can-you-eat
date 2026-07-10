@@ -533,6 +533,40 @@ test('detail page shows process advice and dish ideas for the current food', asy
   assert.match(styles, /\.process-title/)
 })
 
+test('detail page shows recent edit history when audit logs exist', async () => {
+  const page = createPageInstance(loadPage('pages/food/detail', {
+    getAssets: () => assets,
+    getFoodDetail: async () => ({
+      record: {
+        id: 'record-carrot',
+        name: '胡萝卜',
+        status: 'baby_ok',
+        storageText: '冷藏保存'
+      },
+      base: null
+    }),
+    getRecordAuditLogs: async () => [
+      {
+        id: 'audit-a',
+        actorName: '妈妈',
+        action: 'food_record_updated',
+        summary: '编辑了这条食材记录',
+        createdAt: '2026-07-10'
+      }
+    ]
+  }))
+  const markup = readText('pages/food/detail.wxml')
+  const styles = readText('pages/food/detail.wxss')
+
+  await page.onLoad({ id: 'record-carrot' })
+
+  assert.equal(page.data.auditLogs[0].actorText, '妈妈')
+  assert.equal(page.data.auditLogs[0].actionText, '编辑')
+  assert.match(markup, /最近编辑记录/)
+  assert.match(markup, /auditLogs/)
+  assert.match(styles, /\.audit-row/)
+})
+
 test('detail page shows only verified record food icons', async () => {
   const page = createPageInstance(loadPage('pages/food/detail', {
     getAssets: () => assets,

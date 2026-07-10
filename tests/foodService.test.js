@@ -132,6 +132,23 @@ test('gets complete cloud food base through dedicated food base action', async (
   assert.deepEqual(result.map((item) => item.id), ['broccoli', 'yam'])
 })
 
+test('gets record audit logs through cloud foodApi when enabled', async () => {
+  const calls = []
+  const service = createFoodService({
+    useCloud: true,
+    repo: createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] }),
+    callCloud: async (data) => {
+      calls.push(data)
+      return [{ id: 'audit-a', summary: '编辑了这条食材记录' }]
+    }
+  })
+
+  const result = await service.getRecordAuditLogs('record-a')
+
+  assert.deepEqual(calls, [{ action: 'getRecordAuditLogs', recordId: 'record-a' }])
+  assert.equal(result[0].id, 'audit-a')
+})
+
 test('falls back to local repository when cloud call fails', async () => {
   const repo = createMemoryFoodRepository({ today: '2026-06-12', seedRecords: [] })
   repo.addFoodRecord({

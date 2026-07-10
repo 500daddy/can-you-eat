@@ -274,6 +274,10 @@ function createFoodService(options = {}) {
       return cloudOrLocal('getFoodDetail', { recordId }, () => repo.getFoodDetail(recordId))
     },
 
+    async getRecordAuditLogs(recordId) {
+      return cloudOrLocal('getRecordAuditLogs', { recordId }, () => [])
+    },
+
     async updateFoodRecord(input) {
       return cloudOrLocal('updateFoodRecord', input, () => repo.updateFoodRecord(input))
     },

@@ -87,6 +87,47 @@
   border-left-color: #e4bf68;
 }
 
+.audit-card {
+  padding-bottom: 10rpx;
+}
+
+.audit-row {
+  display: flex;
+  gap: 16rpx;
+  padding: 18rpx 0;
+  border-bottom: 2rpx solid rgba(216, 201, 157, 0.5);
+}
+
+.audit-row:last-child {
+  border-bottom: 0;
+}
+
+.audit-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70rpx;
+  height: 44rpx;
+  border: 2rpx solid #8ebf7b;
+  border-radius: 14rpx;
+  background: #e7f4d8;
+  color: #2f6c37;
+  font-size: 22rpx;
+  font-weight: 900;
+}
+
+.audit-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.audit-summary {
+  color: #2d261c;
+  font-size: 26rpx;
+  font-weight: 900;
+  line-height: 1.4;
+}
+
 .detail-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;

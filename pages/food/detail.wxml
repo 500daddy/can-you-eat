@@ -62,6 +62,17 @@
     超过宝宝建议期后，给宝宝前请重新检查外观、气味和触感。
   </view>
 
+  <view wx:if="{{auditLogs.length}}" class="paper-card audit-card">
+    <view class="section-title">最近编辑记录</view>
+    <view class="audit-row" wx:for="{{auditLogs}}" wx:key="id">
+      <view class="audit-dot">{{item.actionText}}</view>
+      <view class="audit-main">
+        <view class="audit-summary">{{item.summaryText}}</view>
+        <view class="subtitle">{{item.actorText}} · {{item.timeText}}</view>
+      </view>
+    </view>
+  </view>
+
   <view class="detail-actions fixed-action-dock">
     <view class="pixel-btn" bindtap="finish">已吃掉</view>
     <view class="pixel-btn secondary" bindtap="keepAdult">留给大人吃</view>
