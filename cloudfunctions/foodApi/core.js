@@ -340,12 +340,12 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
   }
 
   async function writeAuditLog(input) {
-    const { familyId } = await getFamilyContext()
+    const { familyId, membership } = await getFamilyContext()
     return store.add('family_audit_logs', {
       id: makeId('audit'),
       familyId,
       actorOpenId: userId,
-      actorName: input.actorName || '家人',
+      actorName: input.actorName || membership.nickname || userId,
       action: input.action,
       targetType: input.targetType,
       targetId: input.targetId,

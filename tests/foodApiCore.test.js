@@ -229,6 +229,7 @@ test('food edits write family audit logs with actor information', async () => {
   assert.equal(logs.data[0].targetId, added.data.id)
   assert.match(logs.data[0].summary, /编辑/)
   assert.equal(logs.data[0].actorOpenId, 'owner')
+  assert.equal(logs.data[0].actorName, 'owner')
 })
 
 test('preserves manual cloud adult_only status', async () => {

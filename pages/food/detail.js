@@ -46,7 +46,7 @@ function formatAuditLogs(logs = []) {
   return logs.map((item) => ({
     ...item,
     actionText: auditActionTextMap[item.action] || '更新',
-    actorText: item.actorName || '家人',
+    actorText: item.actorName || item.actorOpenId || '家人',
     timeText: item.createdAt || '',
     summaryText: item.summary || auditActionTextMap[item.action] || '更新了记录'
   }))
