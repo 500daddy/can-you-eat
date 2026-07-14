@@ -1,6 +1,8 @@
 const { getFamilyService } = require('../../utils/familyService')
+const { getAccountService } = require('../../utils/accountService')
 
 const familyService = getFamilyService()
+const accountService = getAccountService()
 const roleTextMap = {
   owner: '创建者',
   admin: '管理员',
@@ -9,6 +11,15 @@ const roleTextMap = {
 
 function roleText(role) {
   return roleTextMap[role] || '成员'
+}
+
+function parentIdentity() {
+  const session = accountService.getSession() || {}
+  const profile = session.profile || {}
+  const identity = {}
+  if (profile.nickname) identity.nickname = profile.nickname
+  if (profile.avatarUrl) identity.avatarUrl = profile.avatarUrl
+  return identity
 }
 
 Page({
@@ -30,7 +41,7 @@ Page({
   async loadFamily() {
     this.setData({ loading: true })
     try {
-      const result = await familyService.getMyFamily()
+      const result = await familyService.getMyFamily(parentIdentity())
       const membership = result.membership || {}
       const members = (result.members || []).map((item) => ({
         ...item,
@@ -89,7 +100,10 @@ Page({
       return
     }
     try {
-      await familyService.joinFamilyByInvite({ inviteId: this.data.inviteCode })
+      await familyService.joinFamilyByInvite({
+        inviteId: this.data.inviteCode,
+        ...parentIdentity()
+      })
       wx.showToast({ title: '已加入家庭', icon: 'success' })
       this.setData({ inviteCode: '', invite: null })
       await this.loadFamily()

@@ -9,10 +9,12 @@ function readText(projectPath) {
   return fs.readFileSync(path.join(root, projectPath), 'utf8')
 }
 
-function loadPage(projectPath, familyService) {
+function loadPage(projectPath, familyService, accountService = { getSession: () => ({}) }) {
   const familyServicePath = require.resolve('../utils/familyService')
+  const accountServicePath = require.resolve('../utils/accountService')
   const pagePath = require.resolve(`../${projectPath}`)
   delete require.cache[familyServicePath]
+  delete require.cache[accountServicePath]
   delete require.cache[pagePath]
   require.cache[familyServicePath] = {
     id: familyServicePath,
@@ -20,6 +22,14 @@ function loadPage(projectPath, familyService) {
     loaded: true,
     exports: {
       getFamilyService: () => familyService
+    }
+  }
+  require.cache[accountServicePath] = {
+    id: accountServicePath,
+    filename: accountServicePath,
+    loaded: true,
+    exports: {
+      getAccountService: () => accountService
     }
   }
 
@@ -31,6 +41,7 @@ function loadPage(projectPath, familyService) {
   delete global.Page
   delete require.cache[pagePath]
   delete require.cache[familyServicePath]
+  delete require.cache[accountServicePath]
   return definition
 }
 
@@ -145,4 +156,44 @@ test('member page only lets owner manage member roles', async () => {
   delete global.wx
   assert.equal(page.data.canManageMembers, false)
   assert.match(toasts[0].title, /创建者/)
+})
+
+test('family entry sends the cached parent identity when creating or joining', async () => {
+  const calls = []
+  const familyService = {
+    getMyFamily: async (input) => {
+      calls.push({ action: 'getMyFamily', input })
+      return {
+        family: { familyId: 'family-a', name: '小满家' },
+        membership: { role: 'owner' },
+        members: []
+      }
+    },
+    joinFamilyByInvite: async (input) => {
+      calls.push({ action: 'joinFamilyByInvite', input })
+      return { familyId: 'family-b' }
+    }
+  }
+  const accountService = {
+    getSession: () => ({
+      loggedIn: true,
+      profile: { nickname: '小满妈妈', avatarUrl: '/parent.jpg' }
+    })
+  }
+  const page = createPageInstance(loadPage('pages/family/index', familyService, accountService))
+  global.wx = { showToast() {} }
+
+  await page.loadFamily()
+  page.setData({ inviteCode: 'invite-b' })
+  await page.joinByInvite()
+
+  delete global.wx
+  assert.deepEqual(calls[0], {
+    action: 'getMyFamily',
+    input: { nickname: '小满妈妈', avatarUrl: '/parent.jpg' }
+  })
+  assert.deepEqual(calls[1], {
+    action: 'joinFamilyByInvite',
+    input: { inviteId: 'invite-b', nickname: '小满妈妈', avatarUrl: '/parent.jpg' }
+  })
 })

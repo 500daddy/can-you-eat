@@ -220,8 +220,18 @@ test('family members share food records by family id', async () => {
 
 test('food edits write family audit logs with actor information', async () => {
   const store = createMemoryStore()
+  const familyApi = createFamilyApi({ store, userId: 'owner', today: '2026-07-09' })
+  await familyApi.handle({
+    action: 'getMyFamily',
+    nickname: '小满妈妈',
+    avatarUrl: '/old-avatar.jpg'
+  })
   const api = createFoodApi({ store, userId: 'owner', today: '2026-07-09' })
   const added = await api.handle({ action: 'addFoodRecord', foodBaseId: 'carrot', purchaseDate: '2026-07-09' })
+  await store.update('family_members', (item) => item.openId === 'owner', {
+    nickname: '小满爸爸',
+    avatarUrl: '/new-avatar.jpg'
+  })
   await api.handle({ action: 'updateFoodRecord', recordId: added.data.id, note: '已经切块密封' })
 
   const logs = await api.handle({ action: 'getRecordAuditLogs', recordId: added.data.id })
@@ -229,7 +239,10 @@ test('food edits write family audit logs with actor information', async () => {
   assert.equal(logs.data[0].targetId, added.data.id)
   assert.match(logs.data[0].summary, /编辑/)
   assert.equal(logs.data[0].actorOpenId, 'owner')
-  assert.equal(logs.data[0].actorName, 'owner')
+  assert.equal(logs.data[0].actorName, '小满爸爸')
+  assert.equal(logs.data[0].actorAvatar, '/new-avatar.jpg')
+  assert.equal(logs.data[1].actorName, '小满妈妈')
+  assert.equal(logs.data[1].actorAvatar, '/old-avatar.jpg')
 })
 
 test('preserves manual cloud adult_only status', async () => {
