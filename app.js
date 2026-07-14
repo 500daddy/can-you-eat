@@ -1,4 +1,4 @@
-const LOGGED_OUT_KEY = 'baby_food_logged_out_v1'
+const ACCOUNT_SESSION_KEY = 'baby_food_account_session_v1'
 
 function loadCloudConfig() {
   try {
@@ -12,18 +12,23 @@ const cloudConfig = loadCloudConfig()
 
 App({
   globalData: {
-    babyName: '小芽贝',
-    babyAgeText: '8个月',
-    babyMode: true,
+    babyName: '',
+    babyAgeText: '',
+    babyMode: false,
     cloudEnvId: cloudConfig.cloudEnvId || 'cloud1-please-replace',
-    useCloudFoodApi: cloudConfig.useCloudFoodApi === true,
-    loggedOut: false
+    cloudFoodApiConfigured: cloudConfig.useCloudFoodApi === true,
+    useCloudFoodApi: false,
+    accountLoggedIn: false,
+    loggedOut: true
   },
 
   onLaunch() {
-    const loggedOut = Boolean(wx.getStorageSync && wx.getStorageSync(LOGGED_OUT_KEY))
-    this.globalData.loggedOut = loggedOut
-    if (loggedOut) this.globalData.useCloudFoodApi = false
+    const session = wx.getStorageSync ? wx.getStorageSync(ACCOUNT_SESSION_KEY) : null
+    const accountLoggedIn = Boolean(session && session.loggedIn)
+    this.globalData.accountLoggedIn = accountLoggedIn
+    this.globalData.loggedOut = !accountLoggedIn
+    this.globalData.cloudFoodApiConfigured = cloudConfig.useCloudFoodApi === true
+    this.globalData.useCloudFoodApi = this.globalData.cloudFoodApiConfigured && accountLoggedIn
     const env = this.globalData.cloudEnvId
     if (wx.cloud && env && env !== 'cloud1-please-replace') {
       try {

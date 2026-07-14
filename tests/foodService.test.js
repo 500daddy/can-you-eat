@@ -424,8 +424,8 @@ test('logged out session stops cloud reads but still saves local food records', 
   const stats = await service.getStats()
 
   assert.deepEqual(calls, [])
-  assert.equal(settings.babyName, '未登录')
-  assert.equal(settings.babyAgeText, '0个月')
+  assert.equal(settings.babyName, '')
+  assert.equal(settings.babyAgeText, '')
   assert.equal(added.name, '胡萝卜')
   assert.equal(records.length, 1)
   assert.equal(records[0].name, '胡萝卜')
@@ -466,6 +466,32 @@ test('markLoggedIn clears the logged out placeholder without forcing cloud back 
   assert.equal(app.globalData.loggedOut, false)
   assert.equal(app.globalData.useCloudFoodApi, false)
   assert.equal(storage[LOGGED_OUT_KEY], undefined)
+})
+
+test('markLoggedIn enables cloud food only when cloud food api is configured', () => {
+  const configuredApp = {
+    globalData: {
+      accountLoggedIn: false,
+      loggedOut: true,
+      cloudFoodApiConfigured: true,
+      useCloudFoodApi: false
+    }
+  }
+  const originalGetApp = global.getApp
+  const originalWx = global.wx
+  try {
+    global.getApp = () => configuredApp
+    global.wx = { removeStorageSync() {} }
+
+    markLoggedIn()
+  } finally {
+    global.getApp = originalGetApp
+    global.wx = originalWx
+  }
+
+  assert.equal(configuredApp.globalData.accountLoggedIn, true)
+  assert.equal(configuredApp.globalData.loggedOut, false)
+  assert.equal(configuredApp.globalData.useCloudFoodApi, true)
 })
 
 test('gets food base by id through cloud foodApi when enabled', async () => {

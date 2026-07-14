@@ -117,7 +117,7 @@ test('app uses local cloud config for private deployments', () => {
   assert.match(appJs, /require\('\.\/utils\/cloudConfig\.local'\)/)
   assert.match(appJs, /require\('\.\/utils\/cloudConfig\.example'\)/)
   assert.match(appJs, /cloudEnvId:\s*cloudConfig\.cloudEnvId/)
-  assert.match(appJs, /useCloudFoodApi:\s*cloudConfig\.useCloudFoodApi === true/)
+  assert.match(appJs, /cloudFoodApiConfigured:\s*cloudConfig\.useCloudFoodApi === true/)
   assert.match(cloudConfigExample, /cloud1-please-replace/)
   assert.doesNotMatch(appJs, /cloud1-[a-z0-9]{16,}/)
   assert.doesNotMatch(JSON.stringify(projectConfig), /wx[0-9a-f]{16}/)
@@ -190,4 +190,20 @@ test('project upload source stays under preview size budget', () => {
     .reduce((total, file) => total + fs.statSync(file).size, 0)
 
   assert.ok(uploadBytes < 1900 * 1024, `upload source should stay below budget, got ${Math.round(uploadBytes / 1024)}KB`)
+})
+
+test('cloud food mode starts only for a saved parent session', () => {
+  const appJs = readText('app.js')
+
+  assert.match(appJs, /ACCOUNT_SESSION_KEY/)
+  assert.match(appJs, /accountLoggedIn/)
+  assert.match(appJs, /cloudFoodApiConfigured/)
+  assert.match(appJs, /useCloudFoodApi\s*=\s*this\.globalData\.cloudFoodApiConfigured\s*&&\s*accountLoggedIn/)
+})
+
+test('logout keeps an empty local profile without clearing all mini program storage', () => {
+  const foodService = readText('utils/foodService.js')
+
+  assert.doesNotMatch(foodService, /clearStorageSync/)
+  assert.match(foodService, /babyName:\s*''/)
 })

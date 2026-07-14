@@ -45,6 +45,7 @@ function markLoggedOut() {
   if (typeof getApp === 'function') {
     const app = getApp()
     if (app && app.globalData) {
+      app.globalData.accountLoggedIn = false
       app.globalData.loggedOut = true
       app.globalData.useCloudFoodApi = false
     }
@@ -56,8 +57,9 @@ function markLoggedOut() {
     wx.setStorageSync(FEEDBACK_KEY, [])
     wx.setStorageSync(SETTINGS_KEY, {
       ...defaultSettings,
-      babyName: '未登录',
-      babyAgeMonths: 0,
+      babyName: '',
+      babyAgeMonths: null,
+      babyAgeText: '',
       babyMode: false
     })
   }
@@ -67,7 +69,9 @@ function markLoggedIn() {
   if (typeof getApp === 'function') {
     const app = getApp()
     if (app && app.globalData) {
+      app.globalData.accountLoggedIn = true
       app.globalData.loggedOut = false
+      app.globalData.useCloudFoodApi = app.globalData.cloudFoodApiConfigured === true
     }
   }
   if (typeof wx !== 'undefined') {
@@ -118,8 +122,9 @@ function createFoodService(options = {}) {
   function loggedOutSettings() {
     return withComputedBabyAge({
       ...defaultSettings,
-      babyName: '未登录',
-      babyAgeMonths: 0,
+      babyName: '',
+      babyAgeMonths: null,
+      babyAgeText: '',
       babyAvatarUrl: '',
       babyAllergens: [],
       babyMode: false,
