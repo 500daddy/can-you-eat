@@ -9,11 +9,13 @@ function readText(projectPath) {
   return fs.readFileSync(path.join(root, projectPath), 'utf8')
 }
 
-function loadMinePage({ foodService, recognitionService }) {
+function loadMinePage({ foodService, accountService, recognitionService = {} }) {
   const foodServicePath = require.resolve('../utils/foodService')
+  const accountServicePath = require.resolve('../utils/accountService')
   const recognitionServicePath = require.resolve('../utils/recognitionService')
   const pagePath = require.resolve('../pages/mine/index')
   delete require.cache[foodServicePath]
+  delete require.cache[accountServicePath]
   delete require.cache[recognitionServicePath]
   delete require.cache[pagePath]
   require.cache[foodServicePath] = {
@@ -22,6 +24,14 @@ function loadMinePage({ foodService, recognitionService }) {
     loaded: true,
     exports: {
       getFoodService: () => foodService
+    }
+  }
+  require.cache[accountServicePath] = {
+    id: accountServicePath,
+    filename: accountServicePath,
+    loaded: true,
+    exports: {
+      getAccountService: () => accountService
     }
   }
   require.cache[recognitionServicePath] = {
@@ -41,6 +51,7 @@ function loadMinePage({ foodService, recognitionService }) {
   delete global.Page
   delete require.cache[pagePath]
   delete require.cache[recognitionServicePath]
+  delete require.cache[accountServicePath]
   delete require.cache[foodServicePath]
   return definition
 }
@@ -55,25 +66,136 @@ function createPageInstance(definition) {
   }
 }
 
-test('mine profile card exposes baby info editing from the visible baby summary', () => {
+function createMineFoodService() {
+  return {
+    getAssets: () => ({ mascot: {} }),
+    getSettings: async () => ({
+      babyProfileConfigured: false,
+      babyMode: false,
+      dailySummaryTime: '08:00'
+    }),
+    getStats: async () => []
+  }
+}
+
+test('mine page shows parent account and nests family sharing in the profile card', () => {
   const markup = readText('pages/mine/index.wxml')
   const stylesheet = readText('pages/mine/index.wxss')
 
-  assert.match(markup, /class="profile-card"[^>]+bindtap="goBaby"/)
-  assert.match(markup, /settings\.babyAvatarImage/)
-  assert.match(markup, /class="profile-avatar"[^>]+mode="aspectFill"/)
-  assert.match(markup, /settings\.babyStageText/)
-  assert.match(markup, /settings\.babyStageDescription/)
-  assert.match(markup, /profile-stage-desc/)
-  assert.doesNotMatch(markup, /Lv\.3/)
-  assert.match(markup, /class="profile-edit"/)
-  assert.match(markup, /编辑/)
+  assert.match(markup, /account\.profile\.avatarUrl/)
+  assert.match(markup, /微信登录/)
+  assert.match(markup, /账号设置/)
+  assert.match(markup, /家庭共享/)
+  assert.match(markup, /family-summary/)
+  assert.match(markup, /加载失败，点击重试/)
+  assert.doesNotMatch(markup, /settings\.babyAvatarImage/)
+  assert.doesNotMatch(markup, /宝宝信息未设置/)
+  assert.doesNotMatch(markup, /class="list-cell" bindtap="goFamily"/)
   assert.doesNotMatch(markup, /宝宝成长徽章/)
-  assert.doesNotMatch(markup, /achievement-card/)
-  assert.doesNotMatch(markup, /achievements/)
-  assert.match(stylesheet, /\.profile-edit/)
-  assert.match(stylesheet, /\.profile-stage-desc/)
-  assert.doesNotMatch(stylesheet, /\.achievement-card/)
+  assert.match(stylesheet, /\.account-card/)
+  assert.match(stylesheet, /\.family-summary/)
+})
+
+test('mine page loads account, stats, and baby setting note together', async () => {
+  const page = createPageInstance(loadMinePage({
+    accountService: {
+      refresh: async () => ({
+        loggedIn: true,
+        profile: { nickname: '小满妈妈', avatarUrl: '/a.jpg' },
+        family: {
+          family: { familyId: 'family-a', name: '小满家' },
+          membership: { role: 'owner' },
+          members: [{}, {}]
+        },
+        syncStatus: 'synced'
+      })
+    },
+    foodService: {
+      ...createMineFoodService(),
+      getSettings: async () => ({
+        babyProfileConfigured: true,
+        babyMode: true,
+        babyAgeText: '11个月',
+        dailySummaryTime: '09:00'
+      }),
+      getStats: async () => [{ label: '已记录食材', value: 2 }]
+    }
+  }))
+
+  await page.onShow()
+
+  assert.equal(page.data.account.profile.nickname, '小满妈妈')
+  assert.equal(page.data.account.familyName, '小满家')
+  assert.equal(page.data.account.familyRoleText, '创建者')
+  assert.equal(page.data.account.familyMemberCount, 2)
+  assert.equal(page.data.babySettingNote, '11个月')
+  assert.equal(page.data.reminderTime, '09:00')
+  assert.equal(page.data.stats[0].action, 'overview')
+})
+
+test('mine page opens account settings for login and logged-in account editing', () => {
+  const navigations = []
+  const page = createPageInstance(loadMinePage({
+    accountService: { refresh: async () => ({ loggedIn: false }) },
+    foodService: createMineFoodService()
+  }))
+  global.wx = { navigateTo: (input) => navigations.push(input) }
+
+  page.goAccount()
+  page.setData({ account: { loggedIn: true } })
+  page.goAccount()
+
+  delete global.wx
+  assert.deepEqual(navigations, [
+    { url: '/pages/settings/account' },
+    { url: '/pages/settings/account' }
+  ])
+})
+
+test('mine page retries pending sync and refreshes the account card', async () => {
+  let retried = 0
+  const page = createPageInstance(loadMinePage({
+    accountService: {
+      refresh: async () => ({ loggedIn: true, syncStatus: 'pending', profile: {}, family: {} }),
+      retryPendingSync: async () => {
+        retried += 1
+        return { loggedIn: true, syncStatus: 'synced', profile: {}, family: {} }
+      }
+    },
+    foodService: createMineFoodService()
+  }))
+  global.wx = { showToast() {} }
+
+  await page.onShow()
+  await page.retrySync()
+
+  delete global.wx
+  assert.equal(retried, 1)
+  assert.equal(page.data.account.syncStatus, 'synced')
+  assert.equal(page.data.syncing, false)
+})
+
+test('mine page opens family sharing and preserves family load errors', async () => {
+  const navigations = []
+  const page = createPageInstance(loadMinePage({
+    accountService: {
+      refresh: async () => ({
+        loggedIn: true,
+        familyLoadError: true,
+        profile: { nickname: '小满妈妈' }
+      })
+    },
+    foodService: createMineFoodService()
+  }))
+  global.wx = { navigateTo: (input) => navigations.push(input) }
+
+  await page.onShow()
+  page.goFamily()
+
+  delete global.wx
+  assert.equal(page.data.account.familyLoadError, true)
+  assert.equal(page.data.account.familyName, '')
+  assert.deepEqual(navigations, [{ url: '/pages/family/index' }])
 })
 
 test('mine stats cards expose clear actions without making score a navigation', async () => {
@@ -83,6 +205,9 @@ test('mine stats cards expose clear actions without making score a navigation', 
   const storageWrites = []
   const modals = []
   const page = createPageInstance(loadMinePage({
+    accountService: {
+      refresh: async () => ({ loggedIn: false, syncStatus: 'idle' })
+    },
     foodService: {
       getAssets: () => ({ mascot: {} }),
       getSettings: async () => ({}),

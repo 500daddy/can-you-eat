@@ -1,6 +1,8 @@
 const { getFoodService } = require('../../utils/foodService')
+const { getAccountService } = require('../../utils/accountService')
 
 const foodService = getFoodService()
+const accountService = getAccountService()
 
 const statActions = {
   已记录食材: { action: 'overview' },
@@ -16,21 +18,76 @@ function decorateStats(stats = []) {
   }))
 }
 
+const familyRoleLabels = {
+  owner: '创建者',
+  admin: '管理员',
+  member: '成员'
+}
+
+function decorateAccount(account = {}) {
+  const familyContext = account.family || {}
+  const family = familyContext.family || {}
+  const membership = familyContext.membership || {}
+  const members = Array.isArray(familyContext.members) ? familyContext.members : []
+  return {
+    loggedIn: false,
+    syncStatus: 'idle',
+    ...account,
+    familyName: account.familyLoadError ? '' : (family.name || ''),
+    familyRoleText: familyRoleLabels[membership.role] || '成员',
+    familyMemberCount: members.length
+  }
+}
+
 Page({
   data: {
     assets: foodService.getAssets(),
-    settings: {},
-    stats: []
+    account: decorateAccount(),
+    stats: [],
+    babySettingNote: '待设置',
+    reminderTime: '08:00',
+    syncing: false
   },
 
   async onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 3 })
     }
+    const [account, stats, settings] = await Promise.all([
+      accountService.refresh(),
+      foodService.getStats(),
+      foodService.getSettings()
+    ])
     this.setData({
-      settings: await foodService.getSettings(),
-      stats: decorateStats(await foodService.getStats())
+      account: decorateAccount(account),
+      stats: decorateStats(stats),
+      babySettingNote: settings && settings.babyProfileConfigured
+        ? settings.babyAgeText
+        : '待设置',
+      reminderTime: (settings && settings.dailySummaryTime) || '08:00'
     })
+  },
+
+  goAccount() {
+    wx.navigateTo({ url: '/pages/settings/account' })
+  },
+
+  async retrySync() {
+    if (this.data.syncing) return
+    this.setData({ syncing: true })
+    try {
+      const account = await accountService.retryPendingSync()
+      this.setData({ account: decorateAccount(account) })
+      wx.showToast({ title: '同步完成', icon: 'success' })
+    } catch (error) {
+      wx.showToast({ title: '同步失败，请重试', icon: 'none' })
+    } finally {
+      this.setData({ syncing: false })
+    }
+  },
+
+  async retryFamily() {
+    await this.onShow()
   },
 
   handleStatTap(e) {

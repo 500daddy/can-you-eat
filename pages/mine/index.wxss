@@ -1,67 +1,94 @@
-.profile-card {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 18rpx;
-  padding: 22rpx;
+.account-card {
   border: 4rpx solid #8ebf7b;
-  border-radius: 28rpx;
+  border-radius: 24rpx;
   background: #fffdf2;
+  overflow: hidden;
 }
 
-.profile-avatar {
-  width: 116rpx;
-  height: 116rpx;
+.account-profile {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  min-height: 118rpx;
+  padding: 22rpx;
+}
+
+.account-avatar {
+  flex: 0 0 auto;
+  width: 104rpx;
+  height: 104rpx;
   border: 3rpx solid #51351f;
-  border-radius: 22rpx;
+  border-radius: 20rpx;
   background: #fff9e9;
 }
 
-.profile-main {
+.account-main {
   flex: 1;
   min-width: 0;
 }
 
-.profile-name {
+.account-name {
   color: #2d261c;
-  font-size: 34rpx;
+  font-size: 32rpx;
   font-weight: 900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.profile-stage {
-  display: inline-flex;
-  padding: 8rpx 14rpx;
-  border: 2rpx solid #e4bf68;
-  border-radius: 14rpx;
-  background: #fff0b8;
-  color: #9a5c12;
-  font-size: 22rpx;
-  font-weight: 900;
+.account-subtitle {
+  margin-top: 8rpx;
+  color: #7c735f;
+  font-size: 23rpx;
 }
 
-.profile-side {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10rpx;
-}
-
-.profile-edit {
+.account-action,
+.family-arrow {
   color: #2f6c37;
-  font-size: 22rpx;
+  font-size: 24rpx;
   font-weight: 900;
   white-space: nowrap;
 }
 
-.profile-stage-desc {
-  flex: 0 0 100%;
-  padding: 12rpx 16rpx;
-  border: 2rpx solid #e4d9aa;
-  border-radius: 16rpx;
-  background: #fff8df;
-  color: #7c6847;
+.family-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 82rpx;
+  margin: 0 22rpx;
+  padding: 16rpx 0;
+  border-top: 2rpx solid #e6dcba;
+}
+
+.family-title {
+  color: #315d32;
+  font-size: 26rpx;
+  font-weight: 900;
+}
+
+.family-meta {
+  margin-top: 5rpx;
+  color: #7c735f;
   font-size: 23rpx;
-  line-height: 1.45;
+}
+
+.family-summary.is-error .family-meta {
+  color: #a65d35;
+}
+
+.sync-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14rpx 22rpx;
+  background: #fff4cf;
+  color: #7d5a1d;
+  font-size: 23rpx;
+}
+
+.sync-action {
+  color: #2f6c37;
+  font-weight: 900;
 }
 
 .stats-grid {
