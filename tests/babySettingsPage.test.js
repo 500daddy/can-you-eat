@@ -8,24 +8,12 @@ function loadBabySettingsPage(foodService) {
   const pagePath = require.resolve('../pages/settings/baby')
   delete require.cache[servicePath]
   delete require.cache[pagePath]
-  let resetCalled = false
-  let markLoggedInCalled = false
-  let markLoggedOutCalled = false
   require.cache[servicePath] = {
     id: servicePath,
     filename: servicePath,
     loaded: true,
     exports: {
-      getFoodService: () => foodService,
-      markLoggedIn: () => {
-        markLoggedInCalled = true
-      },
-      markLoggedOut: () => {
-        markLoggedOutCalled = true
-      },
-      resetFoodService: () => {
-        resetCalled = true
-      }
+      getFoodService: () => foodService
     }
   }
 
@@ -37,9 +25,6 @@ function loadBabySettingsPage(foodService) {
   delete global.Page
   delete require.cache[pagePath]
   delete require.cache[servicePath]
-  if (definition) definition.__resetCalled = () => resetCalled
-  if (definition) definition.__markLoggedInCalled = () => markLoggedInCalled
-  if (definition) definition.__markLoggedOutCalled = () => markLoggedOutCalled
   return definition
 }
 
@@ -102,7 +87,6 @@ test('baby settings page saves gender and allergens then returns', async () => {
     babyProfileUpdatedAt: undefined
   })
   assert.equal(returned, true)
-  assert.equal(pageDefinition.__markLoggedInCalled(), true)
 })
 
 test('baby settings page leaves nickname empty when profile is logged out', async () => {
@@ -122,6 +106,45 @@ test('baby settings page leaves nickname empty when profile is logged out', asyn
 
   assert.equal(page.data.nickname, '')
   assert.equal(page.data.babyAgeText, '0个月')
+})
+
+test('baby settings page starts unset and requires an explicit age selection', async () => {
+  const updates = []
+  const toasts = []
+  const pageDefinition = loadBabySettingsPage({
+    getAssets: () => ({ mascot: { babyBasket: '/baby.png' } }),
+    getSettings: async () => ({
+      babyName: '',
+      babyAgeMonths: null,
+      babyAgeText: '',
+      babyMode: false,
+      babyAvatarUrl: ''
+    }),
+    updateSettings: async (input) => {
+      updates.push(input)
+      return input
+    }
+  })
+  const page = createPageInstance(pageDefinition)
+  global.wx = {
+    showToast: (input) => toasts.push(input)
+  }
+
+  await page.onLoad()
+  await page.save()
+  page.onSwitch({ detail: { value: true } })
+
+  delete global.wx
+  assert.equal(page.data.nickname, '')
+  assert.equal(page.data.babyAgeMonths, null)
+  assert.equal(page.data.babyAgeText, '')
+  assert.equal(page.data.ageSelected, false)
+  assert.equal(page.data.babyMode, false)
+  assert.deepEqual(updates, [])
+  assert.deepEqual(toasts, [
+    { title: '请选择宝宝月龄', icon: 'none' },
+    { title: '请先选择宝宝月龄', icon: 'none' }
+  ])
 })
 
 test('baby settings page blocks saving when current member cannot edit baby settings', async () => {
@@ -153,7 +176,6 @@ test('baby settings page blocks saving when current member cannot edit baby sett
   assert.equal(page.data.canEditBabySettings, false)
   assert.deepEqual(updates, [])
   assert.deepEqual(toasts, [{ title: '宝宝资料由家庭创建者维护', icon: 'none' }])
-  assert.equal(pageDefinition.__markLoggedInCalled(), false)
 })
 
 test('baby settings page opens a custom cropper before accepting uploaded avatar', async () => {
@@ -207,6 +229,8 @@ test('baby settings page shows gender and allergen controls', () => {
   const stylesheet = fs.readFileSync(path.resolve(__dirname, '../pages/settings/baby.wxss'), 'utf8')
 
   assert.match(markup, /宝宝月龄/)
+  assert.match(markup, /请选择月龄/)
+  assert.match(markup, /ageSelected/)
   assert.doesNotMatch(markup, /宝宝出生日期/)
   assert.doesNotMatch(markup, /mode="date"/)
   assert.doesNotMatch(markup, /2 岁前按月选择/)
@@ -219,11 +243,11 @@ test('baby settings page shows gender and allergen controls', () => {
   assert.match(markup, /avatar-secondary/)
   assert.match(markup, /avatar-helper/)
   assert.match(markup, /sticky-save-bar/)
-  assert.match(markup, /退出登录/)
   assert.match(markup, /宝宝资料由家庭创建者维护/)
   assert.match(markup, /canEditBabySettings/)
-  assert.match(markup, /bindtap="logout"/)
-  assert.match(markup, /logout-card/)
+  assert.doesNotMatch(markup, /退出登录/)
+  assert.doesNotMatch(markup, /账号与数据/)
+  assert.doesNotMatch(markup, /bindtap="logout"/)
   assert.match(markup, /button-primary/)
   assert.match(markup, /button-secondary/)
   assert.match(markup, /button-compact/)
@@ -235,57 +259,15 @@ test('baby settings page shows gender and allergen controls', () => {
   assert.match(stylesheet, /\.button-primary/)
   assert.match(stylesheet, /\.button-secondary/)
   assert.match(stylesheet, /\.button-compact/)
-  assert.match(stylesheet, /\.logout-card/)
-  assert.match(stylesheet, /\.logout-btn/)
+  assert.doesNotMatch(stylesheet, /\.logout-card/)
+  assert.doesNotMatch(stylesheet, /\.logout-btn/)
 })
 
-test('baby settings page confirms logout before clearing local cache', async () => {
-  const modals = []
-  const toasts = []
-  let cleared = false
-  const switches = []
-  const pageDefinition = loadBabySettingsPage({
-    getAssets: () => ({ mascot: { babyBasket: '/baby.png' } }),
-    getSettings: async () => ({
-      babyName: '500',
-      babyAgeMonths: 11,
-      babyAgeText: '11个月',
-      babyMode: true
-    }),
-    updateSettings: async (input) => input
-  })
-  const page = createPageInstance(pageDefinition)
-  global.wx = {
-    showModal: (input) => {
-      modals.push(input)
-      input.success({ confirm: false })
-    },
-    clearStorageSync: () => {
-      cleared = true
-    },
-    showToast: (input) => toasts.push(input),
-    switchTab: (input) => switches.push(input)
-  }
+test('baby settings no longer owns account login or logout', () => {
+  const script = fs.readFileSync(path.resolve(__dirname, '../pages/settings/baby.js'), 'utf8')
+  const markup = fs.readFileSync(path.resolve(__dirname, '../pages/settings/baby.wxml'), 'utf8')
 
-  await page.logout()
-
-  assert.equal(cleared, false)
-  assert.equal(pageDefinition.__markLoggedOutCalled(), false)
-  assert.equal(pageDefinition.__resetCalled(), false)
-  assert.deepEqual(toasts, [])
-  assert.deepEqual(switches, [])
-
-  global.wx.showModal = (input) => {
-    modals.push(input)
-    input.success({ confirm: true })
-  }
-  await page.logout()
-
-  delete global.wx
-  assert.match(modals[0].content, /重新加载你的资料/)
-  assert.equal(cleared, true)
-  assert.equal(pageDefinition.__markLoggedOutCalled(), true)
-  assert.equal(pageDefinition.__resetCalled(), true)
-  assert.deepEqual(toasts, [{ title: '已退出登录', icon: 'success' }])
-  assert.deepEqual(switches, [{ url: '/pages/mine/index' }])
+  assert.doesNotMatch(script, /markLoggedIn|markLoggedOut|resetFoodService/)
+  assert.doesNotMatch(script, /clearStorageSync|async logout\(/)
+  assert.doesNotMatch(markup, /退出登录|账号与数据/)
 })

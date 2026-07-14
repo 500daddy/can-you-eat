@@ -7,7 +7,7 @@
     <image class="baby-img" src="{{assets.mascot.babyBasket}}" mode="aspectFit" />
     <view>
       <view class="section-title">当前宝宝：{{nickname || '待设置'}}</view>
-      <view class="subtitle">宝宝月龄：{{babyAgeText || '0个月'}}</view>
+      <view class="subtitle">宝宝月龄：{{babyAgeText || '待设置'}}</view>
     </view>
   </view>
 
@@ -32,7 +32,7 @@
     <view class="field">
       <text class="label">宝宝月龄</text>
       <picker mode="selector" range="{{ageOptions}}" range-key="text" value="{{ageOptionIndex}}" bindchange="onAgeChange">
-        <view class="picker-box">{{ageOptions[ageOptionIndex].text}}</view>
+        <view class="picker-box {{ageSelected ? '' : 'placeholder'}}">{{ageSelected ? ageOptions[ageOptionIndex].text : '请选择月龄'}}</view>
       </picker>
     </view>
     <view class="field">
@@ -63,14 +63,6 @@
       </view>
       <switch checked="{{babyMode}}" color="#55a85a" bindchange="onSwitch" />
     </view>
-  </view>
-
-  <view class="logout-card">
-    <view>
-      <view class="logout-title">账号与数据</view>
-      <view class="logout-helper">退出后，下次打开会重新加载资料。</view>
-    </view>
-    <view class="logout-btn" bindtap="logout">退出登录</view>
   </view>
 
   <view class="sticky-save-bar">

@@ -14,6 +14,7 @@
     "pages/feedback/index",
     "pages/recognition-log/index",
     "pages/about/index",
+    "pages/settings/account",
     "pages/settings/baby",
     "pages/avatar-crop/index",
     "pages/settings/reminder",
