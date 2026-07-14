@@ -35,18 +35,40 @@ module.exports = {
 在云开发控制台的数据库里创建以下集合：
 
 - `food_base`：食材基础库。
-- `user_food_records`：用户添加的食材记录。
-- `user_settings`：宝宝信息、提醒设置、宝宝模式。
+- `user_profiles`：家长账号昵称和头像。
+- `families`：家庭共享组。
+- `family_members`：家庭成员、身份和资料快照。
+- `family_invites`：家庭邀请码。
+- `family_audit_logs`：家庭成员的编辑记录。
+- `family_settings`：家庭共用的宝宝资料和提醒设置。
+- `user_food_records`：家庭共用的食材记录。
 - `feedback`：意见反馈。
 - `recognition_logs`：拍照识别选择记录。
 
 开发联调阶段可以先用“仅创建者可读写”权限。后续如果要开放多人测试，再按实际登录态和云函数访问方式调整规则。
+
+`accountApi` 和 `familyApi` 会尝试自动创建所需集合。如果日志提示自动创建不可用或初始化失败，请先在云控制台手动创建缺少的集合；家长登录至少需要 `user_profiles` 和 `family_members`。
+
+## 家长账号与家庭共享部署顺序
+
+账号、家庭和食材云函数存在依赖关系，首次部署或更新这套功能时按以下顺序操作：
+
+1. 创建或确认上面的数据库集合，尤其是 `user_profiles`、`family_members` 和 `families`。
+2. 上传并部署 `cloudfunctions/login`。
+3. 上传并部署 `cloudfunctions/accountApi`，选择“云端安装依赖”。
+4. 重新上传并部署 `cloudfunctions/familyApi` 和 `cloudfunctions/foodApi`，同样选择“云端安装依赖”。
+5. 在 `utils/cloudConfig.local.js` 中填入当前环境 ID，并将 `useCloudFoodApi` 设置为 `true`。
+6. 先用一个新微信账号登录，确认自动生成 1 人家庭；再用第二个账号验证邀请、加入、共同编辑和本机食材同步。
+
+如果 `accountApi` 日志提示 `user_profiles` 不存在，先手动创建该集合，再重新部署并调用。不要把 Qwen API Key、订阅消息密钥或其他服务端密钥写进 `utils/cloudConfig.local.js` 或任何小程序客户端文件；这些值应放在对应云函数的环境变量中。
 
 ## 部署云函数
 
 在开发者工具里依次右键上传并部署：
 
 - `cloudfunctions/login`
+- `cloudfunctions/accountApi`
+- `cloudfunctions/familyApi`
 - `cloudfunctions/mockRecognize`
 - `cloudfunctions/foodApi`
 
@@ -154,8 +176,9 @@ const TEMPLATE_ID_FOOD_EXPIRE = '请替换为实际订阅消息模板ID'
 
 - `utils/cloudConfig.local.js` 已填入真实环境 ID。
 - `useCloudFoodApi` 已按上线目标设置。
-- 三个云函数已部署。
-- 五个集合已创建。
+- `login`、`accountApi`、`familyApi`、`foodApi` 等所需云函数已部署。
+- 家长账号、家庭共享、食材、反馈和识别所需集合已创建。
 - 已执行 `initFoodBase`。
+- 新账号登录后可创建 1 人家庭，并已验证邀请加入和共同编辑记录。
 - 订阅消息模板 ID 已替换，或者明确暂不上线订阅能力。
 - 真机测试过添加、编辑、完成食材、提醒列表、反馈、识别记录。
