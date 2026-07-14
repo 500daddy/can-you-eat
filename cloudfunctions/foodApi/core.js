@@ -146,6 +146,39 @@ function makeId(prefix) {
   return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2, 8)}`
 }
 
+function sanitizeImportedRecord(input, familyId, userId, today) {
+  const source = input && typeof input === 'object' && !Array.isArray(input) ? input : {}
+  const recordId = String(source.id || '').trim()
+  const storageMethod = ['room', 'fridge', 'freezer'].includes(source.storageMethod)
+    ? source.storageMethod
+    : 'fridge'
+  const status = Object.prototype.hasOwnProperty.call(statusTextMap, source.status)
+    ? source.status
+    : undefined
+  return compactObject({
+    id: recordId || makeId('record'),
+    familyId,
+    userId,
+    foodBaseId: source.foodBaseId || 'custom',
+    customFoodName: source.customFoodName || '',
+    purchaseDate: source.purchaseDate || today,
+    storageMethod,
+    quantity: source.quantity || '',
+    unit: source.unit || '',
+    isBabyFood: source.isBabyFood !== false,
+    note: source.note || '',
+    status,
+    createdAt: source.createdAt || today,
+    updatedAt: source.updatedAt || source.createdAt || today
+  })
+}
+
+function recordTimestamp(value) {
+  if (!value) return null
+  const timestamp = Date.parse(value)
+  return Number.isFinite(timestamp) ? timestamp : null
+}
+
 function aliasesOf(food) {
   return Array.isArray(food.aliases) ? food.aliases : []
 }
@@ -481,6 +514,66 @@ function createFoodApi({ store, userId, today = formatDate(new Date()) }) {
 
       if (action === 'getFoodRecords') {
         return { ok: true, data: await listCalculatedRecords(false) }
+      }
+
+      if (action === 'mergeLocalRecords') {
+        const inputs = Array.isArray(event.records) ? event.records : []
+        if (inputs.length > 200) {
+          return { ok: false, error: '一次最多同步 200 条食材记录' }
+        }
+
+        const { familyId } = await getFamilyContext()
+        await requirePermission(store, userId, 'edit_food_records')
+        const cloudRecords = await store.list(
+          'user_food_records',
+          (item) => item.familyId === familyId
+        )
+        const cloudById = new Map(cloudRecords.map((record) => [String(record.id || ''), record]))
+        const summary = { added: 0, updated: 0, skipped: 0 }
+
+        for (const input of inputs) {
+          if (!input || typeof input !== 'object' || Array.isArray(input)) {
+            summary.skipped += 1
+            continue
+          }
+          const imported = sanitizeImportedRecord(input, familyId, userId, today)
+          const existing = cloudById.get(imported.id)
+          if (!existing) {
+            const added = await store.add('user_food_records', imported)
+            cloudById.set(imported.id, added)
+            summary.added += 1
+            continue
+          }
+
+          const localTime = recordTimestamp(input.updatedAt)
+          const cloudTime = recordTimestamp(existing.updatedAt)
+          if (localTime === null || cloudTime === null || localTime <= cloudTime) {
+            summary.skipped += 1
+            continue
+          }
+
+          const patch = { ...imported }
+          delete patch.id
+          delete patch.familyId
+          delete patch.userId
+          delete patch.createdAt
+          const updated = await store.update(
+            'user_food_records',
+            (item) => item.familyId === familyId && item.id === imported.id,
+            patch
+          )
+          cloudById.set(imported.id, updated || { ...existing, ...patch })
+          summary.updated += 1
+        }
+
+        await writeAuditLog({
+          action: 'local_records_merged',
+          targetType: 'food_records',
+          targetId: familyId,
+          summary: `同步本机食材：新增 ${summary.added} 条，更新 ${summary.updated} 条，跳过 ${summary.skipped} 条`,
+          after: summary
+        })
+        return { ok: true, data: summary }
       }
 
       if (action === 'getFoodDetail') {

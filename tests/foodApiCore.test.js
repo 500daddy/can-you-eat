@@ -401,3 +401,148 @@ test('cloud api update payloads do not persist undefined fields', async () => {
   assert.equal(Object.prototype.hasOwnProperty.call(rawRecord, 'status'), false)
   assert.equal(Object.prototype.hasOwnProperty.call(rawSettings, 'action'), false)
 })
+
+test('merges local records idempotently and keeps the newest duplicate', async () => {
+  const store = createMemoryStore()
+  const api = createFoodApi({ store, userId: 'owner', today: '2026-07-13' })
+  await api.handle({ action: 'getFoodRecords' })
+  const membership = await store.get('family_members', (item) => item.openId === 'owner')
+  await store.add('user_food_records', {
+    id: 'record-shared',
+    familyId: membership.familyId,
+    userId: 'owner',
+    foodBaseId: 'carrot',
+    note: '云端新备注',
+    createdAt: '2026-07-10',
+    updatedAt: '2026-07-13'
+  })
+
+  const input = [
+    { id: 'record-shared', foodBaseId: 'carrot', note: '本机旧备注', updatedAt: '2026-07-12' },
+    { id: 'record-local', foodBaseId: 'egg', purchaseDate: '2026-07-13', updatedAt: '2026-07-13' }
+  ]
+  const first = await api.handle({ action: 'mergeLocalRecords', records: input })
+  const second = await api.handle({ action: 'mergeLocalRecords', records: input })
+  const records = await store.list('user_food_records', (item) => item.familyId === membership.familyId)
+
+  assert.deepEqual(first.data, { added: 1, updated: 0, skipped: 1 })
+  assert.deepEqual(second.data, { added: 0, updated: 0, skipped: 2 })
+  assert.equal(records.length, 2)
+  assert.equal(records.find((item) => item.id === 'record-shared').note, '云端新备注')
+})
+
+test('merge local records accepts only safe fields and records a family audit summary', async () => {
+  const store = createMemoryStore()
+  const api = createFoodApi({ store, userId: 'owner', today: '2026-07-13' })
+
+  const result = await api.handle({
+    action: 'mergeLocalRecords',
+    records: [{
+      _id: 'forged-cloud-id',
+      id: 'record-local',
+      familyId: 'forged-family',
+      userId: 'forged-user',
+      foodBaseId: 'custom',
+      customFoodName: '自制高汤',
+      purchaseDate: '2026-07-12',
+      storageMethod: 'freezer',
+      quantity: '2',
+      unit: '盒',
+      isBabyFood: false,
+      note: '分装冷冻',
+      status: 'finished',
+      createdAt: '2026-07-12',
+      updatedAt: '2026-07-13',
+      unexpected: 'do-not-save'
+    }]
+  })
+  const membership = await store.get('family_members', (item) => item.openId === 'owner')
+  const saved = await store.get('user_food_records', (item) => item.id === 'record-local')
+  const logs = await store.list('family_audit_logs', (item) => item.action === 'local_records_merged')
+
+  assert.deepEqual(result.data, { added: 1, updated: 0, skipped: 0 })
+  assert.equal(saved.familyId, membership.familyId)
+  assert.equal(saved.userId, 'owner')
+  assert.notEqual(saved._id, 'forged-cloud-id')
+  assert.equal(saved.unexpected, undefined)
+  assert.equal(saved.customFoodName, '自制高汤')
+  assert.equal(saved.status, 'finished')
+  assert.equal(logs.length, 1)
+  assert.equal(logs[0].familyId, membership.familyId)
+  assert.match(logs[0].summary, /新增 1 条.*更新 0 条/)
+})
+
+test('merge local records updates only when both timestamps exist and local is newer', async () => {
+  const store = createMemoryStore()
+  const api = createFoodApi({ store, userId: 'owner', today: '2026-07-13' })
+  await api.handle({ action: 'getFoodRecords' })
+  const membership = await store.get('family_members', (item) => item.openId === 'owner')
+  await store.add('user_food_records', {
+    id: 'record-newer-local',
+    familyId: membership.familyId,
+    userId: 'owner',
+    foodBaseId: 'carrot',
+    note: '云端旧备注',
+    createdAt: '2026-07-10',
+    updatedAt: '2026-07-11'
+  })
+  await store.add('user_food_records', {
+    id: 'record-missing-time',
+    familyId: membership.familyId,
+    userId: 'owner',
+    foodBaseId: 'egg',
+    note: '云端无时间'
+  })
+
+  const result = await api.handle({
+    action: 'mergeLocalRecords',
+    records: [
+      { id: 'record-newer-local', foodBaseId: 'carrot', note: '本机新备注', updatedAt: '2026-07-12' },
+      { id: 'record-missing-time', foodBaseId: 'egg', note: '不能覆盖', updatedAt: '2026-07-13' }
+    ]
+  })
+  const updated = await store.get('user_food_records', (item) => item.id === 'record-newer-local')
+  const skipped = await store.get('user_food_records', (item) => item.id === 'record-missing-time')
+
+  assert.deepEqual(result.data, { added: 0, updated: 1, skipped: 1 })
+  assert.equal(updated.note, '本机新备注')
+  assert.equal(updated.familyId, membership.familyId)
+  assert.equal(skipped.note, '云端无时间')
+})
+
+test('merge local records rejects more than 200 records without writing', async () => {
+  const store = createMemoryStore()
+  const api = createFoodApi({ store, userId: 'owner', today: '2026-07-13' })
+  const records = Array.from({ length: 201 }, (_, index) => ({
+    id: `record-${index}`,
+    foodBaseId: 'carrot',
+    updatedAt: '2026-07-13'
+  }))
+
+  const result = await api.handle({ action: 'mergeLocalRecords', records })
+
+  assert.equal(result.ok, false)
+  assert.match(result.error, /最多.*200/)
+  assert.equal((await store.list('user_food_records')).length, 0)
+})
+
+test('merge local records requires food editing permission', async () => {
+  const store = createMemoryStore()
+  await store.add('family_members', {
+    id: 'viewer-membership',
+    familyId: 'family-a',
+    openId: 'viewer',
+    role: 'viewer',
+    status: 'active'
+  })
+  const api = createFoodApi({ store, userId: 'viewer', today: '2026-07-13' })
+
+  await assert.rejects(
+    () => api.handle({
+      action: 'mergeLocalRecords',
+      records: [{ id: 'record-a', foodBaseId: 'carrot', updatedAt: '2026-07-13' }]
+    }),
+    /没有权限/
+  )
+  assert.equal((await store.list('user_food_records')).length, 0)
+})
