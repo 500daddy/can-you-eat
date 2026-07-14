@@ -191,6 +191,14 @@ function createFoodService(options = {}) {
       return repo.getAssets()
     },
 
+    getLocalRecordsSnapshot() {
+      return repo.getAllRawRecords()
+    },
+
+    async mergeLocalRecords(records) {
+      return callCloud({ action: 'mergeLocalRecords', records })
+    },
+
     async initFoodBase() {
       return cloudOrLocal('initFoodBase', {}, async () => ({
         inserted: 0,

@@ -511,3 +511,36 @@ test('submits feedback to local repository by default', async () => {
   assert.equal(repo.getFeedbackList().length, 1)
   assert.equal(repo.getFeedbackList()[0].content, '希望增加常用食材快捷入口')
 })
+
+test('returns the repository raw records as the local sync snapshot', () => {
+  const repo = createMemoryFoodRepository({
+    today: '2026-07-13',
+    seedRecords: [
+      { id: 'active-record', foodBaseId: 'carrot', status: 'fresh', updatedAt: '2026-07-13' },
+      { id: 'deleted-record', foodBaseId: 'egg', status: 'deleted', updatedAt: '2026-07-12' }
+    ]
+  })
+  const service = createFoodService({ repo })
+
+  const snapshot = service.getLocalRecordsSnapshot()
+
+  assert.deepEqual(snapshot.map((item) => item.id), ['active-record', 'deleted-record'])
+  assert.equal(snapshot[1].status, 'deleted')
+})
+
+test('merges local records through foodApi directly and propagates cloud errors', async () => {
+  const calls = []
+  const service = createFoodService({
+    useCloud: false,
+    loggedOut: true,
+    repo: createMemoryFoodRepository({ today: '2026-07-13', seedRecords: [] }),
+    callCloud: async (input) => {
+      calls.push(input)
+      throw new Error('merge unavailable')
+    }
+  })
+  const records = [{ id: 'local-record', foodBaseId: 'carrot' }]
+
+  await assert.rejects(() => service.mergeLocalRecords(records), /merge unavailable/)
+  assert.deepEqual(calls, [{ action: 'mergeLocalRecords', records }])
+})
