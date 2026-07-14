@@ -43,17 +43,21 @@ function createAccountApi({ store, userId, today = formatDate(new Date()) }) {
           if (!nickname) {
             return { ok: false, error: '请输入家长昵称' }
           }
-          const avatarUrl = String(event.avatarUrl ?? '').trim()
           const existing = await getProfile(store, userId)
+          const hasAvatar = event.avatarUrl !== undefined && event.avatarUrl !== null
+          const avatarUrl = hasAvatar
+            ? String(event.avatarUrl).trim()
+            : String((existing && existing.avatarUrl) || '')
           const profilePatch = {
             nickname,
-            avatarUrl,
+            ...(hasAvatar ? { avatarUrl } : {}),
             profileUpdatedAt: today,
             updatedAt: today
           }
           const profile = {
             id: `profile_${userId}`,
             openId: userId,
+            avatarUrl,
             ...profilePatch,
             createdAt: existing && existing.createdAt ? existing.createdAt : today
           }
@@ -75,7 +79,11 @@ function createAccountApi({ store, userId, today = formatDate(new Date()) }) {
           }
 
           const memberFields = { openId: userId, status: 'active' }
-          const memberPatch = { nickname, avatarUrl, updatedAt: today }
+          const memberPatch = {
+            nickname,
+            ...(hasAvatar ? { avatarUrl } : {}),
+            updatedAt: today
+          }
           if (typeof store.updateManyByFields === 'function') {
             await store.updateManyByFields('family_members', memberFields, memberPatch)
           } else {

@@ -22,7 +22,9 @@ const LOGGED_OUT_KEY = 'baby_food_logged_out_v1'
 function unwrapCloudResult(result) {
   const payload = result && result.result !== undefined ? result.result : result
   if (payload && payload.ok === false) {
-    throw new Error(payload.error || 'foodApi failed')
+    const error = new Error(payload.error || 'cloud api failed')
+    if (payload.code) error.code = payload.code
+    throw error
   }
   return payload && payload.data !== undefined ? payload.data : payload
 }

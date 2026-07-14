@@ -86,6 +86,20 @@ test('saving again updates the existing profile instead of adding a duplicate', 
   assert.equal(result.data.updatedAt, '2026-07-13')
 })
 
+test('saving a nickname without avatar keeps the existing remote avatar', async () => {
+  const createAccountApi = loadCreateAccountApi()
+  const store = createMemoryStore()
+  const oldApi = createAccountApi({ store, userId: 'parent-1', today: '2026-07-13T08:00:00.000Z' })
+  await oldApi.handle({ action: 'saveMyProfile', nickname: '旧昵称', avatarUrl: 'cloud://old.jpg' })
+
+  const api = createAccountApi({ store, userId: 'parent-1', today: '2026-07-14T08:00:00.000Z' })
+  const result = await api.handle({ action: 'saveMyProfile', nickname: '新昵称' })
+
+  assert.equal(result.ok, true)
+  assert.equal(result.data.nickname, '新昵称')
+  assert.equal(result.data.avatarUrl, 'cloud://old.jpg')
+})
+
 test('getMyProfile returns the current profile and null when none exists', async () => {
   const createAccountApi = loadCreateAccountApi()
   const store = createMemoryStore()
@@ -372,6 +386,7 @@ test('account cloud entry reports unexpected collection initialization errors', 
 
   assert.deepEqual(await entry.main({ action: 'getMyProfile' }), {
     ok: false,
+    code: 'PERMISSION_DENIED',
     error: '账号服务初始化失败：permission denied'
   })
 })
