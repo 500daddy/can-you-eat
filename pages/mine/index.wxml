@@ -27,7 +27,7 @@
     </view>
 
     <view wx:if="{{account.loggedIn && account.syncStatus === 'pending'}}" class="sync-status" catchtap="retrySync">
-      <text>本机食材待同步</text>
+      <text>{{account.syncText}}</text>
       <text class="sync-action">{{syncing ? '同步中…' : '重试 ›'}}</text>
     </view>
   </view>

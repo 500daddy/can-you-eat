@@ -30,6 +30,10 @@ module.exports = {
 
 `utils/cloudConfig.local.js` 已加入 `.gitignore`，不会进入开源仓库。如果后续要临时回到本地模式，可以把 `useCloudFoodApi` 改成 `false`。如果 `cloudEnvId` 保持 `cloud1-please-replace`，小程序会跳过 `wx.cloud.init`，这是为了避免开发者工具一直提示云环境占位错误。
 
+### 在哪里找环境 ID
+
+在微信开发者工具打开“云开发”，先看左上角的环境选择器是否选中当前小程序环境，再进入“设置 > 环境设置”复制环境 ID。它通常形如 `cloud1-xxxx`，填到 `utils/cloudConfig.local.js` 的 `cloudEnvId`。环境选择器、云函数、数据库必须处在同一个环境；否则会出现“已部署但页面没变化”或“集合不存在”。
+
 ## 需要创建的数据库集合
 
 在云开发控制台的数据库里创建以下集合：
@@ -44,6 +48,7 @@ module.exports = {
 - `user_food_records`：家庭共用的食材记录。
 - `feedback`：意见反馈。
 - `recognition_logs`：拍照识别选择记录。
+- `purchase_plans`：家庭共用的采购计划。
 
 开发联调阶段可以先用“仅创建者可读写”权限。后续如果要开放多人测试，再按实际登录态和云函数访问方式调整规则。
 
@@ -59,6 +64,15 @@ module.exports = {
 4. 重新上传并部署 `cloudfunctions/familyApi` 和 `cloudfunctions/foodApi`，同样选择“云端安装依赖”。
 5. 在 `utils/cloudConfig.local.js` 中填入当前环境 ID，并将 `useCloudFoodApi` 设置为 `true`。
 6. 先用一个新微信账号登录，确认自动生成 1 人家庭；再用第二个账号验证邀请、加入、共同编辑和本机食材同步。
+
+### 家庭微信分享验收
+
+家庭分享需要用两个不同的微信账号做真机验收，开发者工具中单账号无法完整验证：
+
+1. 账号 A 登录后进入“家庭共享”，点击“邀请家人”并通过微信分享。这会把 A 的个人家庭升级为正式家庭。
+2. 账号 B 从微信分享卡片打开小程序，先登录，再在邀请预览中确认加入。
+3. A 和 B 分别添加或处理一条食材，确认另一方能看到共用食材库和编辑记录。
+4. 再用其他正式家庭邀请 A，确认系统拒绝加入；一个账号同一时间只能属于一个正式家庭。
 
 如果 `accountApi` 日志提示 `user_profiles` 不存在，先手动创建该集合，再重新部署并调用。不要把 Qwen API Key、订阅消息密钥或其他服务端密钥写进 `utils/cloudConfig.local.js` 或任何小程序客户端文件；这些值应放在对应云函数的环境变量中。
 

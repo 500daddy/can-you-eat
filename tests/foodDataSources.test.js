@@ -23,3 +23,14 @@ test('food data sources document authority, taxonomy, and safety limits', () => 
     assert.ok(doc.includes(phrase), `document should mention ${phrase}`)
   }
 })
+
+test('cloud setup documents account collections environment id and family share verification', () => {
+  const guide = fs.readFileSync(path.resolve(__dirname, '../docs/cloud-setup.md'), 'utf8')
+
+  assert.match(guide, /user_profiles/)
+  assert.match(guide, /环境选择器|环境设置/)
+  assert.match(guide, /utils\/cloudConfig\.local\.js/)
+  assert.match(guide, /微信分享/)
+  assert.match(guide, /正式家庭/)
+  assert.match(guide, /两个.*微信账号|双账号/)
+})

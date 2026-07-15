@@ -1,5 +1,6 @@
 const { getFoodService } = require('../../utils/foodService')
 const { getAccountService } = require('../../utils/accountService')
+const { syncIssueText } = require('../../utils/cloudIssue')
 
 const foodService = getFoodService()
 const accountService = getAccountService()
@@ -35,7 +36,8 @@ function decorateAccount(account = {}) {
     ...account,
     familyName: account.familyLoadError ? '' : (family.name || ''),
     familyRoleText: familyRoleLabels[membership.role] || '成员',
-    familyMemberCount: members.length
+    familyMemberCount: members.length,
+    syncText: syncIssueText(account.syncIssue)
   }
 }
 
@@ -53,6 +55,11 @@ Page({
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 3 })
     }
+    if (typeof accountService.getSession === 'function') {
+      const cachedAccount = accountService.getSession()
+      if (cachedAccount) this.setData({ account: decorateAccount(cachedAccount) })
+    }
+
     const [account, stats, settings] = await Promise.all([
       accountService.refresh(),
       foodService.getStats(),
@@ -66,6 +73,19 @@ Page({
         : '待设置',
       reminderTime: (settings && settings.dailySummaryTime) || '08:00'
     })
+
+    if (
+      account &&
+      account.loggedIn &&
+      account.syncStatus === 'pending' &&
+      typeof accountService.resumePendingSync === 'function'
+    ) {
+      Promise.resolve(accountService.resumePendingSync())
+        .then((nextAccount) => {
+          this.setData({ account: decorateAccount(nextAccount) })
+        })
+        .catch(() => {})
+    }
   },
 
   goAccount() {
@@ -78,7 +98,10 @@ Page({
     try {
       const account = await accountService.retryPendingSync()
       this.setData({ account: decorateAccount(account) })
-      wx.showToast({ title: '同步完成', icon: 'success' })
+      wx.showToast({
+        title: account.syncStatus === 'synced' ? '同步完成' : syncIssueText(account.syncIssue),
+        icon: account.syncStatus === 'synced' ? 'success' : 'none'
+      })
     } catch (error) {
       wx.showToast({ title: '同步失败，请重试', icon: 'none' })
     } finally {

@@ -175,6 +175,35 @@ test('mine page retries pending sync and refreshes the account card', async () =
   assert.equal(page.data.syncing, false)
 })
 
+test('mine page resumes pending work and shows issue-specific copy', async () => {
+  let resumeCalls = 0
+  const pending = {
+    loggedIn: true,
+    syncStatus: 'pending',
+    syncIssue: { code: 'COLLECTION_MISSING' },
+    profile: { nickname: '小满妈妈' },
+    family: {}
+  }
+  const page = createPageInstance(loadMinePage({
+    accountService: {
+      getSession: () => pending,
+      refresh: async () => pending,
+      resumePendingSync: async () => {
+        resumeCalls += 1
+        return pending
+      }
+    },
+    foodService: createMineFoodService()
+  }))
+
+  await page.onShow()
+  await new Promise((resolve) => setImmediate(resolve))
+
+  assert.equal(resumeCalls, 1)
+  assert.equal(page.data.account.syncText, '家庭信息暂不可用')
+  assert.match(readText('pages/mine/index.wxml'), /\{\{account\.syncText\}\}/)
+})
+
 test('mine page opens family sharing and preserves family load errors', async () => {
   const navigations = []
   const page = createPageInstance(loadMinePage({
