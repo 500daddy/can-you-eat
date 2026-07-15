@@ -14,7 +14,7 @@ function confirmLogout() {
   return new Promise((resolve) => {
     wx.showModal({
       title: '退出登录',
-      content: '这台设备将退出家庭食材库，云端记录不会删除。确定退出吗？',
+      content: '这台设备将退出当前账号，云端记录不会删除。确定退出吗？',
       confirmText: '退出',
       confirmColor: '#b24b3f',
       cancelText: '取消',
@@ -42,18 +42,22 @@ function sessionView(session = {}) {
 }
 
 function applySessionToMinePage(session) {
-  if (typeof getCurrentPages !== 'function') return
-  const pages = getCurrentPages()
-  for (let index = pages.length - 1; index >= 0; index -= 1) {
-    const page = pages[index]
-    if (
-      page &&
-      page.route === 'pages/mine/index' &&
-      typeof page.applyAccountSession === 'function'
-    ) {
-      page.applyAccountSession(session)
-      return
+  try {
+    if (typeof getCurrentPages !== 'function') return
+    const pages = getCurrentPages()
+    for (let index = pages.length - 1; index >= 0; index -= 1) {
+      const page = pages[index]
+      if (
+        page &&
+        page.route === 'pages/mine/index' &&
+        typeof page.applyAccountSession === 'function'
+      ) {
+        page.applyAccountSession(session)
+        return
+      }
     }
+  } catch (error) {
+    console.warn('账号状态页面刷新失败', error)
   }
 }
 
@@ -84,11 +88,15 @@ Page({
   },
 
   notifyAccountUpdated(session) {
-    if (typeof this.getOpenerEventChannel === 'function') {
-      const eventChannel = this.getOpenerEventChannel()
-      if (eventChannel && typeof eventChannel.emit === 'function') {
-        eventChannel.emit('accountUpdated', session)
+    try {
+      if (typeof this.getOpenerEventChannel === 'function') {
+        const eventChannel = this.getOpenerEventChannel()
+        if (eventChannel && typeof eventChannel.emit === 'function') {
+          eventChannel.emit('accountUpdated', session)
+        }
       }
+    } catch (error) {
+      console.warn('账号状态通知失败', error)
     }
     applySessionToMinePage(session)
   },
@@ -114,20 +122,28 @@ Page({
     if (this.data.saving) return
     const nickname = String(this.data.nickname || '').trim()
     if (!nickname) {
-      wx.showToast({ title: '请输入家长昵称', icon: 'none' })
+      wx.showToast({ title: '请输入昵称', icon: 'none' })
       return
     }
 
     this.setData({ saving: true })
+    const wasLoggedIn = this.data.loggedIn
+    const input = { nickname, avatarUrl: this.data.avatarUrl }
+    let session
     try {
-      const wasLoggedIn = this.data.loggedIn
-      const input = { nickname, avatarUrl: this.data.avatarUrl }
-      const session = wasLoggedIn
+      session = wasLoggedIn
         ? await accountService.updateProfile(input)
         : await accountService.login(input)
-      this.applySession(session)
-      this.notifyAccountUpdated(session)
-      wx.showToast({ title: wasLoggedIn ? '已保存' : '登录成功', icon: 'success' })
+    } catch (error) {
+      wx.showToast({ title: '保存失败，请重试', icon: 'none' })
+      this.setData({ saving: false })
+      return
+    }
+
+    this.applySession(session)
+    this.notifyAccountUpdated(session)
+    wx.showToast({ title: wasLoggedIn ? '已保存' : '登录成功', icon: 'success' })
+    try {
       if (wx.navigateBack) {
         wx.navigateBack({
           delta: 1,
@@ -135,7 +151,7 @@ Page({
         })
       }
     } catch (error) {
-      wx.showToast({ title: '保存失败，请重试', icon: 'none' })
+      console.warn('账号页面返回失败', error)
     } finally {
       this.setData({ saving: false })
     }

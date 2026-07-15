@@ -6,7 +6,7 @@
         <view wx:if="{{account.loggedIn}}" class="account-name">{{account.profile.nickname || '微信用户'}}</view>
         <view wx:else class="account-name">微信登录</view>
         <view wx:if="{{account.loggedIn}}" class="account-subtitle">微信账号 · 账号设置</view>
-        <view wx:else class="account-subtitle">登录后与家人共用食材库</view>
+        <view wx:else class="account-subtitle">登录后可跨设备保存记录</view>
       </view>
       <view class="account-action">{{account.loggedIn ? '设置' : '登录'}} ›</view>
     </view>

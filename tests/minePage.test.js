@@ -84,6 +84,7 @@ test('mine page shows parent account and nests family sharing in the profile car
 
   assert.match(markup, /account\.profile\.avatarUrl/)
   assert.match(markup, /微信登录/)
+  assert.match(markup, /登录后可跨设备保存记录/)
   assert.match(markup, /账号设置/)
   assert.match(markup, /家庭共享/)
   assert.match(markup, /family-summary/)

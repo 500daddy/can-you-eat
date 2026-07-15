@@ -1,6 +1,6 @@
 <view class="page account-page">
-  <view class="page-title">家长账号</view>
-  <view class="subtitle">登录后可与家人共用食材库，并在换设备后继续查看记录。</view>
+  <view class="page-title">我的账号</view>
+  <view class="subtitle">登录后可跨设备保存记录，也可以邀请他人共同管理。</view>
 
   <view class="profile-card">
     <button class="avatar-button" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
@@ -8,7 +8,7 @@
       <view class="avatar-badge">更换</view>
     </button>
     <view class="profile-main">
-      <view class="label">家长昵称</view>
+      <view class="label">昵称</view>
       <input class="input nickname-input" type="nickname" value="{{nickname}}" bindinput="onNicknameInput" bindchange="onNicknameChange" bindblur="onNicknameBlur" placeholder="请输入你的昵称" />
       <view class="nickname-help">可选择微信昵称，也可以自己填写</view>
     </view>

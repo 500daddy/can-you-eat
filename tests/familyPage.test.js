@@ -72,7 +72,7 @@ test('mine page exposes family sharing entry and app registers family pages', ()
   const appConfig = JSON.parse(readText('app.json'))
 
   assert.match(markup, /家庭共享/)
-  assert.match(markup, /共用食材库/)
+  assert.match(markup, /跨设备保存记录/)
   assert.match(markup, /bindtap="goFamily"/)
   assert.match(script, /goFamily\(\)/)
   assert.ok(appConfig.pages.includes('pages/family/index'))

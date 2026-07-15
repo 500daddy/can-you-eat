@@ -46,6 +46,7 @@ function createPageInstance(definition) {
 
 test('account settings uses WeChat avatar and nickname controls', () => {
   const markup = readText('pages/settings/account.wxml')
+  const pageConfig = JSON.parse(readText('pages/settings/account.json'))
   const appConfig = JSON.parse(readText('app.json'))
   const assets = require('../utils/assets')
 
@@ -55,6 +56,9 @@ test('account settings uses WeChat avatar and nickname controls', () => {
   assert.match(markup, /登录并同步|保存账号信息/)
   assert.match(markup, /退出登录/)
   assert.match(markup, /家庭共享/)
+  assert.match(markup, /我的账号/)
+  assert.doesNotMatch(markup, /家长账号|家长昵称/)
+  assert.equal(pageConfig.navigationBarTitleText, '我的账号')
   assert.ok(appConfig.pages.includes('pages/settings/account'))
   assert.match(assets.account.defaultAvatar, /nav_pixel_mine_active\.png$/)
 })
@@ -138,7 +142,36 @@ test('successful login directly refreshes the mine page when event channel deliv
   assert.equal(appliedSessions.at(-1).profile.nickname, '小满妈妈')
 })
 
-test('account settings logs in only after a valid parent nickname', async () => {
+test('a page notification failure never turns a successful login into a save failure', async () => {
+  const toasts = []
+  const navigations = []
+  const page = createPageInstance(loadAccountPage({
+    getSession: () => ({ loggedIn: false, syncStatus: 'idle' }),
+    login: async () => ({
+      loggedIn: true,
+      syncStatus: 'pending',
+      profile: { nickname: '小满妈妈' }
+    })
+  }))
+  page.getOpenerEventChannel = () => {
+    throw new Error('event channel is unavailable')
+  }
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    navigateBack: (input) => navigations.push(input)
+  }
+  page.setData({ nickname: '小满妈妈' })
+
+  await page.saveAccount()
+
+  delete global.wx
+  assert.equal(page.data.loggedIn, true)
+  assert.equal(toasts.some((item) => item.title === '登录成功'), true)
+  assert.equal(toasts.some((item) => item.title === '保存失败，请重试'), false)
+  assert.equal(navigations.length, 1)
+})
+
+test('account settings logs in only after a valid nickname', async () => {
   const calls = []
   const toasts = []
   const page = createPageInstance(loadAccountPage({
@@ -167,7 +200,7 @@ test('account settings logs in only after a valid parent nickname', async () => 
   assert.deepEqual(calls, [{ nickname: '小满妈妈', avatarUrl: '/tmp/avatar.jpg' }])
   assert.equal(page.data.loggedIn, true)
   assert.equal(page.data.avatarUrl, 'cloud://avatar.jpg')
-  assert.equal(toasts.some((item) => item.title === '请输入家长昵称'), true)
+  assert.equal(toasts.some((item) => item.title === '请输入昵称'), true)
 })
 
 test('account settings updates an existing profile and prevents duplicate saves', async () => {
@@ -250,7 +283,7 @@ test('account settings logout explains device and cloud impact then returns to m
   await page.logout()
 
   delete global.wx
-  assert.match(modals[0].content, /这台设备将退出家庭食材库/)
+  assert.match(modals[0].content, /这台设备将退出当前账号/)
   assert.match(modals[0].content, /云端记录不会删除/)
   assert.equal(logoutCalls, 1)
   assert.deepEqual(switches, [{ url: '/pages/mine/index' }])
