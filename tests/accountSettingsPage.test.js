@@ -97,10 +97,45 @@ test('successful login navigates back without waiting for pending background syn
   await page.saveAccount()
 
   delete global.wx
-  assert.deepEqual(navigations, [{ delta: 1 }])
+  assert.equal(navigations.length, 1)
+  assert.equal(navigations[0].delta, 1)
+  assert.equal(typeof navigations[0].success, 'function')
   assert.equal(accountEvents.length, 1)
   assert.equal(accountEvents[0].name, 'accountUpdated')
   assert.equal(accountEvents[0].payload.loggedIn, true)
+})
+
+test('successful login directly refreshes the mine page when event channel delivery is unavailable', async () => {
+  const appliedSessions = []
+  const minePage = {
+    route: 'pages/mine/index',
+    applyAccountSession: (session) => appliedSessions.push(session)
+  }
+  const page = createPageInstance(loadAccountPage({
+    getSession: () => ({ loggedIn: false, syncStatus: 'idle' }),
+    login: async () => ({
+      loggedIn: true,
+      syncStatus: 'pending',
+      profile: { nickname: '小满妈妈' }
+    })
+  }))
+  const originalGetCurrentPages = global.getCurrentPages
+  global.getCurrentPages = () => [minePage, page]
+  global.wx = {
+    showToast() {},
+    navigateBack(input) {
+      global.getCurrentPages = () => [minePage]
+      if (input.success) input.success()
+    }
+  }
+  page.setData({ nickname: '小满妈妈' })
+
+  await page.saveAccount()
+
+  delete global.wx
+  global.getCurrentPages = originalGetCurrentPages
+  assert.equal(appliedSessions.length >= 1, true)
+  assert.equal(appliedSessions.at(-1).profile.nickname, '小满妈妈')
 })
 
 test('account settings logs in only after a valid parent nickname', async () => {

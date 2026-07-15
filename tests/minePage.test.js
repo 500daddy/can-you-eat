@@ -162,6 +162,23 @@ test('mine page opens account settings for login and logged-in account editing',
   assert.equal(page.data.account.profile.nickname, '小满妈妈')
 })
 
+test('mine page exposes a direct account session refresh for navigation fallbacks', () => {
+  const page = createPageInstance(loadMinePage({
+    accountService: { refresh: async () => ({ loggedIn: false }) },
+    foodService: createMineFoodService()
+  }))
+
+  page.applyAccountSession({
+    loggedIn: true,
+    syncStatus: 'pending',
+    profile: { nickname: '小满妈妈' },
+    family: {}
+  })
+
+  assert.equal(page.data.account.loggedIn, true)
+  assert.equal(page.data.account.profile.nickname, '小满妈妈')
+})
+
 test('mine page retries pending sync and refreshes the account card', async () => {
   let retried = 0
   const page = createPageInstance(loadMinePage({

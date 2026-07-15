@@ -41,6 +41,22 @@ function sessionView(session = {}) {
   }
 }
 
+function applySessionToMinePage(session) {
+  if (typeof getCurrentPages !== 'function') return
+  const pages = getCurrentPages()
+  for (let index = pages.length - 1; index >= 0; index -= 1) {
+    const page = pages[index]
+    if (
+      page &&
+      page.route === 'pages/mine/index' &&
+      typeof page.applyAccountSession === 'function'
+    ) {
+      page.applyAccountSession(session)
+      return
+    }
+  }
+}
+
 Page({
   data: {
     assets,
@@ -68,11 +84,13 @@ Page({
   },
 
   notifyAccountUpdated(session) {
-    if (typeof this.getOpenerEventChannel !== 'function') return
-    const eventChannel = this.getOpenerEventChannel()
-    if (eventChannel && typeof eventChannel.emit === 'function') {
-      eventChannel.emit('accountUpdated', session)
+    if (typeof this.getOpenerEventChannel === 'function') {
+      const eventChannel = this.getOpenerEventChannel()
+      if (eventChannel && typeof eventChannel.emit === 'function') {
+        eventChannel.emit('accountUpdated', session)
+      }
     }
+    applySessionToMinePage(session)
   },
 
   onChooseAvatar(event) {
@@ -110,7 +128,12 @@ Page({
       this.applySession(session)
       this.notifyAccountUpdated(session)
       wx.showToast({ title: wasLoggedIn ? '已保存' : '登录成功', icon: 'success' })
-      if (wx.navigateBack) wx.navigateBack({ delta: 1 })
+      if (wx.navigateBack) {
+        wx.navigateBack({
+          delta: 1,
+          success: () => applySessionToMinePage(session)
+        })
+      }
     } catch (error) {
       wx.showToast({ title: '保存失败，请重试', icon: 'none' })
     } finally {
