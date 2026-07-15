@@ -1,7 +1,7 @@
 <view class="page with-tab">
   <view class="account-card">
     <view class="account-profile" bindtap="goAccount">
-      <image class="account-avatar" src="{{account.profile.avatarUrl || '/assets/sprites/nav/nav_pixel_mine_active.png'}}" mode="aspectFill" />
+      <image class="account-avatar" src="{{account.profile.avatarUrl || assets.account.defaultAvatar}}" mode="aspectFit" />
       <view class="account-main">
         <view wx:if="{{account.loggedIn}}" class="account-name">{{account.profile.nickname || '微信用户'}}</view>
         <view wx:else class="account-name">微信登录</view>
@@ -9,6 +9,14 @@
         <view wx:else class="account-subtitle">登录后可跨设备保存记录</view>
       </view>
       <view class="account-action">{{account.loggedIn ? '设置' : '登录'}} ›</view>
+    </view>
+
+    <view wx:if="{{!account.loggedIn}}" class="login-family-hint" bindtap="goAccount">
+      <view class="login-family-copy">
+        <view class="login-family-title">创建家庭组</view>
+        <view class="login-family-meta">登录后可邀请成员共同管理食材</view>
+      </view>
+      <view class="login-family-action">去登录 ›</view>
     </view>
 
     <view wx:if="{{account.loggedIn && account.familyLoadError}}" class="family-summary is-error" bindtap="retryFamily">

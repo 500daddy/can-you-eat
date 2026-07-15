@@ -83,8 +83,12 @@ test('mine page shows parent account and nests family sharing in the profile car
   const stylesheet = readText('pages/mine/index.wxss')
 
   assert.match(markup, /account\.profile\.avatarUrl/)
+  assert.match(markup, /assets\.account\.defaultAvatar/)
   assert.match(markup, /微信登录/)
   assert.match(markup, /登录后可跨设备保存记录/)
+  assert.match(markup, /创建家庭组/)
+  assert.match(markup, /登录后可邀请成员共同管理食材/)
+  assert.match(markup, /login-family-hint/)
   assert.match(markup, /账号设置/)
   assert.match(markup, /家庭共享/)
   assert.match(markup, /family-summary/)
@@ -95,6 +99,21 @@ test('mine page shows parent account and nests family sharing in the profile car
   assert.doesNotMatch(markup, /宝宝成长徽章/)
   assert.match(stylesheet, /\.account-card/)
   assert.match(stylesheet, /\.family-summary/)
+  assert.match(stylesheet, /\.login-family-hint/)
+})
+
+test('logged-out mine account keeps a profile shape for the default avatar', async () => {
+  const page = createPageInstance(loadMinePage({
+    accountService: {
+      getSession: () => ({ loggedIn: false, syncStatus: 'idle' }),
+      refresh: async () => ({ loggedIn: false, syncStatus: 'idle' })
+    },
+    foodService: createMineFoodService()
+  }))
+
+  await page.onShow()
+
+  assert.deepEqual(page.data.account.profile, {})
 })
 
 test('mine page loads account, stats, and baby setting note together', async () => {

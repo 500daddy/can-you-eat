@@ -34,6 +34,7 @@ function decorateAccount(account = {}) {
     loggedIn: false,
     syncStatus: 'idle',
     ...account,
+    profile: account.profile || {},
     familyName: account.familyLoadError ? '' : (family.name || ''),
     familyRoleText: familyRoleLabels[membership.role] || '成员',
     familyMemberCount: members.length,

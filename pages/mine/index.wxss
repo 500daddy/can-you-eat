@@ -50,6 +50,42 @@
   white-space: nowrap;
 }
 
+.login-family-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  min-height: 86rpx;
+  margin: 0 22rpx;
+  padding: 16rpx 0 18rpx;
+  border-top: 2rpx solid #e6dcba;
+}
+
+.login-family-copy {
+  min-width: 0;
+}
+
+.login-family-title {
+  color: #315d32;
+  font-size: 25rpx;
+  font-weight: 900;
+}
+
+.login-family-meta {
+  margin-top: 5rpx;
+  color: #7c735f;
+  font-size: 21rpx;
+  line-height: 1.35;
+}
+
+.login-family-action {
+  flex: 0 0 auto;
+  color: #2f6c37;
+  font-size: 22rpx;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
 .family-summary {
   display: flex;
   align-items: center;
