@@ -79,6 +79,7 @@ test('account page accepts nickname change and blur events and keeps avatar squa
 
 test('successful login navigates back without waiting for pending background sync', async () => {
   const navigations = []
+  const accountEvents = []
   const page = createPageInstance(loadAccountPage({
     getSession: () => ({ loggedIn: false, syncStatus: 'idle' }),
     login: async () => ({
@@ -87,6 +88,9 @@ test('successful login navigates back without waiting for pending background syn
       profile: { nickname: '小满妈妈', avatarUrl: '/tmp/avatar.jpg' }
     })
   }))
+  page.getOpenerEventChannel = () => ({
+    emit: (name, payload) => accountEvents.push({ name, payload })
+  })
   global.wx = { showToast() {}, navigateBack: (input) => navigations.push(input) }
   page.setData({ nickname: '小满妈妈', avatarUrl: '/tmp/avatar.jpg' })
 
@@ -94,6 +98,9 @@ test('successful login navigates back without waiting for pending background syn
 
   delete global.wx
   assert.deepEqual(navigations, [{ delta: 1 }])
+  assert.equal(accountEvents.length, 1)
+  assert.equal(accountEvents[0].name, 'accountUpdated')
+  assert.equal(accountEvents[0].payload.loggedIn, true)
 })
 
 test('account settings logs in only after a valid parent nickname', async () => {

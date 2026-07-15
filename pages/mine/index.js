@@ -94,7 +94,15 @@ Page({
   },
 
   goAccount() {
-    wx.navigateTo({ url: '/pages/settings/account' })
+    wx.navigateTo({
+      url: '/pages/settings/account',
+      events: {
+        accountUpdated: (session) => {
+          this._loadVersion = (this._loadVersion || 0) + 1
+          this.setData({ account: decorateAccount(session) })
+        }
+      }
+    })
   },
 
   async retrySync() {

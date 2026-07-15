@@ -145,11 +145,21 @@ test('mine page opens account settings for login and logged-in account editing',
   page.setData({ account: { loggedIn: true } })
   page.goAccount()
 
+  const updatedSession = {
+    loggedIn: true,
+    syncStatus: 'pending',
+    profile: { nickname: '小满妈妈' },
+    family: {}
+  }
+  navigations[0].events.accountUpdated(updatedSession)
+
   delete global.wx
-  assert.deepEqual(navigations, [
-    { url: '/pages/settings/account' },
-    { url: '/pages/settings/account' }
+  assert.deepEqual(navigations.map((item) => item.url), [
+    '/pages/settings/account',
+    '/pages/settings/account'
   ])
+  assert.equal(page.data.account.loggedIn, true)
+  assert.equal(page.data.account.profile.nickname, '小满妈妈')
 })
 
 test('mine page retries pending sync and refreshes the account card', async () => {

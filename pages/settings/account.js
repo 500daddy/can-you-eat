@@ -67,6 +67,14 @@ Page({
     this.setData(sessionView(session))
   },
 
+  notifyAccountUpdated(session) {
+    if (typeof this.getOpenerEventChannel !== 'function') return
+    const eventChannel = this.getOpenerEventChannel()
+    if (eventChannel && typeof eventChannel.emit === 'function') {
+      eventChannel.emit('accountUpdated', session)
+    }
+  },
+
   onChooseAvatar(event) {
     const avatarUrl = event && event.detail && event.detail.avatarUrl
     if (avatarUrl) this.setData({ avatarUrl })
@@ -100,6 +108,7 @@ Page({
         ? await accountService.updateProfile(input)
         : await accountService.login(input)
       this.applySession(session)
+      this.notifyAccountUpdated(session)
       wx.showToast({ title: wasLoggedIn ? '已保存' : '登录成功', icon: 'success' })
       if (wx.navigateBack) wx.navigateBack({ delta: 1 })
     } catch (error) {
@@ -133,7 +142,8 @@ Page({
   async logout() {
     const confirmed = await confirmLogout()
     if (!confirmed) return
-    await Promise.resolve(accountService.logout())
+    const session = await Promise.resolve(accountService.logout())
+    this.notifyAccountUpdated(session)
     wx.showToast({ title: '已退出登录', icon: 'success' })
     wx.switchTab({ url: '/pages/mine/index' })
   }
