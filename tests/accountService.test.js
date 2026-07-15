@@ -49,12 +49,76 @@ test('returns an idle logged-out session when no account session is cached', () 
   assert.deepEqual(service.getSession(), { loggedIn: false, syncStatus: 'idle' })
 })
 
+test('login returns before avatar family and food background work finishes', async () => {
+  const storage = createStorage()
+  const scheduled = []
+  const accountCalls = []
+  const service = createAccountService({
+    storage,
+    schedule: (task) => scheduled.push(task),
+    callLogin: async () => ({ openId: 'user-a' }),
+    callAccount: async (input) => {
+      accountCalls.push(input)
+      return { openId: 'user-a', nickname: input.nickname, avatarUrl: input.avatarUrl || '' }
+    },
+    uploadAvatar: async () => 'cloud://avatar-a.jpg',
+    getFamily: async () => ({ family: { familyId: 'family-a' }, membership: { role: 'owner' }, members: [] }),
+    getLocalRecords: () => [{ id: 'record-a' }],
+    mergeLocalRecords: async () => ({ added: 1 }),
+    setCloudSession: () => {}
+  })
+
+  const session = await service.login({ nickname: '小满妈妈', avatarUrl: '/tmp/a.jpg' })
+
+  assert.equal(session.loggedIn, true)
+  assert.equal(session.syncStatus, 'pending')
+  assert.equal(scheduled.length, 1)
+  assert.equal(accountCalls.length, 1)
+  await scheduled[0]()
+  assert.equal(service.getSession().syncStatus, 'synced')
+  assert.equal(accountCalls.length, 2)
+})
+
+test('concurrent sync resumes share one in-flight request', async () => {
+  let releaseMerge
+  const mergeGate = new Promise((resolve) => { releaseMerge = resolve })
+  let mergeCalls = 0
+  const storage = createStorage({
+    [ACCOUNT_SESSION_KEY]: createLoggedInSession({ syncStatus: 'pending' }),
+    [PENDING_SYNC_KEY]: {
+      openId: 'user-a',
+      nickname: '小满妈妈',
+      avatarUrl: '',
+      records: [{ id: 'record-a' }],
+      stages: { avatar: false, family: false, food: true }
+    }
+  })
+  const service = createAccountService({
+    storage,
+    mergeLocalRecords: async () => {
+      mergeCalls += 1
+      await mergeGate
+    }
+  })
+
+  const first = service.resumePendingSync()
+  const second = service.resumePendingSync()
+  await new Promise((resolve) => setImmediate(resolve))
+  releaseMerge()
+  await Promise.all([first, second])
+
+  assert.equal(mergeCalls, 1)
+  assert.equal(service.getSession().syncStatus, 'synced')
+})
+
 test('logs in and keeps the original local snapshot pending when sync fails', async () => {
   const storage = createStorage()
   const events = []
+  const scheduled = []
   const records = [{ id: 'record-local', status: 'deleted', updatedAt: '2026-07-13' }]
   const service = createAccountService({
     storage,
+    schedule: (task) => scheduled.push(task),
     callLogin: async () => ({ openid: 'user-a' }),
     uploadAvatar: async (openId, avatarUrl) => {
       events.push(['upload', openId, avatarUrl])
@@ -84,16 +148,24 @@ test('logs in and keeps the original local snapshot pending when sync fails', as
   })
 
   const result = await service.login({ nickname: '小满妈妈', avatarUrl: '/tmp/a.jpg' })
+  await scheduled[0]()
+  const syncedSession = service.getSession()
 
   assert.equal(result.loggedIn, true)
   assert.equal(result.openId, 'user-a')
-  assert.equal(result.syncStatus, 'pending')
-  assert.deepEqual(storage.get(PENDING_SYNC_KEY), { openId: 'user-a', records })
-  assert.deepEqual(storage.get(ACCOUNT_SESSION_KEY), result)
-  assert.deepEqual(events.at(-1), ['cloud', true])
+  assert.equal(syncedSession.syncStatus, 'pending')
+  assert.deepEqual(storage.get(PENDING_SYNC_KEY), {
+    openId: 'user-a',
+    nickname: '小满妈妈',
+    avatarUrl: '/tmp/a.jpg',
+    records,
+    stages: { avatar: false, family: false, food: true }
+  })
+  assert.deepEqual(storage.get(ACCOUNT_SESSION_KEY), syncedSession)
+  assert.equal(events.some((item) => item[0] === 'cloud' && item[1] === true), true)
   assert.deepEqual(events.find((item) => item[0] === 'family')[1], {
     nickname: '小满妈妈',
-    avatarUrl: 'cloud://account-avatars/user-a/a.jpg'
+    avatarUrl: ''
   })
   assert.equal(events.findIndex((item) => item[0] === 'snapshot') < events.findIndex((item) => item[0] === 'merge'), true)
 })
@@ -101,8 +173,10 @@ test('logs in and keeps the original local snapshot pending when sync fails', as
 test('clears pending records after a successful login sync', async () => {
   const storage = createStorage()
   const cloudStates = []
+  const scheduled = []
   const service = createAccountService({
     storage,
+    schedule: (task) => scheduled.push(task),
     callLogin: async () => ({ openId: 'user-a' }),
     uploadAvatar: async () => 'https://example.com/avatar.jpg',
     callAccount: async () => ({ nickname: '小满爸爸', avatarUrl: 'https://example.com/avatar.jpg' }),
@@ -113,15 +187,19 @@ test('clears pending records after a successful login sync', async () => {
   })
 
   const result = await service.login({ nickname: '小满爸爸', avatarUrl: 'https://example.com/avatar.jpg' })
+  await scheduled[0]()
+  const syncedSession = service.getSession()
 
   assert.equal(result.openId, 'user-a')
-  assert.equal(result.syncStatus, 'synced')
+  assert.equal(result.syncStatus, 'pending')
+  assert.equal(syncedSession.syncStatus, 'synced')
   assert.equal(storage.get(PENDING_SYNC_KEY), undefined)
   assert.deepEqual(cloudStates, [true])
 })
 
 test('same account login syncs preserved pending records after logout cleared the local snapshot', async () => {
   const storage = createStorage()
+  const scheduled = []
   let localRecords = [
     { id: 'record-old', note: '退出前记录', updatedAt: '2026-07-12' },
     { note: '没有 id 的旧记录', updatedAt: '2026-07-12' }
@@ -130,6 +208,7 @@ test('same account login syncs preserved pending records after logout cleared th
   const mergedBatches = []
   const service = createAccountService({
     storage,
+    schedule: (task) => scheduled.push(task),
     callLogin: async () => ({ openid: 'user-a' }),
     uploadAvatar: async () => 'cloud://avatar-a.jpg',
     callAccount: async () => ({ nickname: '小满妈妈', avatarUrl: 'cloud://avatar-a.jpg' }),
@@ -145,9 +224,12 @@ test('same account login syncs preserved pending records after logout cleared th
   })
 
   await service.login({ nickname: '小满妈妈', avatarUrl: 'cloud://avatar-a.jpg' })
+  await scheduled.shift()()
   service.logout()
   shouldFailSync = false
-  const relogged = await service.login({ nickname: '小满妈妈', avatarUrl: 'cloud://avatar-a.jpg' })
+  await service.login({ nickname: '小满妈妈', avatarUrl: 'cloud://avatar-a.jpg' })
+  await scheduled.shift()()
+  const relogged = service.getSession()
 
   assert.equal(relogged.syncStatus, 'synced')
   assert.deepEqual(mergedBatches[1], [
@@ -169,8 +251,10 @@ test('same account pending merge keeps newer duplicates and every id-less record
     }
   })
   let mergedRecords
+  const scheduled = []
   const service = createAccountService({
     storage,
+    schedule: (task) => scheduled.push(task),
     callLogin: async () => ({ openid: 'user-a' }),
     uploadAvatar: async () => '',
     callAccount: async () => ({ nickname: '家长', avatarUrl: '' }),
@@ -185,6 +269,7 @@ test('same account pending merge keeps newer duplicates and every id-less record
   })
 
   await service.login({ nickname: '家长', avatarUrl: '' })
+  await scheduled[0]()
 
   assert.deepEqual(mergedRecords, [
     { id: 'record-a', note: '旧 pending 较新', updatedAt: '2026-07-13' },
@@ -202,8 +287,10 @@ test('login never merges pending records owned by a different account', async ()
     }
   })
   let mergedRecords
+  const scheduled = []
   const service = createAccountService({
     storage,
+    schedule: (task) => scheduled.push(task),
     callLogin: async () => ({ openid: 'user-a' }),
     uploadAvatar: async () => '',
     callAccount: async () => ({ nickname: '家长 A', avatarUrl: '' }),
@@ -214,6 +301,7 @@ test('login never merges pending records owned by a different account', async ()
   })
 
   await service.login({ nickname: '家长 A', avatarUrl: '' })
+  await scheduled[0]()
 
   assert.deepEqual(mergedRecords, [{ id: 'record-a', updatedAt: '2026-07-12' }])
   assert.equal(mergedRecords.some((item) => item.id === 'private-record-b'), false)
@@ -369,6 +457,7 @@ test('default adapters call login and accountApi and upload a local avatar to th
     }
     const service = createAccountService({
       storage,
+      schedule: (task) => task(),
       getFamily: async () => ({ family: { familyId: 'family-default' } }),
       getLocalRecords: () => [],
       mergeLocalRecords: async () => {},
@@ -376,10 +465,13 @@ test('default adapters call login and accountApi and upload a local avatar to th
     })
 
     await service.login({ nickname: '微信家长', avatarUrl: '/tmp/avatar.PNG' })
+    await service.resumePendingSync()
 
-    assert.deepEqual(cloudCalls.map((item) => item.name), ['login', 'accountApi'])
+    assert.deepEqual(cloudCalls.map((item) => item.name), ['login', 'accountApi', 'accountApi'])
     assert.deepEqual(cloudCalls[0].data, {})
     assert.equal(cloudCalls[1].data.action, 'saveMyProfile')
+    assert.equal(Object.hasOwn(cloudCalls[1].data, 'avatarUrl'), false)
+    assert.equal(cloudCalls[2].data.avatarUrl, 'cloud://uploaded-avatar.png')
     assert.equal(uploads[0].filePath, '/tmp/avatar.PNG')
     assert.match(uploads[0].cloudPath, /^account-avatars\/user-default\/\d+\.png$/)
   } finally {

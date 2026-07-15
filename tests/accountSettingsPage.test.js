@@ -59,6 +59,43 @@ test('account settings uses WeChat avatar and nickname controls', () => {
   assert.match(assets.account.defaultAvatar, /nav_pixel_mine_active\.png$/)
 })
 
+test('account page accepts nickname change and blur events and keeps avatar square', () => {
+  const markup = readText('pages/settings/account.wxml')
+  const stylesheet = readText('pages/settings/account.wxss')
+  const page = createPageInstance(loadAccountPage({ getSession: () => ({ loggedIn: false }) }))
+
+  page.onNicknameChange({ detail: { value: '微信妈妈' } })
+  assert.equal(page.data.nickname, '微信妈妈')
+  page.onNicknameBlur({ detail: { value: '微信妈妈 ' } })
+  assert.equal(page.data.nickname, '微信妈妈 ')
+  assert.match(markup, /bindchange="onNicknameChange"/)
+  assert.match(markup, /bindblur="onNicknameBlur"/)
+  assert.match(markup, /可选择微信昵称，也可以自己填写/)
+  assert.match(stylesheet, /min-width:\s*126rpx/)
+  assert.match(stylesheet, /max-width:\s*126rpx/)
+  assert.match(stylesheet, /padding:\s*0/)
+  assert.match(stylesheet, /\.avatar-button::after/)
+})
+
+test('successful login navigates back without waiting for pending background sync', async () => {
+  const navigations = []
+  const page = createPageInstance(loadAccountPage({
+    getSession: () => ({ loggedIn: false, syncStatus: 'idle' }),
+    login: async () => ({
+      loggedIn: true,
+      syncStatus: 'pending',
+      profile: { nickname: '小满妈妈', avatarUrl: '/tmp/avatar.jpg' }
+    })
+  }))
+  global.wx = { showToast() {}, navigateBack: (input) => navigations.push(input) }
+  page.setData({ nickname: '小满妈妈', avatarUrl: '/tmp/avatar.jpg' })
+
+  await page.saveAccount()
+
+  delete global.wx
+  assert.deepEqual(navigations, [{ delta: 1 }])
+})
+
 test('account settings logs in only after a valid parent nickname', async () => {
   const calls = []
   const toasts = []

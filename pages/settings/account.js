@@ -76,6 +76,14 @@ Page({
     this.setData({ nickname: event.detail.value })
   },
 
+  onNicknameChange(event) {
+    this.setData({ nickname: event.detail.value })
+  },
+
+  onNicknameBlur(event) {
+    this.setData({ nickname: event.detail.value })
+  },
+
   async saveAccount() {
     if (this.data.saving) return
     const nickname = String(this.data.nickname || '').trim()
@@ -92,10 +100,6 @@ Page({
         ? await accountService.updateProfile(input)
         : await accountService.login(input)
       this.applySession(session)
-      if (session.syncStatus === 'pending') {
-        wx.showToast({ title: '已登录，食材待同步', icon: 'none' })
-        return
-      }
       wx.showToast({ title: wasLoggedIn ? '已保存' : '登录成功', icon: 'success' })
       if (wx.navigateBack) wx.navigateBack({ delta: 1 })
     } catch (error) {
@@ -111,7 +115,10 @@ Page({
     try {
       const session = await accountService.retryPendingSync()
       this.applySession(session)
-      wx.showToast({ title: '同步完成', icon: 'success' })
+      wx.showToast({
+        title: session.syncStatus === 'synced' ? '同步完成' : '仍有内容未同步',
+        icon: session.syncStatus === 'synced' ? 'success' : 'none'
+      })
     } catch (error) {
       wx.showToast({ title: '同步失败，请重试', icon: 'none' })
     } finally {

@@ -16,13 +16,26 @@
 
 .avatar-button {
   position: relative;
-  flex: 0 0 auto;
+  display: block;
+  box-sizing: border-box;
+  flex: 0 0 126rpx;
   width: 126rpx;
+  min-width: 126rpx;
+  max-width: 126rpx;
   height: 126rpx;
+  min-height: 126rpx;
+  max-height: 126rpx;
+  margin: 0;
+  padding: 0;
   border: 3rpx solid #51351f;
   border-radius: 20rpx;
   background: #fff9e9;
+  line-height: 1;
   overflow: hidden;
+}
+
+.avatar-button::after {
+  border: 0;
 }
 
 .avatar-preview {
@@ -53,6 +66,13 @@
   height: 72rpx;
   min-height: 72rpx;
   line-height: 72rpx;
+}
+
+.nickname-help {
+  margin-top: 8rpx;
+  color: #8a806d;
+  font-size: 21rpx;
+  line-height: 1.4;
 }
 
 .family-card,

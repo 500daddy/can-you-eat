@@ -1,4 +1,5 @@
 const { unwrapCloudResult } = require('./foodService')
+const { classifyCloudIssue } = require('./cloudIssue')
 
 const ACCOUNT_SESSION_KEY = 'baby_food_account_session_v1'
 const PENDING_SYNC_KEY = 'baby_food_pending_sync_v1'
@@ -143,9 +144,27 @@ function createAccountService(options = {}) {
   const getLocalRecords = options.getLocalRecords || defaultGetLocalRecords
   const mergeLocalRecords = options.mergeLocalRecords || defaultMergeLocalRecords
   const setCloudSession = options.setCloudSession || setDefaultCloudSession
+  const schedule = options.schedule || ((task) => {
+    if (typeof setTimeout === 'function') {
+      setTimeout(() => Promise.resolve(task()).catch(() => {}), 0)
+      return undefined
+    }
+    return Promise.resolve().then(task)
+  })
+  let syncPromise = null
 
   function getSession() {
     return storage.get(ACCOUNT_SESSION_KEY) || { ...LOGGED_OUT_SESSION }
+  }
+
+  function saveSession(patch) {
+    const next = { ...getSession(), ...patch }
+    storage.set(ACCOUNT_SESSION_KEY, next)
+    return next
+  }
+
+  function isRemoteAvatar(value) {
+    return /^(cloud:\/\/|https?:\/\/)/i.test(String(value || '').trim())
   }
 
   async function login(profileInput = {}) {
@@ -153,15 +172,12 @@ function createAccountService(options = {}) {
     const openId = identity && (identity.openId || identity.openid || identity.userId)
     if (!openId) throw new Error('登录失败，未取得用户身份')
 
-    const avatarUrl = await uploadAvatar(openId, profileInput.avatarUrl)
+    const nickname = String(profileInput.nickname || '').trim()
+    const localAvatarUrl = String(profileInput.avatarUrl || '').trim()
     const profile = await callAccount({
       action: 'saveMyProfile',
-      nickname: profileInput.nickname,
-      avatarUrl
-    })
-    const family = await getFamily({
-      nickname: profile && profile.nickname,
-      avatarUrl: profile && profile.avatarUrl
+      nickname,
+      ...(isRemoteAvatar(localAvatarUrl) ? { avatarUrl: localAvatarUrl } : {})
     })
     const currentRecords = await Promise.resolve(getLocalRecords())
     const existingPending = storage.get(PENDING_SYNC_KEY)
@@ -170,28 +186,111 @@ function createAccountService(options = {}) {
       : (Array.isArray(currentRecords) ? currentRecords : [])
     const pending = {
       openId,
-      records
+      nickname,
+      avatarUrl: localAvatarUrl,
+      records,
+      stages: {
+        avatar: Boolean(localAvatarUrl && !isRemoteAvatar(localAvatarUrl)),
+        family: true,
+        food: records.length > 0
+      }
     }
     storage.set(PENDING_SYNC_KEY, pending)
-
-    let syncStatus = 'synced'
-    try {
-      await mergeLocalRecords(pending.records)
-      storage.remove(PENDING_SYNC_KEY)
-    } catch (error) {
-      syncStatus = 'pending'
-    }
 
     const session = {
       loggedIn: true,
       openId,
-      profile,
-      family,
-      syncStatus
+      profile: {
+        ...profile,
+        avatarUrl: localAvatarUrl || (profile && profile.avatarUrl) || ''
+      },
+      syncStatus: 'pending',
+      syncIssue: null
     }
     storage.set(ACCOUNT_SESSION_KEY, session)
     await Promise.resolve(setCloudSession(true))
+    Promise.resolve(schedule(() => resumePendingSync())).catch(() => {})
     return session
+  }
+
+  async function runPendingSync() {
+    const session = getSession()
+    const pending = storage.get(PENDING_SYNC_KEY)
+    if (!session.loggedIn || !pending || pending.openId !== session.openId) {
+      return session
+    }
+
+    const stages = pending.stages
+      ? { avatar: false, family: false, food: false, ...pending.stages }
+      : { avatar: false, family: !session.family, food: true }
+    let profile = session.profile || {}
+    let family = session.family
+    let firstError = null
+
+    const avatarTask = stages.avatar
+      ? uploadAvatar(session.openId, pending.avatarUrl)
+      : Promise.resolve(isRemoteAvatar(profile.avatarUrl) ? profile.avatarUrl : '')
+    const familyTask = stages.family
+      ? getFamily({
+        nickname: pending.nickname || profile.nickname || '',
+        avatarUrl: isRemoteAvatar(profile.avatarUrl) ? profile.avatarUrl : ''
+      })
+      : Promise.resolve(family)
+    const [avatarResult, familyResult] = await Promise.allSettled([avatarTask, familyTask])
+
+    if (familyResult.status === 'fulfilled') {
+      family = familyResult.value || family
+      stages.family = false
+    } else {
+      firstError = familyResult.reason
+    }
+
+    if (avatarResult.status === 'fulfilled' && stages.avatar) {
+      try {
+        profile = await callAccount({
+          action: 'saveMyProfile',
+          nickname: pending.nickname || profile.nickname || '',
+          avatarUrl: avatarResult.value
+        })
+        stages.avatar = false
+      } catch (error) {
+        firstError = firstError || error
+      }
+    } else if (avatarResult.status === 'rejected') {
+      firstError = firstError || avatarResult.reason
+    }
+
+    if (stages.food && !stages.family) {
+      try {
+        await mergeLocalRecords(Array.isArray(pending.records) ? pending.records : [])
+        stages.food = false
+      } catch (error) {
+        firstError = firstError || error
+      }
+    }
+
+    const hasPending = Object.values(stages).some(Boolean)
+    if (hasPending) {
+      storage.set(PENDING_SYNC_KEY, { ...pending, stages })
+    } else {
+      storage.remove(PENDING_SYNC_KEY)
+    }
+
+    return saveSession({
+      profile,
+      family,
+      familyLoadError: Boolean(stages.family),
+      syncStatus: hasPending ? 'pending' : 'synced',
+      syncIssue: firstError ? classifyCloudIssue(firstError) : null
+    })
+  }
+
+  function resumePendingSync() {
+    if (syncPromise) return syncPromise
+    syncPromise = runPendingSync().finally(() => {
+      syncPromise = null
+    })
+    return syncPromise
   }
 
   async function updateProfile(profileInput = {}) {
@@ -209,16 +308,7 @@ function createAccountService(options = {}) {
   }
 
   async function retryPendingSync() {
-    const session = getSession()
-    const pending = storage.get(PENDING_SYNC_KEY)
-    if (!session.loggedIn || !pending || pending.openId !== session.openId) {
-      return session
-    }
-    await mergeLocalRecords(Array.isArray(pending.records) ? pending.records : [])
-    storage.remove(PENDING_SYNC_KEY)
-    const next = { ...session, syncStatus: 'synced' }
-    storage.set(ACCOUNT_SESSION_KEY, next)
-    return next
+    return resumePendingSync()
   }
 
   async function refresh() {
@@ -259,6 +349,7 @@ function createAccountService(options = {}) {
     login,
     logout,
     refresh,
+    resumePendingSync,
     retryPendingSync,
     updateProfile
   }
