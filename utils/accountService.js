@@ -9,6 +9,27 @@ const LOGGED_OUT_SESSION = Object.freeze({
   syncStatus: 'idle'
 })
 
+function getRuntimeSession() {
+  if (typeof getApp !== 'function') return undefined
+  try {
+    const app = getApp()
+    const session = app && app.globalData && app.globalData.accountSession
+    return session && typeof session.loggedIn === 'boolean' ? session : undefined
+  } catch (error) {
+    return undefined
+  }
+}
+
+function setRuntimeSession(session) {
+  if (typeof getApp !== 'function') return
+  try {
+    const app = getApp()
+    if (app && app.globalData) app.globalData.accountSession = session
+  } catch (error) {
+    // The storage copy remains available when the app instance is unavailable.
+  }
+}
+
 function createWxStorage() {
   return {
     get(key) {
@@ -152,15 +173,22 @@ function createAccountService(options = {}) {
     return Promise.resolve().then(task)
   })
   let syncPromise = null
+  let currentSession = getRuntimeSession() || storage.get(ACCOUNT_SESSION_KEY) || { ...LOGGED_OUT_SESSION }
 
   function getSession() {
-    return storage.get(ACCOUNT_SESSION_KEY) || { ...LOGGED_OUT_SESSION }
+    return currentSession
+  }
+
+  function replaceSession(next) {
+    currentSession = next
+    setRuntimeSession(next)
+    storage.set(ACCOUNT_SESSION_KEY, next)
+    return next
   }
 
   function saveSession(patch) {
     const next = { ...getSession(), ...patch }
-    storage.set(ACCOUNT_SESSION_KEY, next)
-    return next
+    return replaceSession(next)
   }
 
   function isRemoteAvatar(value) {
@@ -210,7 +238,7 @@ function createAccountService(options = {}) {
       syncStatus: 'pending',
       syncIssue: null
     }
-    storage.set(ACCOUNT_SESSION_KEY, session)
+    replaceSession(session)
     await Promise.resolve(setCloudSession(true))
     Promise.resolve(schedule(() => resumePendingSync())).catch(() => {})
     return session
@@ -306,8 +334,7 @@ function createAccountService(options = {}) {
       avatarUrl
     })
     const next = { ...session, profile }
-    storage.set(ACCOUNT_SESSION_KEY, next)
-    return next
+    return replaceSession(next)
   }
 
   async function retryPendingSync() {
@@ -332,16 +359,16 @@ function createAccountService(options = {}) {
     try {
       const family = await getFamily(familyInput)
       const next = { ...session, profile, family, familyLoadError: false }
-      storage.set(ACCOUNT_SESSION_KEY, next)
-      return next
+      return replaceSession(next)
     } catch (error) {
       const next = { ...session, profile, familyLoadError: true }
-      storage.set(ACCOUNT_SESSION_KEY, next)
-      return next
+      return replaceSession(next)
     }
   }
 
   function logout() {
+    currentSession = { ...LOGGED_OUT_SESSION }
+    setRuntimeSession(currentSession)
     storage.remove(ACCOUNT_SESSION_KEY)
     setCloudSession(false)
     return { ...LOGGED_OUT_SESSION }

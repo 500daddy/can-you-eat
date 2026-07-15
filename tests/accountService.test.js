@@ -49,6 +49,48 @@ test('returns an idle logged-out session when no account session is cached', () 
   assert.deepEqual(service.getSession(), { loggedIn: false, syncStatus: 'idle' })
 })
 
+test('new login session is immediately readable across service instances when storage still exposes its previous value', async () => {
+  let persistedSession
+  let pendingSession
+  const app = { globalData: {} }
+  const originalGetApp = global.getApp
+  global.getApp = () => app
+  const storage = {
+    get(key) {
+      if (key === ACCOUNT_SESSION_KEY) return persistedSession
+      return undefined
+    },
+    set(key, value) {
+      if (key === ACCOUNT_SESSION_KEY) pendingSession = value
+    },
+    remove() {}
+  }
+  try {
+    const service = createAccountService({
+      storage,
+      schedule: () => {},
+      callAccount: async (input) => ({
+        openId: 'user-a',
+        nickname: input.nickname,
+        avatarUrl: ''
+      }),
+      getLocalRecords: () => [],
+      setCloudSession: () => {}
+    })
+
+    await service.login({ nickname: '小满妈妈' })
+    const nextPageService = createAccountService({ storage })
+
+    assert.equal(pendingSession.loggedIn, true)
+    assert.equal(service.getSession().loggedIn, true)
+    assert.equal(nextPageService.getSession().loggedIn, true)
+    assert.equal(nextPageService.getSession().profile.nickname, '小满妈妈')
+  } finally {
+    if (originalGetApp) global.getApp = originalGetApp
+    else delete global.getApp
+  }
+})
+
 test('login returns before avatar family and food background work finishes', async () => {
   const storage = createStorage()
   const scheduled = []
