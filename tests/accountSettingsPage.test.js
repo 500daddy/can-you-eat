@@ -142,8 +142,9 @@ test('successful login directly refreshes the mine page when event channel deliv
   assert.equal(appliedSessions.at(-1).profile.nickname, '小满妈妈')
 })
 
-test('login opened from mine switches back to the mine tab for a fresh lifecycle', async () => {
-  const switches = []
+test('login opened from mine relaunches the mine tab instead of reusing its stale page instance', async () => {
+  const relaunches = []
+  let switchTabCalls = 0
   let navigateBackCalls = 0
   const page = createPageInstance(loadAccountPage({
     getSession: () => ({ loggedIn: false, syncStatus: 'idle' }),
@@ -155,7 +156,8 @@ test('login opened from mine switches back to the mine tab for a fresh lifecycle
   }))
   global.wx = {
     showToast() {},
-    switchTab: (input) => switches.push(input),
+    reLaunch: (input) => relaunches.push(input),
+    switchTab: () => { switchTabCalls += 1 },
     navigateBack: () => { navigateBackCalls += 1 }
   }
   await page.onLoad({ source: 'mine' })
@@ -165,8 +167,9 @@ test('login opened from mine switches back to the mine tab for a fresh lifecycle
 
   delete global.wx
   assert.equal(page.data.returnToMine, true)
-  assert.equal(switches.length, 1)
-  assert.equal(switches[0].url, '/pages/mine/index')
+  assert.equal(relaunches.length, 1)
+  assert.equal(relaunches[0].url, '/pages/mine/index')
+  assert.equal(switchTabCalls, 0)
   assert.equal(navigateBackCalls, 0)
 })
 

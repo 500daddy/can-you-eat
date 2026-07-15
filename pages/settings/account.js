@@ -143,14 +143,20 @@ Page({
     }
 
     this.applySession(session)
-    this.notifyAccountUpdated(session)
+    if (!this.data.returnToMine) this.notifyAccountUpdated(session)
     wx.showToast({ title: wasLoggedIn ? '已保存' : '登录成功', icon: 'success' })
     try {
-      if (this.data.returnToMine && wx.switchTab) {
-        wx.switchTab({
+      if (this.data.returnToMine && wx.reLaunch) {
+        wx.reLaunch({
           url: '/pages/mine/index',
-          success: () => applySessionToMinePage(session)
+          fail: () => {
+            this.notifyAccountUpdated(session)
+            if (wx.switchTab) wx.switchTab({ url: '/pages/mine/index' })
+          }
         })
+      } else if (this.data.returnToMine && wx.switchTab) {
+        this.notifyAccountUpdated(session)
+        wx.switchTab({ url: '/pages/mine/index' })
       } else if (wx.navigateBack) {
         wx.navigateBack({
           delta: 1,
