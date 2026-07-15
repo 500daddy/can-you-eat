@@ -71,11 +71,13 @@ Page({
     familyName: '',
     familyRoleText: '成员',
     familyMemberCount: 0,
+    returnToMine: false,
     saving: false,
     syncing: false
   },
 
-  async onLoad() {
+  async onLoad(options = {}) {
+    this.setData({ returnToMine: options.source === 'mine' })
     let session = accountService.getSession()
     if (session.loggedIn && typeof accountService.refresh === 'function') {
       session = await accountService.refresh()
@@ -144,7 +146,12 @@ Page({
     this.notifyAccountUpdated(session)
     wx.showToast({ title: wasLoggedIn ? '已保存' : '登录成功', icon: 'success' })
     try {
-      if (wx.navigateBack) {
+      if (this.data.returnToMine && wx.switchTab) {
+        wx.switchTab({
+          url: '/pages/mine/index',
+          success: () => applySessionToMinePage(session)
+        })
+      } else if (wx.navigateBack) {
         wx.navigateBack({
           delta: 1,
           success: () => applySessionToMinePage(session)

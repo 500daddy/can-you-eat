@@ -142,6 +142,34 @@ test('successful login directly refreshes the mine page when event channel deliv
   assert.equal(appliedSessions.at(-1).profile.nickname, '小满妈妈')
 })
 
+test('login opened from mine switches back to the mine tab for a fresh lifecycle', async () => {
+  const switches = []
+  let navigateBackCalls = 0
+  const page = createPageInstance(loadAccountPage({
+    getSession: () => ({ loggedIn: false, syncStatus: 'idle' }),
+    login: async () => ({
+      loggedIn: true,
+      syncStatus: 'pending',
+      profile: { nickname: '小满妈妈' }
+    })
+  }))
+  global.wx = {
+    showToast() {},
+    switchTab: (input) => switches.push(input),
+    navigateBack: () => { navigateBackCalls += 1 }
+  }
+  await page.onLoad({ source: 'mine' })
+  page.setData({ nickname: '小满妈妈' })
+
+  await page.saveAccount()
+
+  delete global.wx
+  assert.equal(page.data.returnToMine, true)
+  assert.equal(switches.length, 1)
+  assert.equal(switches[0].url, '/pages/mine/index')
+  assert.equal(navigateBackCalls, 0)
+})
+
 test('a page notification failure never turns a successful login into a save failure', async () => {
   const toasts = []
   const navigations = []

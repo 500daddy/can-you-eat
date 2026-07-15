@@ -1,7 +1,7 @@
 <view class="page with-tab">
   <view class="account-card">
     <view class="account-profile" bindtap="goAccount">
-      <image class="account-avatar" src="{{account.profile.avatarUrl || assets.account.defaultAvatar}}" mode="aspectFit" />
+      <image class="account-avatar" src="{{account.profile.avatarUrl || defaultAccountAvatar}}" mode="aspectFit" />
       <view class="account-main">
         <view wx:if="{{account.loggedIn}}" class="account-name">{{account.profile.nickname || '微信用户'}}</view>
         <view wx:else class="account-name">微信登录</view>

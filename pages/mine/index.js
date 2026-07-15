@@ -1,6 +1,7 @@
 const { getFoodService } = require('../../utils/foodService')
 const { getAccountService } = require('../../utils/accountService')
 const { syncIssueText } = require('../../utils/cloudIssue')
+const assets = require('../../utils/assets')
 
 const foodService = getFoodService()
 const accountService = getAccountService()
@@ -45,6 +46,7 @@ function decorateAccount(account = {}) {
 Page({
   data: {
     assets: foodService.getAssets(),
+    defaultAccountAvatar: assets.account.defaultAvatar,
     account: decorateAccount(),
     stats: [],
     babySettingNote: '待设置',
@@ -96,7 +98,7 @@ Page({
 
   goAccount() {
     wx.navigateTo({
-      url: '/pages/settings/account',
+      url: '/pages/settings/account?source=mine',
       events: {
         accountUpdated: (session) => this.applyAccountSession(session)
       }

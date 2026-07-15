@@ -83,7 +83,7 @@ test('mine page shows parent account and nests family sharing in the profile car
   const stylesheet = readText('pages/mine/index.wxss')
 
   assert.match(markup, /account\.profile\.avatarUrl/)
-  assert.match(markup, /assets\.account\.defaultAvatar/)
+  assert.match(markup, /defaultAccountAvatar/)
   assert.match(markup, /微信登录/)
   assert.match(markup, /登录后可跨设备保存记录/)
   assert.match(markup, /创建家庭组/)
@@ -114,6 +114,7 @@ test('logged-out mine account keeps a profile shape for the default avatar', asy
   await page.onShow()
 
   assert.deepEqual(page.data.account.profile, {})
+  assert.match(page.data.defaultAccountAvatar, /nav_pixel_mine_active\.png$/)
 })
 
 test('mine page loads account, stats, and baby setting note together', async () => {
@@ -175,8 +176,8 @@ test('mine page opens account settings for login and logged-in account editing',
 
   delete global.wx
   assert.deepEqual(navigations.map((item) => item.url), [
-    '/pages/settings/account',
-    '/pages/settings/account'
+    '/pages/settings/account?source=mine',
+    '/pages/settings/account?source=mine'
   ])
   assert.equal(page.data.account.loggedIn, true)
   assert.equal(page.data.account.profile.nickname, '小满妈妈')
