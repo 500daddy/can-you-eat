@@ -56,7 +56,9 @@ test('login returns before avatar family and food background work finishes', asy
   const service = createAccountService({
     storage,
     schedule: (task) => scheduled.push(task),
-    callLogin: async () => ({ openId: 'user-a' }),
+    callLogin: async () => {
+      throw new Error('identity endpoint should not be needed')
+    },
     callAccount: async (input) => {
       accountCalls.push(input)
       return { openId: 'user-a', nickname: input.nickname, avatarUrl: input.avatarUrl || '' }
@@ -71,6 +73,7 @@ test('login returns before avatar family and food background work finishes', asy
   const session = await service.login({ nickname: '小满妈妈', avatarUrl: '/tmp/a.jpg' })
 
   assert.equal(session.loggedIn, true)
+  assert.equal(session.openId, 'user-a')
   assert.equal(session.syncStatus, 'pending')
   assert.equal(scheduled.length, 1)
   assert.equal(accountCalls.length, 1)
@@ -427,7 +430,7 @@ test('logout clears the readable account session but preserves account-owned pen
   assert.deepEqual(cloudStates, [false])
 })
 
-test('default adapters call login and accountApi and upload a local avatar to the account path', async () => {
+test('default adapters use accountApi identity and upload a local avatar to the account path', async () => {
   const originalWx = global.wx
   const cloudCalls = []
   const uploads = []
@@ -467,17 +470,36 @@ test('default adapters call login and accountApi and upload a local avatar to th
     await service.login({ nickname: '微信家长', avatarUrl: '/tmp/avatar.PNG' })
     await service.resumePendingSync()
 
-    assert.deepEqual(cloudCalls.map((item) => item.name), ['login', 'accountApi', 'accountApi'])
-    assert.deepEqual(cloudCalls[0].data, {})
-    assert.equal(cloudCalls[1].data.action, 'saveMyProfile')
-    assert.equal(Object.hasOwn(cloudCalls[1].data, 'avatarUrl'), false)
-    assert.equal(cloudCalls[2].data.avatarUrl, 'cloud://uploaded-avatar.png')
+    assert.deepEqual(cloudCalls.map((item) => item.name), ['accountApi', 'accountApi'])
+    assert.equal(cloudCalls[0].data.action, 'saveMyProfile')
+    assert.equal(Object.hasOwn(cloudCalls[0].data, 'avatarUrl'), false)
+    assert.equal(cloudCalls[1].data.avatarUrl, 'cloud://uploaded-avatar.png')
     assert.equal(uploads[0].filePath, '/tmp/avatar.PNG')
     assert.match(uploads[0].cloudPath, /^account-avatars\/user-default\/\d+\.png$/)
   } finally {
     global.wx = originalWx
     resetAccountService()
   }
+})
+
+test('login falls back to the identity function for an older account api response', async () => {
+  let identityCalls = 0
+  const service = createAccountService({
+    storage: createStorage(),
+    schedule: () => {},
+    callAccount: async () => ({ nickname: '微信家长', avatarUrl: '' }),
+    callLogin: async () => {
+      identityCalls += 1
+      return { openid: 'legacy-user' }
+    },
+    getLocalRecords: () => [],
+    setCloudSession: () => {}
+  })
+
+  const session = await service.login({ nickname: '微信家长' })
+
+  assert.equal(session.openId, 'legacy-user')
+  assert.equal(identityCalls, 1)
 })
 
 test('default avatar adapter reuses cloud and http addresses without uploading', async () => {

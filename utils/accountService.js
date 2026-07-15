@@ -168,10 +168,6 @@ function createAccountService(options = {}) {
   }
 
   async function login(profileInput = {}) {
-    const identity = await callLogin()
-    const openId = identity && (identity.openId || identity.openid || identity.userId)
-    if (!openId) throw new Error('登录失败，未取得用户身份')
-
     const nickname = String(profileInput.nickname || '').trim()
     const localAvatarUrl = String(profileInput.avatarUrl || '').trim()
     const profile = await callAccount({
@@ -179,6 +175,13 @@ function createAccountService(options = {}) {
       nickname,
       ...(isRemoteAvatar(localAvatarUrl) ? { avatarUrl: localAvatarUrl } : {})
     })
+    let openId = profile && (profile.openId || profile.openid || profile.userId)
+    if (!openId) {
+      const identity = await callLogin()
+      openId = identity && (identity.openId || identity.openid || identity.userId)
+    }
+    if (!openId) throw new Error('登录失败，未取得用户身份')
+
     const currentRecords = await Promise.resolve(getLocalRecords())
     const existingPending = storage.get(PENDING_SYNC_KEY)
     const records = existingPending && existingPending.openId === openId

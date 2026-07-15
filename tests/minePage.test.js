@@ -204,6 +204,39 @@ test('mine page resumes pending work and shows issue-specific copy', async () =>
   assert.match(readText('pages/mine/index.wxml'), /\{\{account\.syncText\}\}/)
 })
 
+test('mine page ignores an older logged-out load after a new login is visible', async () => {
+  let session = { loggedIn: false, syncStatus: 'idle' }
+  let releaseFirstRefresh
+  const firstRefresh = new Promise((resolve) => {
+    releaseFirstRefresh = () => resolve({ loggedIn: false, syncStatus: 'idle' })
+  })
+  let refreshCalls = 0
+  const page = createPageInstance(loadMinePage({
+    accountService: {
+      getSession: () => session,
+      refresh: () => {
+        refreshCalls += 1
+        return refreshCalls === 1 ? firstRefresh : Promise.resolve(session)
+      }
+    },
+    foodService: createMineFoodService()
+  }))
+
+  const oldLoad = page.onShow()
+  session = {
+    loggedIn: true,
+    syncStatus: 'synced',
+    profile: { nickname: '小满妈妈' },
+    family: {}
+  }
+  await page.onShow()
+  releaseFirstRefresh()
+  await oldLoad
+
+  assert.equal(page.data.account.loggedIn, true)
+  assert.equal(page.data.account.profile.nickname, '小满妈妈')
+})
+
 test('mine page opens family sharing and preserves family load errors', async () => {
   const navigations = []
   const page = createPageInstance(loadMinePage({

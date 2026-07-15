@@ -52,6 +52,8 @@ Page({
   },
 
   async onShow() {
+    const loadVersion = (this._loadVersion || 0) + 1
+    this._loadVersion = loadVersion
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 3 })
     }
@@ -65,6 +67,8 @@ Page({
       foodService.getStats(),
       foodService.getSettings()
     ])
+    if (loadVersion !== this._loadVersion) return
+
     this.setData({
       account: decorateAccount(account),
       stats: decorateStats(stats),
@@ -82,6 +86,7 @@ Page({
     ) {
       Promise.resolve(accountService.resumePendingSync())
         .then((nextAccount) => {
+          if (loadVersion !== this._loadVersion) return
           this.setData({ account: decorateAccount(nextAccount) })
         })
         .catch(() => {})
