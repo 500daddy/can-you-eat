@@ -2,48 +2,72 @@
   <view class="page-title">家庭共享</view>
   <view class="subtitle">让家人共用一套食材库，谁添加、谁处理都会留下记录。</view>
 
-  <view class="paper-card green family-card">
-    <view class="family-main">
-      <view>
-        <view class="family-name">{{family.name || '宝宝的小厨房'}}</view>
-        <view class="subtitle">当前身份：{{membership.role === 'owner' ? '创建者' : membership.role === 'admin' ? '管理员' : '成员'}}</view>
+  <view wx:if="{{invitePreview}}" class="paper-card green invite-confirm-card">
+    <view class="invite-eyebrow">家庭邀请</view>
+    <view class="family-name">{{invitePreview.familyName}}</view>
+    <view class="subtitle">{{invitePreview.inviterName}} 邀请你加入 · 当前 {{invitePreview.memberCount}} 人</view>
+    <view class="invite-note">加入后可以共同查看、添加和处理家庭食材。</view>
+    <button class="pixel-btn confirm-join-btn" bindtap="confirmJoinInvite">
+      {{joining ? '正在加入…' : '确认加入'}}
+    </button>
+  </view>
+
+  <view wx:elif="{{needsLogin}}" class="paper-card green invite-confirm-card">
+    <view class="family-name">收到家庭邀请</view>
+    <view class="subtitle">登录家长账号后即可查看邀请并加入家庭食材库。</view>
+    <button class="pixel-btn confirm-join-btn" bindtap="goLoginForInvite">登录后查看邀请</button>
+  </view>
+
+  <block wx:else>
+    <view class="paper-card green family-card">
+      <view class="family-main">
+        <view>
+          <view class="family-name">{{family.name || '宝宝的小厨房'}}</view>
+          <view class="subtitle">当前身份：{{roleLabel}}</view>
+        </view>
+        <view class="member-count">{{members.length}}人</view>
       </view>
-      <view class="member-count">{{members.length}}人</view>
-    </view>
-    <view class="button-row">
-      <button class="pixel-btn" bindtap="createInvite" disabled="{{!canInvite}}">邀请家人</button>
-      <button class="pixel-btn ghost" bindtap="goMemberManage">成员管理</button>
-    </view>
-  </view>
-
-  <view wx:if="{{invite}}" class="paper-card yellow invite-card">
-    <view class="section-title">邀请已生成</view>
-    <view class="invite-code">{{invite.inviteId}}</view>
-    <view class="subtitle">有效期至 {{invite.expiresAt}}，可以复制后发给家人。</view>
-    <button class="pixel-btn secondary" bindtap="copyInvite">复制邀请</button>
-  </view>
-
-  <view class="paper-card join-card">
-    <view class="section-title">收到家人邀请？</view>
-    <view class="subtitle">输入邀请码后，会切换到家人的共享食材库。</view>
-    <view class="join-row">
-      <input class="input join-input" value="{{inviteCode}}" placeholder="输入邀请码" bindinput="onInviteCodeInput" />
-      <button class="pixel-btn ghost join-btn" bindtap="joinByInvite">加入</button>
-    </view>
-  </view>
-
-  <view class="paper-card">
-    <view class="card-head">
-      <view class="section-title">家庭成员</view>
-      <view class="cell-note">{{canManageMembers ? '可调整身份' : '仅查看'}}</view>
-    </view>
-    <view class="member-row" wx:for="{{members}}" wx:key="openId">
-      <view class="member-avatar">{{item.avatarText}}</view>
-      <view class="member-info">
-        <view class="member-name">{{item.nickname || '家庭成员'}}</view>
-        <view class="subtitle">{{item.openId}}</view>
+      <view class="button-row">
+        <button wx:if="{{!invite}}" class="pixel-btn" bindtap="prepareInvite">
+          {{preparingInvite ? '正在准备…' : '邀请家人'}}
+        </button>
+        <button wx:else class="pixel-btn share-ready-btn" open-type="share">发送给微信家人</button>
+        <button class="pixel-btn ghost" bindtap="goMemberManage">成员管理</button>
       </view>
-      <view class="role-badge {{item.role}}">{{item.roleText}}</view>
     </view>
-  </view>
+
+    <view wx:if="{{invite}}" class="paper-card yellow invite-card">
+      <view class="section-title">微信邀请已准备好</view>
+      <view class="subtitle">点击“发送给微信家人”，对方打开后可直接确认加入。邀请有效期至 {{invite.expiresAt}}。</view>
+    </view>
+
+    <view class="paper-card join-card">
+      <view class="other-join-head" bindtap="toggleInviteCode">
+        <view>
+          <view class="section-title">收到家人邀请？</view>
+          <view class="subtitle">微信分享无法打开时，可以改用邀请码。</view>
+        </view>
+        <view class="cell-note">{{showInviteCode ? '收起⌃' : '其他加入方式⌄'}}</view>
+      </view>
+      <view wx:if="{{showInviteCode}}" class="join-row">
+        <input class="input join-input" value="{{inviteCode}}" placeholder="输入邀请码" bindinput="onInviteCodeInput" />
+        <button class="pixel-btn ghost join-btn" bindtap="joinByInvite">加入</button>
+      </view>
+      <button wx:if="{{showInviteCode && invite}}" class="copy-invite-btn" bindtap="copyInvite">复制当前邀请码</button>
+    </view>
+
+    <view class="paper-card">
+      <view class="card-head">
+        <view class="section-title">家庭成员</view>
+        <view class="cell-note">{{canManageMembers ? '可调整身份' : '仅查看'}}</view>
+      </view>
+      <view class="member-row" wx:for="{{members}}" wx:key="openId">
+        <view class="member-avatar">{{item.avatarText}}</view>
+        <view class="member-info">
+          <view class="member-name">{{item.nickname || '家庭成员'}}</view>
+        </view>
+        <view class="role-badge {{item.role}}">{{item.roleText}}</view>
+      </view>
+    </view>
+  </block>
 </view>

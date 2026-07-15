@@ -26,6 +26,10 @@ function createFamilyService(options = {}) {
       return request('createInvite', input)
     },
 
+    getInvitePreview(input) {
+      return request('getInvitePreview', input)
+    },
+
     joinFamilyByInvite(input) {
       return request('joinFamilyByInvite', input)
     },

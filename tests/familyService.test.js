@@ -42,6 +42,21 @@ test('creates invite and joins family through service actions', async () => {
   assert.equal(joined.role, 'member')
 })
 
+test('gets a safe invite preview through familyApi', async () => {
+  const calls = []
+  const service = createFamilyService({
+    callCloud: async (data) => {
+      calls.push(data)
+      return { familyName: '小满家', inviterName: '小满妈妈', memberCount: 1 }
+    }
+  })
+
+  const preview = await service.getInvitePreview({ inviteId: 'invite-a' })
+
+  assert.deepEqual(calls, [{ action: 'getInvitePreview', inviteId: 'invite-a' }])
+  assert.equal(preview.familyName, '小满家')
+})
+
 test('resets family service singleton without throwing', () => {
   assert.doesNotThrow(() => resetFamilyService())
 })

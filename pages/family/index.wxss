@@ -33,8 +33,47 @@
   margin-top: 18rpx;
 }
 
+.invite-confirm-card {
+  margin-top: 24rpx;
+  padding: 30rpx;
+}
+
+.invite-eyebrow {
+  margin-bottom: 8rpx;
+  color: #3f8a43;
+  font-size: 22rpx;
+  font-weight: 900;
+}
+
+.invite-note {
+  margin-top: 20rpx;
+  padding: 18rpx;
+  border: 2rpx solid rgba(142, 191, 123, 0.65);
+  border-radius: 16rpx;
+  background: #fffdf2;
+  color: #6f6757;
+  font-size: 23rpx;
+  line-height: 1.6;
+}
+
+.confirm-join-btn {
+  width: 100%;
+  margin-top: 24rpx;
+}
+
+.share-ready-btn {
+  background: #3f9f49;
+}
+
 .join-card {
   padding-bottom: 24rpx;
+}
+
+.other-join-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
 }
 
 .join-row {
@@ -51,6 +90,20 @@
 .join-btn {
   width: 150rpx;
   flex: 0 0 auto;
+}
+
+.copy-invite-btn {
+  margin: 18rpx auto 0;
+  padding: 8rpx 18rpx;
+  border: 0;
+  background: transparent;
+  color: #6f6757;
+  font-size: 22rpx;
+  text-decoration: underline;
+}
+
+.copy-invite-btn::after {
+  border: 0;
 }
 
 .invite-code {

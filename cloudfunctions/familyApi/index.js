@@ -8,7 +8,9 @@ const familyCollections = [
   'family_invites',
   'family_audit_logs',
   'family_settings',
-  'user_food_records'
+  'user_food_records',
+  'recognition_logs',
+  'purchase_plans'
 ]
 
 function initializationErrorCode(error) {

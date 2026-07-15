@@ -73,12 +73,31 @@ async function updateItem(store, collection, predicate, patch) {
   }
 }
 
-async function moveUserFamilyData(store, userId, fromFamilyId, toFamilyId) {
-  const records = await listItems(store, 'user_food_records', (item) => item.familyId === fromFamilyId && item.userId === userId)
-  for (const record of records) {
-    await updateItem(store, 'user_food_records', (item) => item._id === record._id || item.id === record.id, {
-      familyId: toFamilyId
-    })
+async function moveUserFamilyData(store, userId, fromFamilyId, toFamilyId, today) {
+  const collections = ['user_food_records', 'purchase_plans', 'recognition_logs']
+  for (const collection of collections) {
+    if (typeof store.updateManyByFields === 'function') {
+      await store.updateManyByFields(collection, { familyId: fromFamilyId, userId }, { familyId: toFamilyId })
+      continue
+    }
+    const records = await listItems(store, collection, (item) => item.familyId === fromFamilyId && item.userId === userId)
+    for (const record of records) {
+      await updateItem(store, collection, (item) => item._id === record._id || item.id === record.id, {
+        familyId: toFamilyId,
+        updatedAt: today
+      })
+    }
+  }
+
+  const sourceSettings = await getItem(store, 'family_settings', (item) => item.familyId === fromFamilyId)
+  const targetSettings = await getItem(store, 'family_settings', (item) => item.familyId === toFamilyId)
+  if (sourceSettings && !targetSettings) {
+    await updateItem(
+      store,
+      'family_settings',
+      (item) => item._id === sourceSettings._id || item.id === sourceSettings.id,
+      { familyId: toFamilyId, updatedAt: today }
+    )
   }
 }
 
@@ -121,6 +140,9 @@ async function ensureDefaultFamily(store, userId, today, input = {}) {
     name: input.name || '宝宝的小厨房',
     ownerOpenId: userId,
     createdBy: userId,
+    kind: 'personal',
+    formalizedAt: null,
+    formalizedReason: null,
     status: 'active',
     createdAt: today,
     updatedAt: today
@@ -139,14 +161,41 @@ async function ensureDefaultFamily(store, userId, today, input = {}) {
   return { family, membership }
 }
 
+async function normalizeFamilyKind(store, family, membership, today) {
+  if (!family || family.kind) return family
+  const members = await listItems(store, 'family_members', (item) => item.familyId === family.familyId && item.status === 'active')
+  const invites = await listItems(store, 'family_invites', (item) => item.familyId === family.familyId && ['active', 'used'].includes(item.status))
+  const kind = members.length > 1 || invites.length > 0 || membership.role !== 'owner'
+    ? 'formal'
+    : 'personal'
+  return updateItem(store, 'families', (item) => item.familyId === family.familyId, {
+    kind,
+    formalizedAt: kind === 'formal' ? today : null,
+    formalizedReason: kind === 'formal' ? 'legacy_activity' : null,
+    updatedAt: today
+  })
+}
+
+async function formalizeFamily(store, familyId, today, reason) {
+  const family = await getItem(store, 'families', (item) => item.familyId === familyId && item.status === 'active')
+  if (!family || family.kind === 'formal') return family
+  return updateItem(store, 'families', (item) => item.familyId === familyId, {
+    kind: 'formal',
+    formalizedAt: today,
+    formalizedReason: reason,
+    updatedAt: today
+  })
+}
+
 function createFamilyApi({ store, userId, today = '2026-07-09' }) {
   return {
     async handle(event = {}) {
       try {
         if (event.action === 'getMyFamily') {
-          const { family, membership } = await ensureDefaultFamily(store, userId, today, event)
+          const context = await ensureDefaultFamily(store, userId, today, event)
+          const family = await normalizeFamilyKind(store, context.family, context.membership, today)
           const members = await listItems(store, 'family_members', (item) => item.familyId === family.familyId && item.status === 'active')
-          return { ok: true, data: { family, members, membership } }
+          return { ok: true, data: { family, members, membership: context.membership } }
         }
 
         if (event.action === 'createInvite') {
@@ -162,22 +211,63 @@ function createFamilyApi({ store, userId, today = '2026-07-09' }) {
             status: 'active',
             createdAt: today
           })
+          try {
+            await formalizeFamily(store, membership.familyId, today, 'invite_created')
+          } catch (error) {
+            await updateItem(store, 'family_invites', (item) => item.inviteId === inviteId, {
+              status: 'revoked',
+              updatedAt: today
+            })
+            throw error
+          }
           return { ok: true, data: invite }
         }
 
+        if (event.action === 'getInvitePreview') {
+          const invite = await getItem(store, 'family_invites', (item) => item.inviteId === event.inviteId)
+          if (!invite || invite.status !== 'active' || invite.expiresAt < today) {
+            return { ok: false, code: 'INVITE_EXPIRED', error: '邀请已失效，请联系邀请人重新发送' }
+          }
+          const family = await getItem(store, 'families', (item) => item.familyId === invite.familyId && item.status === 'active')
+          const inviter = await getItem(store, 'family_members', (item) => item.familyId === invite.familyId && item.openId === invite.createdBy)
+          const members = await listItems(store, 'family_members', (item) => item.familyId === invite.familyId && item.status === 'active')
+          return {
+            ok: true,
+            data: {
+              familyName: (family && family.name) || '家庭食材库',
+              inviterName: (inviter && inviter.nickname) || '家人',
+              memberCount: members.length,
+              expiresAt: invite.expiresAt,
+              status: invite.status
+            }
+          }
+        }
+
         if (event.action === 'joinFamilyByInvite') {
-          const invite = await getItem(store, 'family_invites', (item) => item.inviteId === event.inviteId && item.status === 'active')
-          if (!invite || invite.expiresAt < today) {
-            return { ok: false, error: '邀请已过期，请让家人重新发送邀请' }
+          const invite = await getItem(store, 'family_invites', (item) => item.inviteId === event.inviteId)
+          if (!invite || invite.expiresAt < today || ['expired', 'revoked'].includes(invite.status)) {
+            return { ok: false, code: 'INVITE_EXPIRED', error: '邀请已过期，请让家人重新发送邀请' }
+          }
+          if (invite.status === 'used') {
+            const current = await getActiveMembership(store, userId)
+            if (invite.usedBy === userId && current && current.familyId === invite.familyId) {
+              return { ok: true, data: current }
+            }
+            return { ok: false, code: 'INVITE_USED', error: '这条邀请已经被使用，请联系邀请人重新发送' }
           }
           const existing = await getActiveMembership(store, userId)
           if (existing && existing.familyId === invite.familyId) return { ok: true, data: existing }
           if (existing) {
-            const existingMembers = await listItems(store, 'family_members', (item) => item.familyId === existing.familyId && item.status === 'active')
-            if (existing.role !== 'owner' || existingMembers.length > 1) {
-              return { ok: false, error: '请先退出当前家庭' }
+            const currentFamily = await getItem(store, 'families', (item) => item.familyId === existing.familyId && item.status === 'active')
+            const normalizedFamily = await normalizeFamilyKind(store, currentFamily, existing, today)
+            if (!normalizedFamily || normalizedFamily.kind !== 'personal') {
+              return {
+                ok: false,
+                code: 'ALREADY_IN_FORMAL_FAMILY',
+                error: '你已经加入一个家庭，暂时无法加入其他家庭'
+              }
             }
-            await moveUserFamilyData(store, userId, existing.familyId, invite.familyId)
+            await moveUserFamilyData(store, userId, existing.familyId, invite.familyId, today)
             await updateItem(store, 'family_members', (item) => item._id === existing._id || item.id === existing.id, {
               status: 'left',
               updatedAt: today
@@ -203,6 +293,7 @@ function createFamilyApi({ store, userId, today = '2026-07-09' }) {
             usedBy: userId,
             usedAt: today
           })
+          await formalizeFamily(store, invite.familyId, today, 'member_joined')
           return { ok: true, data: member }
         }
 
