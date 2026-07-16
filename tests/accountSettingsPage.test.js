@@ -9,6 +9,13 @@ function readText(projectPath) {
   return fs.readFileSync(path.join(root, projectPath), 'utf8')
 }
 
+function readCssRule(stylesheet, selector) {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const match = stylesheet.match(new RegExp(`${escapedSelector}\\s*\\{([^}]*)\\}`))
+  assert.ok(match, `missing CSS rule: ${selector}`)
+  return match[1]
+}
+
 function loadAccountPage(accountService) {
   const servicePath = require.resolve('../utils/accountService')
   const pagePath = path.join(root, 'pages/settings/account.js')
@@ -69,6 +76,8 @@ test('account settings uses WeChat avatar and nickname controls', () => {
 test('account page accepts nickname change and blur events and keeps avatar square', () => {
   const markup = readText('pages/settings/account.wxml')
   const stylesheet = readText('pages/settings/account.wxss')
+  const avatarRule = readCssRule(stylesheet, '.avatar-preview.has-avatar')
+  const placeholderRule = readCssRule(stylesheet, '.avatar-preview.is-placeholder')
   const page = createPageInstance(loadAccountPage({ getSession: () => ({ loggedIn: false }) }))
 
   page.onNicknameChange({ detail: { value: '微信妈妈' } })
@@ -85,8 +94,12 @@ test('account page accepts nickname change and blur events and keeps avatar squa
   assert.match(stylesheet, /max-width:\s*126rpx/)
   assert.match(stylesheet, /padding:\s*0/)
   assert.match(stylesheet, /\.avatar-button::after/)
-  assert.match(stylesheet, /\.avatar-preview\.has-avatar/)
-  assert.match(stylesheet, /\.avatar-preview\.is-placeholder/)
+  assert.match(avatarRule, /width:\s*100%\s*;/)
+  assert.match(avatarRule, /height:\s*100%\s*;/)
+  assert.match(placeholderRule, /width:\s*56rpx\s*;/)
+  assert.match(placeholderRule, /height:\s*56rpx\s*;/)
+  assert.match(placeholderRule, /margin:\s*18rpx auto 0\s*;/)
+  assert.match(placeholderRule, /opacity:\s*0\.78\s*;/)
 })
 
 test('successful login navigates back without waiting for pending background sync', async () => {
