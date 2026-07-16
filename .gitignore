@@ -3,6 +3,7 @@ project.private.config.json
 *.swp
 .env
 .env.*
+.worktrees/
 
 # Local private runtime config. Copy the matching *.example.js file when needed.
 utils/cloudConfig.local.js
