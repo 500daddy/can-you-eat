@@ -7,6 +7,11 @@ const roleTextMap = {
   admin: '管理员',
   member: '成员'
 }
+const rolePermissionHelp = [
+  '创建者：管理成员、修改宝宝资料、邀请家人、管理食材和采购计划。',
+  '管理员：邀请家人、管理食材和采购计划，不能调整成员或宝宝资料。',
+  '成员：管理食材和采购计划，不能邀请或管理成员。'
+].join('\n')
 
 function decorateMembers(members = []) {
   return members.map((item) => ({
@@ -45,6 +50,15 @@ Page({
       this.setData({ loading: false })
       wx.showToast({ title: '成员加载失败', icon: 'none' })
     }
+  },
+
+  showRolePermissions() {
+    wx.showModal({
+      title: '身份权限说明',
+      content: rolePermissionHelp,
+      showCancel: false,
+      confirmText: '我知道了'
+    })
   },
 
   updateRole(e) {

@@ -377,3 +377,22 @@ test('member page only lets owner manage member roles', async () => {
   assert.equal(page.data.canManageMembers, false)
   assert.match(toasts[0].title, /创建者/)
 })
+
+test('member page explains all family role permissions in a modal', () => {
+  const page = createPageInstance(loadPage('pages/family/member', {}))
+  const modals = []
+  global.wx = { showModal: (input) => modals.push(input) }
+
+  assert.equal(typeof page.showRolePermissions, 'function')
+  page.showRolePermissions()
+
+  delete global.wx
+  const markup = readText('pages/family/member.wxml')
+  assert.match(markup, /bindtap="showRolePermissions"/)
+  assert.equal(modals[0].title, '身份权限说明')
+  assert.equal(modals[0].showCancel, false)
+  assert.equal(modals[0].confirmText, '我知道了')
+  assert.match(modals[0].content, /创建者：.*管理成员.*修改宝宝资料.*邀请家人/)
+  assert.match(modals[0].content, /管理员：.*邀请家人.*不能调整成员或宝宝资料/)
+  assert.match(modals[0].content, /成员：.*管理食材和采购计划.*不能邀请或管理成员/)
+})

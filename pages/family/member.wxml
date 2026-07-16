@@ -1,5 +1,8 @@
 <view class="page">
-  <view class="page-title">成员管理</view>
+  <view class="member-page-head">
+    <view class="page-title">成员管理</view>
+    <button class="role-help-btn" bindtap="showRolePermissions">身份权限说明</button>
+  </view>
   <view class="subtitle">创建者可以调整家人的身份；成员和管理员仍可一起记录食材。</view>
 
   <view wx:if="{{!canManageMembers}}" class="paper-card yellow">
