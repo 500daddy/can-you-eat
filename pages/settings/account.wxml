@@ -22,14 +22,6 @@
     <view class="cell-arrow">管理 ›</view>
   </view>
 
-  <view wx:if="{{loggedIn && syncStatus === 'pending'}}" class="sync-card">
-    <view>
-      <view class="sync-title">本机食材还未同步完成</view>
-      <view class="subtitle">本机数据仍然保留，可以重新同步。</view>
-    </view>
-    <view class="pixel-btn ghost compact-action" bindtap="retrySync">{{syncing ? '同步中…' : '重新同步'}}</view>
-  </view>
-
   <view wx:if="{{loggedIn}}" class="logout-section">
     <view class="logout-button" bindtap="logout">退出登录</view>
   </view>

@@ -35,7 +35,6 @@ function sessionView(session = {}) {
     loggedIn: session.loggedIn === true,
     nickname: profile.nickname || '',
     avatarUrl: profile.avatarUrl || '',
-    syncStatus: session.syncStatus || 'idle',
     familyName: family.name || '',
     familyRoleText: roleLabels[membership.role] || '成员',
     familyMemberCount: members.length
@@ -70,13 +69,11 @@ Page({
     loggedIn: false,
     nickname: '',
     avatarUrl: '',
-    syncStatus: 'idle',
     familyName: '',
     familyRoleText: '成员',
     familyMemberCount: 0,
     returnToMine: false,
-    saving: false,
-    syncing: false
+    saving: false
   },
 
   async onLoad(options = {}) {
@@ -170,23 +167,6 @@ Page({
       console.warn('账号页面返回失败', error)
     } finally {
       this.setData({ saving: false })
-    }
-  },
-
-  async retrySync() {
-    if (this.data.syncing) return
-    this.setData({ syncing: true })
-    try {
-      const session = await accountService.retryPendingSync()
-      this.applySession(session)
-      wx.showToast({
-        title: session.syncStatus === 'synced' ? '同步完成' : '仍有内容未同步',
-        icon: session.syncStatus === 'synced' ? 'success' : 'none'
-      })
-    } catch (error) {
-      wx.showToast({ title: '同步失败，请重试', icon: 'none' })
-    } finally {
-      this.setData({ syncing: false })
     }
   },
 

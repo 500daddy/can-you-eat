@@ -58,6 +58,9 @@ test('account settings uses WeChat avatar and nickname controls', () => {
   assert.match(markup, /家庭共享/)
   assert.match(markup, /我的账号/)
   assert.doesNotMatch(markup, /家长账号|家长昵称/)
+  assert.doesNotMatch(markup, /本机食材还未同步完成/)
+  assert.doesNotMatch(markup, /重新同步/)
+  assert.doesNotMatch(markup, /sync-card|retrySync/)
   assert.equal(pageConfig.navigationBarTitleText, '我的账号')
   assert.ok(appConfig.pages.includes('pages/settings/account'))
   assert.match(assets.account.defaultAvatar, /nav_pixel_mine_active\.png$/)
@@ -272,24 +275,17 @@ test('account settings updates an existing profile and prevents duplicate saves'
   assert.deepEqual(calls, [{ nickname: '新昵称', avatarUrl: '/new.jpg' }])
 })
 
-test('account settings retries pending food sync', async () => {
-  let retries = 0
+test('account settings keeps pending sync internal instead of exposing manual retry', async () => {
   const page = createPageInstance(loadAccountPage({
     getSession: () => ({ loggedIn: true, profile: {}, syncStatus: 'pending' }),
-    refresh: async () => ({ loggedIn: true, profile: {}, syncStatus: 'pending' }),
-    retryPendingSync: async () => {
-      retries += 1
-      return { loggedIn: true, profile: {}, syncStatus: 'synced' }
-    }
+    refresh: async () => ({ loggedIn: true, profile: {}, syncStatus: 'pending' })
   }))
-  global.wx = { showToast() {} }
+
   await page.onLoad()
 
-  await page.retrySync()
-
-  delete global.wx
-  assert.equal(retries, 1)
-  assert.equal(page.data.syncStatus, 'synced')
+  assert.equal(page.data.loggedIn, true)
+  assert.equal(typeof page.retrySync, 'undefined')
+  assert.doesNotMatch(readText('pages/settings/account.wxml'), /sync-card|retrySync/)
 })
 
 test('account settings logout explains device and cloud impact then returns to mine', async () => {
