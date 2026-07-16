@@ -82,13 +82,17 @@ test('mine page shows parent account and nests family sharing in the profile car
   const markup = readText('pages/mine/index.wxml')
   const stylesheet = readText('pages/mine/index.wxss')
 
-  assert.match(markup, /account\.profile\.avatarUrl/)
+  assert.match(markup, /<image wx:if="\{\{account\.loggedIn\}\}" class="account-avatar"/)
   assert.match(markup, /defaultAccountAvatar/)
   assert.match(markup, /微信登录/)
   assert.match(markup, /登录后可跨设备保存记录/)
   assert.match(markup, /创建家庭组/)
   assert.match(markup, /登录后可邀请成员共同管理食材/)
-  assert.match(markup, /login-family-hint/)
+  assert.match(markup, /class="login-family-hint"/)
+  assert.doesNotMatch(markup, /class="login-family-hint" bindtap="goAccount"/)
+  assert.match(markup, />登录后可用<\/view>/)
+  assert.doesNotMatch(markup, />去登录 ›<\/view>/)
+  assert.doesNotMatch(markup, /sync-status|bindtap="retrySync"/)
   assert.match(markup, /账号设置/)
   assert.match(markup, /家庭共享/)
   assert.match(markup, /family-summary/)
@@ -100,6 +104,8 @@ test('mine page shows parent account and nests family sharing in the profile car
   assert.match(stylesheet, /\.account-card/)
   assert.match(stylesheet, /\.family-summary/)
   assert.match(stylesheet, /\.login-family-hint/)
+  assert.match(stylesheet, /\.login-family-status/)
+  assert.doesNotMatch(stylesheet, /\.sync-status|\.sync-action/)
 })
 
 test('logged-out mine account keeps a profile shape for the default avatar', async () => {
@@ -200,30 +206,7 @@ test('mine page exposes a direct account session refresh for navigation fallback
   assert.equal(page.data.account.profile.nickname, '小满妈妈')
 })
 
-test('mine page retries pending sync and refreshes the account card', async () => {
-  let retried = 0
-  const page = createPageInstance(loadMinePage({
-    accountService: {
-      refresh: async () => ({ loggedIn: true, syncStatus: 'pending', profile: {}, family: {} }),
-      retryPendingSync: async () => {
-        retried += 1
-        return { loggedIn: true, syncStatus: 'synced', profile: {}, family: {} }
-      }
-    },
-    foodService: createMineFoodService()
-  }))
-  global.wx = { showToast() {} }
-
-  await page.onShow()
-  await page.retrySync()
-
-  delete global.wx
-  assert.equal(retried, 1)
-  assert.equal(page.data.account.syncStatus, 'synced')
-  assert.equal(page.data.syncing, false)
-})
-
-test('mine page resumes pending work and shows issue-specific copy', async () => {
+test('mine page resumes pending sync without exposing persistent sync controls', async () => {
   let resumeCalls = 0
   const pending = {
     loggedIn: true,
@@ -248,8 +231,8 @@ test('mine page resumes pending work and shows issue-specific copy', async () =>
   await new Promise((resolve) => setImmediate(resolve))
 
   assert.equal(resumeCalls, 1)
-  assert.equal(page.data.account.syncText, '家庭信息暂不可用')
-  assert.match(readText('pages/mine/index.wxml'), /\{\{account\.syncText\}\}/)
+  assert.doesNotMatch(readText('pages/mine/index.wxml'), /sync-status|retrySync/)
+  assert.equal(typeof page.retrySync, 'undefined')
 })
 
 test('mine page ignores an older logged-out load after a new login is visible', async () => {

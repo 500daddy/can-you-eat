@@ -13,6 +13,11 @@
   padding: 22rpx;
 }
 
+.account-profile.is-logged-out {
+  min-height: 92rpx;
+  padding: 18rpx 22rpx;
+}
+
 .account-avatar {
   flex: 0 0 auto;
   width: 104rpx;
@@ -78,11 +83,14 @@
   line-height: 1.35;
 }
 
-.login-family-action {
+.login-family-status {
   flex: 0 0 auto;
-  color: #2f6c37;
-  font-size: 22rpx;
-  font-weight: 900;
+  padding: 8rpx 12rpx;
+  border-radius: 10rpx;
+  background: #f0edda;
+  color: #8a806d;
+  font-size: 20rpx;
+  font-weight: 800;
   white-space: nowrap;
 }
 
@@ -110,21 +118,6 @@
 
 .family-summary.is-error .family-meta {
   color: #a65d35;
-}
-
-.sync-status {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14rpx 22rpx;
-  background: #fff4cf;
-  color: #7d5a1d;
-  font-size: 23rpx;
-}
-
-.sync-action {
-  color: #2f6c37;
-  font-weight: 900;
 }
 
 .stats-grid {

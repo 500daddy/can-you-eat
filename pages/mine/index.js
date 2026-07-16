@@ -1,6 +1,5 @@
 const { getFoodService } = require('../../utils/foodService')
 const { getAccountService } = require('../../utils/accountService')
-const { syncIssueText } = require('../../utils/cloudIssue')
 const { createShareHandlers } = require('../../utils/share')
 const assets = require('../../utils/assets')
 
@@ -39,8 +38,7 @@ function decorateAccount(account = {}) {
     profile: account.profile || {},
     familyName: account.familyLoadError ? '' : (family.name || ''),
     familyRoleText: familyRoleLabels[membership.role] || '成员',
-    familyMemberCount: members.length,
-    syncText: syncIssueText(account.syncIssue)
+    familyMemberCount: members.length
   }
 }
 
@@ -53,8 +51,7 @@ Page({
     account: decorateAccount(),
     stats: [],
     babySettingNote: '待设置',
-    reminderTime: '08:00',
-    syncing: false
+    reminderTime: '08:00'
   },
 
   async onShow() {
@@ -111,23 +108,6 @@ Page({
   applyAccountSession(session) {
     this._loadVersion = (this._loadVersion || 0) + 1
     this.setData({ account: decorateAccount(session) })
-  },
-
-  async retrySync() {
-    if (this.data.syncing) return
-    this.setData({ syncing: true })
-    try {
-      const account = await accountService.retryPendingSync()
-      this.setData({ account: decorateAccount(account) })
-      wx.showToast({
-        title: account.syncStatus === 'synced' ? '同步完成' : syncIssueText(account.syncIssue),
-        icon: account.syncStatus === 'synced' ? 'success' : 'none'
-      })
-    } catch (error) {
-      wx.showToast({ title: '同步失败，请重试', icon: 'none' })
-    } finally {
-      this.setData({ syncing: false })
-    }
   },
 
   async retryFamily() {
