@@ -187,6 +187,23 @@ async function formalizeFamily(store, familyId, today, reason) {
   })
 }
 
+async function writeMemberAudit(store, actor, target, updated, action, summary, today) {
+  return addItem(store, 'family_audit_logs', {
+    id: makeId('audit'),
+    familyId: actor.familyId,
+    actorOpenId: actor.openId,
+    actorName: actor.nickname || '家庭成员',
+    actorAvatar: actor.avatarUrl || '',
+    action,
+    targetType: 'family_member',
+    targetId: target.openId,
+    before: target,
+    after: updated,
+    summary,
+    createdAt: today
+  })
+}
+
 function createFamilyApi({ store, userId, today = '2026-07-09' }) {
   return {
     async handle(event = {}) {
@@ -308,6 +325,56 @@ function createFamilyApi({ store, userId, today = '2026-07-09' }) {
             role,
             updatedAt: today
           })
+          return { ok: true, data: updated }
+        }
+
+        if (event.action === 'removeMember') {
+          const actor = await requirePermission(store, userId, 'manage_members')
+          if (event.openId === actor.openId) return { ok: false, error: '创建者不能移出自己' }
+          const target = await getItem(store, 'family_members', (item) => (
+            item.familyId === actor.familyId && item.openId === event.openId && item.status === 'active'
+          ))
+          if (!target) {
+            const previous = await getItem(store, 'family_members', (item) => (
+              item.familyId === actor.familyId && item.openId === event.openId
+            ))
+            return { ok: false, error: previous ? '成员已退出' : '成员不存在' }
+          }
+          if (target.role === 'owner') return { ok: false, error: '不能移出创建者' }
+          const updated = await updateItem(store, 'family_members', (item) => item._id === target._id || item.id === target.id, {
+            status: 'inactive',
+            leftAt: today,
+            updatedAt: today
+          })
+          await writeMemberAudit(
+            store,
+            actor,
+            target,
+            updated,
+            'member_removed',
+            `移出家庭成员：${target.nickname || target.openId}`,
+            today
+          )
+          return { ok: true, data: updated }
+        }
+
+        if (event.action === 'leaveFamily') {
+          const membership = await requireMembership(store, userId)
+          if (membership.role === 'owner') return { ok: false, error: '创建者不能退出家庭' }
+          const updated = await updateItem(store, 'family_members', (item) => item._id === membership._id || item.id === membership.id, {
+            status: 'inactive',
+            leftAt: today,
+            updatedAt: today
+          })
+          await writeMemberAudit(
+            store,
+            membership,
+            membership,
+            updated,
+            'member_left',
+            `${membership.nickname || membership.openId}退出家庭`,
+            today
+          )
           return { ok: true, data: updated }
         }
 
