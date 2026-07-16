@@ -193,6 +193,7 @@ test('project upload ignores local agent workspaces', () => {
   )
 
   assert.ok(ignoredFolders.has('.superpowers'))
+  assert.ok(ignoredFolders.has('.worktrees'))
 })
 
 test('project upload source stays under preview size budget', () => {
