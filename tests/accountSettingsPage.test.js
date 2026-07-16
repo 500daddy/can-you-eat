@@ -63,7 +63,7 @@ test('account settings uses WeChat avatar and nickname controls', () => {
   assert.doesNotMatch(markup, /sync-card|retrySync/)
   assert.equal(pageConfig.navigationBarTitleText, '我的账号')
   assert.ok(appConfig.pages.includes('pages/settings/account'))
-  assert.match(assets.account.defaultAvatar, /nav_pixel_mine_active\.png$/)
+  assert.match(assets.account.defaultAvatar, /actions\/action_camera\.png$/)
 })
 
 test('account page accepts nickname change and blur events and keeps avatar square', () => {
@@ -78,10 +78,15 @@ test('account page accepts nickname change and blur events and keeps avatar squa
   assert.match(markup, /bindchange="onNicknameChange"/)
   assert.match(markup, /bindblur="onNicknameBlur"/)
   assert.match(markup, /可选择微信昵称，也可以自己填写/)
+  assert.match(markup, /avatar-preview \{\{avatarUrl \? 'has-avatar' : 'is-placeholder'\}\}/)
+  assert.match(markup, /mode="\{\{avatarUrl \? 'aspectFill' : 'aspectFit'\}\}"/)
+  assert.match(markup, /\{\{avatarUrl \? '更换' : '添加'\}\}/)
   assert.match(stylesheet, /min-width:\s*126rpx/)
   assert.match(stylesheet, /max-width:\s*126rpx/)
   assert.match(stylesheet, /padding:\s*0/)
   assert.match(stylesheet, /\.avatar-button::after/)
+  assert.match(stylesheet, /\.avatar-preview\.has-avatar/)
+  assert.match(stylesheet, /\.avatar-preview\.is-placeholder/)
 })
 
 test('successful login navigates back without waiting for pending background sync', async () => {

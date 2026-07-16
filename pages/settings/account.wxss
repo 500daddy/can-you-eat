@@ -43,6 +43,19 @@
   height: 100%;
 }
 
+.avatar-preview.has-avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-preview.is-placeholder {
+  display: block;
+  width: 56rpx;
+  height: 56rpx;
+  margin: 18rpx auto 0;
+  opacity: 0.78;
+}
+
 .avatar-badge {
   position: absolute;
   right: 0;
