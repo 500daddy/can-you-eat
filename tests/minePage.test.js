@@ -82,7 +82,9 @@ test('mine page shows parent account and nests family sharing in the profile car
   const markup = readText('pages/mine/index.wxml')
   const stylesheet = readText('pages/mine/index.wxss')
 
-  assert.match(markup, /<image wx:if="\{\{account\.loggedIn\}\}" class="account-avatar"/)
+  assert.match(markup, /<image\s+wx:if="\{\{account\.loggedIn\}\}"/)
+  assert.match(markup, /account-avatar \{\{account\.profile\.avatarUrl \? 'has-avatar' : 'is-placeholder'\}\}/)
+  assert.match(markup, /mode="\{\{account\.profile\.avatarUrl \? 'aspectFill' : 'aspectFit'\}\}"/)
   assert.match(markup, /defaultAccountAvatar/)
   assert.match(markup, /微信登录/)
   assert.match(markup, /登录后可跨设备保存记录/)
@@ -105,6 +107,11 @@ test('mine page shows parent account and nests family sharing in the profile car
   assert.match(stylesheet, /\.family-summary/)
   assert.match(stylesheet, /\.login-family-hint/)
   assert.match(stylesheet, /\.login-family-status/)
+  assert.match(stylesheet, /\.account-avatar\.is-placeholder/)
+  assert.match(
+    stylesheet,
+    /\.account-avatar\.is-placeholder\s*\{[^}]*padding:\s*25rpx;[^}]*opacity:\s*0\.78;[^}]*\}/
+  )
   assert.doesNotMatch(stylesheet, /\.sync-status|\.sync-action/)
 })
 
@@ -120,7 +127,7 @@ test('logged-out mine account keeps a profile shape for the default avatar', asy
   await page.onShow()
 
   assert.deepEqual(page.data.account.profile, {})
-  assert.match(page.data.defaultAccountAvatar, /nav_pixel_mine_active\.png$/)
+  assert.match(page.data.defaultAccountAvatar, /actions\/action_camera\.png$/)
 })
 
 test('mine page loads account, stats, and baby setting note together', async () => {
