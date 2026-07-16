@@ -185,6 +185,16 @@ test('project upload ignores local icon generation packs', () => {
   assert.ok(ignoredFiles.has('宝宝食材小管家_缺失食材icon重生成_严格旧风格_给Codex.zip'))
 })
 
+test('project upload ignores local agent workspaces', () => {
+  const ignoredFolders = new Set(
+    (projectConfig.packOptions.ignore || [])
+      .filter((item) => item.type === 'folder')
+      .map((item) => item.value)
+  )
+
+  assert.ok(ignoredFolders.has('.superpowers'))
+})
+
 test('project upload source stays under preview size budget', () => {
   const uploadBytes = collectUploadFiles()
     .reduce((total, file) => total + fs.statSync(file).size, 0)

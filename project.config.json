@@ -41,6 +41,10 @@
       },
       {
         "type": "folder",
+        "value": ".superpowers"
+      },
+      {
+        "type": "folder",
         "value": "docs"
       },
       {
