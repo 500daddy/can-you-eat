@@ -9,6 +9,13 @@ function readText(projectPath) {
   return fs.readFileSync(path.join(root, projectPath), 'utf8')
 }
 
+function readCssRule(stylesheet, selector) {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const match = stylesheet.match(new RegExp(`${escapedSelector}\\s*\\{([^}]*)\\}`))
+  assert.ok(match, `missing CSS rule: ${selector}`)
+  return match[1]
+}
+
 function loadMinePage({ foodService, accountService, recognitionService = {} }) {
   const foodServicePath = require.resolve('../utils/foodService')
   const accountServicePath = require.resolve('../utils/accountService')
@@ -81,8 +88,9 @@ function createMineFoodService() {
 test('mine page shows parent account and nests family sharing in the profile card', () => {
   const markup = readText('pages/mine/index.wxml')
   const stylesheet = readText('pages/mine/index.wxss')
+  const avatarRule = readCssRule(stylesheet, '.account-avatar')
+  const placeholderRule = readCssRule(stylesheet, '.account-avatar.is-placeholder')
 
-  assert.match(markup, /<image\s+wx:if="\{\{account\.loggedIn\}\}"/)
   assert.match(markup, /account-avatar \{\{account\.profile\.avatarUrl \? 'has-avatar' : 'is-placeholder'\}\}/)
   assert.match(markup, /mode="\{\{account\.profile\.avatarUrl \? 'aspectFill' : 'aspectFit'\}\}"/)
   assert.match(markup, /defaultAccountAvatar/)
@@ -107,15 +115,18 @@ test('mine page shows parent account and nests family sharing in the profile car
   assert.match(stylesheet, /\.family-summary/)
   assert.match(stylesheet, /\.login-family-hint/)
   assert.match(stylesheet, /\.login-family-status/)
-  assert.match(stylesheet, /\.account-avatar\.is-placeholder/)
-  assert.match(
-    stylesheet,
-    /\.account-avatar\.is-placeholder\s*\{[^}]*padding:\s*25rpx;[^}]*opacity:\s*0\.78;[^}]*\}/
-  )
+  assert.match(avatarRule, /box-sizing:\s*border-box\s*;/)
+  assert.match(avatarRule, /width:\s*104rpx\s*;/)
+  assert.match(avatarRule, /height:\s*104rpx\s*;/)
+  assert.doesNotMatch(avatarRule, /\bpadding(?:-[a-z-]+)?\s*:/)
+  assert.doesNotMatch(avatarRule, /\bopacity\s*:/)
+  assert.match(placeholderRule, /padding:\s*25rpx\s*;/)
+  assert.match(placeholderRule, /opacity:\s*0\.78\s*;/)
   assert.doesNotMatch(stylesheet, /\.sync-status|\.sync-action/)
 })
 
-test('logged-out mine account keeps a profile shape for the default avatar', async () => {
+test('logged-out mine account has an empty profile and camera default while markup gates the avatar on loggedIn', async () => {
+  const markup = readText('pages/mine/index.wxml')
   const page = createPageInstance(loadMinePage({
     accountService: {
       getSession: () => ({ loggedIn: false, syncStatus: 'idle' }),
@@ -128,6 +139,7 @@ test('logged-out mine account keeps a profile shape for the default avatar', asy
 
   assert.deepEqual(page.data.account.profile, {})
   assert.match(page.data.defaultAccountAvatar, /actions\/action_camera\.png$/)
+  assert.match(markup, /<image\s+wx:if="\{\{account\.loggedIn\}\}"/)
 })
 
 test('mine page loads account, stats, and baby setting note together', async () => {
