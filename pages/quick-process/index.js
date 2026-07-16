@@ -5,10 +5,13 @@ const {
   buildProcessItem,
   buildSafetyNotes
 } = require('../../utils/processAdvice')
+const { createShareHandlers } = require('../../utils/share')
 
 const foodService = getFoodService()
 
 const pageDefinition = {
+  ...createShareHandlers({ timeline: true }),
+
   data: {
     assets: foodService.getAssets(),
     loading: false,

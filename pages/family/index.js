@@ -1,6 +1,7 @@
 const { getFamilyService } = require('../../utils/familyService')
 const { getAccountService } = require('../../utils/accountService')
 const { getInviteContext } = require('../../utils/inviteContext')
+const { createShareHandlers } = require('../../utils/share')
 
 const familyService = getFamilyService()
 const accountService = getAccountService()
@@ -49,6 +50,8 @@ function parentIdentity() {
 }
 
 Page({
+  ...createShareHandlers(),
+
   data: {
     loading: true,
     family: {},

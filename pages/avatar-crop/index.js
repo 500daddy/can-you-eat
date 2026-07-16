@@ -1,3 +1,5 @@
+const { createShareHandlers } = require('../../utils/share')
+
 function getCropSize() {
   if (typeof wx === 'undefined' || !wx.getSystemInfoSync) return 300
   const { windowWidth } = wx.getSystemInfoSync()
@@ -52,6 +54,8 @@ function fallbackCrop(page, resolve) {
 }
 
 Page({
+  ...createShareHandlers(),
+
   data: {
     src: '',
     cropSize: 300,

@@ -1,6 +1,7 @@
 const { getFoodService } = require('../../utils/foodService')
 const { todayString } = require('../../utils/foodRules')
 const { decorateFoodIconDisplay } = require('../../utils/foodIconPolicy')
+const { createShareHandlers } = require('../../utils/share')
 
 const foodService = getFoodService()
 
@@ -109,6 +110,8 @@ function decorateSelectedFoodIcon(food) {
 }
 
 Page({
+  ...createShareHandlers(),
+
   data: {
     assets: foodService.getAssets(),
     isCustomFood: false,

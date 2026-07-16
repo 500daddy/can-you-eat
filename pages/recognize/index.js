@@ -1,5 +1,6 @@
 const { getFoodService } = require('../../utils/foodService')
 const { getRecognitionService } = require('../../utils/recognitionService')
+const { createShareHandlers } = require('../../utils/share')
 
 const foodService = getFoodService()
 const recognitionService = getRecognitionService()
@@ -18,6 +19,8 @@ function compressRecognitionImage(filePath) {
 }
 
 Page({
+  ...createShareHandlers({ timeline: true }),
+
   data: {
     assets,
     hasImage: false,

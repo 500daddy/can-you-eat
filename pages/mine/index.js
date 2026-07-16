@@ -1,6 +1,7 @@
 const { getFoodService } = require('../../utils/foodService')
 const { getAccountService } = require('../../utils/accountService')
 const { syncIssueText } = require('../../utils/cloudIssue')
+const { createShareHandlers } = require('../../utils/share')
 const assets = require('../../utils/assets')
 
 const foodService = getFoodService()
@@ -44,6 +45,8 @@ function decorateAccount(account = {}) {
 }
 
 Page({
+  ...createShareHandlers({ timeline: true }),
+
   data: {
     assets: foodService.getAssets(),
     defaultAccountAvatar: assets.account.defaultAvatar,

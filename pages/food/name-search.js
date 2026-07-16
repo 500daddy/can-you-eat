@@ -1,5 +1,6 @@
 const { getFoodService } = require('../../utils/foodService')
 const { decorateFoodIconDisplay } = require('../../utils/foodIconPolicy')
+const { createShareHandlers } = require('../../utils/share')
 
 const foodService = getFoodService()
 const RECENT_SEARCH_FOODS_KEY = 'food_name_search_recent'
@@ -69,6 +70,8 @@ async function getRecommendationSummary() {
 }
 
 Page({
+  ...createShareHandlers({ timeline: true }),
+
   data: {
     assets: foodService.getAssets(),
     keyword: '',

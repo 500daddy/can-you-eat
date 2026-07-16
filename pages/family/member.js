@@ -1,4 +1,5 @@
 const { getFamilyService } = require('../../utils/familyService')
+const { createShareHandlers } = require('../../utils/share')
 
 const familyService = getFamilyService()
 const roleTextMap = {
@@ -16,6 +17,8 @@ function decorateMembers(members = []) {
 }
 
 Page({
+  ...createShareHandlers(),
+
   data: {
     loading: true,
     members: [],

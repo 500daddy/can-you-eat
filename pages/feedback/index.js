@@ -1,8 +1,11 @@
 const { getFoodService } = require('../../utils/foodService')
+const { createShareHandlers } = require('../../utils/share')
 
 const foodService = getFoodService()
 
 Page({
+  ...createShareHandlers({ timeline: true }),
+
   data: {
     typeOptions: [
       { key: 'food_not_found', text: '没有找到食材' },

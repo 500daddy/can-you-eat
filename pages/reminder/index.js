@@ -1,6 +1,7 @@
 const { getFoodService } = require('../../utils/foodService')
 const { getSubscribeService } = require('../../utils/subscribeService')
 const { buildDailySummaryTimeState } = require('../../utils/reminderTime')
+const { createShareHandlers } = require('../../utils/share')
 
 const foodService = getFoodService()
 const subscribeService = getSubscribeService()
@@ -36,6 +37,8 @@ function canShowTestReminder() {
 }
 
 Page({
+  ...createShareHandlers({ timeline: true }),
+
   data: {
     tabs: ['今天建议处理', '即将超过建议期', '已超过建议期'],
     active: 0,

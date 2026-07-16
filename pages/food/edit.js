@@ -1,8 +1,11 @@
 const { getFoodService } = require('../../utils/foodService')
+const { createShareHandlers } = require('../../utils/share')
 
 const foodService = getFoodService()
 
 Page({
+  ...createShareHandlers(),
+
   data: {
     assets: foodService.getAssets(),
     form: {},

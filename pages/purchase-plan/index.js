@@ -1,6 +1,7 @@
 const { getFoodService } = require('../../utils/foodService')
 const { todayString } = require('../../utils/foodRules')
 const { decorateFoodIconDisplay } = require('../../utils/foodIconPolicy')
+const { createShareHandlers } = require('../../utils/share')
 
 const foodService = getFoodService()
 
@@ -46,6 +47,8 @@ function findFood(foods, idOrName) {
 }
 
 Page({
+  ...createShareHandlers({ timeline: true }),
+
   data: {
     assets: foodService.getAssets(),
     foodBase: [],

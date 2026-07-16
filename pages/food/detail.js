@@ -2,6 +2,7 @@ const { getFoodService } = require('../../utils/foodService')
 const { getStatus } = require('../../utils/status')
 const { decorateFoodIconDisplay } = require('../../utils/foodIconPolicy')
 const { buildProcessAdvice } = require('../../utils/processAdvice')
+const { createShareHandlers } = require('../../utils/share')
 
 const foodService = getFoodService()
 
@@ -53,6 +54,8 @@ function formatAuditLogs(logs = []) {
 }
 
 Page({
+  ...createShareHandlers(),
+
   data: {
     assets: foodService.getAssets(),
     record: {},

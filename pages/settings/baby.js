@@ -1,6 +1,7 @@
 const { getFoodService } = require('../../utils/foodService')
 const { getBabyAgePickerOptions } = require('../../utils/babyAge')
 const { resolveBabyAvatar } = require('../../utils/babyProfile')
+const { createShareHandlers } = require('../../utils/share')
 
 const foodService = getFoodService()
 const ageOptions = getBabyAgePickerOptions()
@@ -72,6 +73,8 @@ function openAvatarCropper(page, src) {
 }
 
 Page({
+  ...createShareHandlers(),
+
   data: {
     assets: foodService.getAssets(),
     nickname: '',

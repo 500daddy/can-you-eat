@@ -1,4 +1,5 @@
 const { getAccountService } = require('../../utils/accountService')
+const { createShareHandlers } = require('../../utils/share')
 const assets = require('../../utils/assets')
 
 const accountService = getAccountService()
@@ -62,6 +63,8 @@ function applySessionToMinePage(session) {
 }
 
 Page({
+  ...createShareHandlers(),
+
   data: {
     assets,
     loggedIn: false,

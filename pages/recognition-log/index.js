@@ -1,10 +1,13 @@
 const { getRecognitionService } = require('../../utils/recognitionService')
 const { getFoodService } = require('../../utils/foodService')
+const { createShareHandlers } = require('../../utils/share')
 
 const recognitionService = getRecognitionService()
 const foodService = getFoodService()
 
 Page({
+  ...createShareHandlers(),
+
   data: {
     assets: foodService.getAssets(),
     logs: []

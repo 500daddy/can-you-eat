@@ -1,5 +1,21 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
+const fs = require('node:fs')
+const path = require('node:path')
+
+const root = path.resolve(__dirname, '..')
+const timelineRoutes = new Set([
+  'pages/index/index',
+  'pages/food/search',
+  'pages/food/name-search',
+  'pages/purchase-plan/index',
+  'pages/quick-process/index',
+  'pages/recognize/index',
+  'pages/reminder/index',
+  'pages/mine/index',
+  'pages/feedback/index',
+  'pages/about/index'
+])
 
 test('safe browsing routes share the current page with whitelisted query only', () => {
   const { buildSharePath } = require('../utils/share')
@@ -43,4 +59,28 @@ test('share handlers enable timeline only when requested', () => {
 
   assert.equal(friendCard.path, '/pages/food/name-search?keyword=%E8%93%9D%E8%8E%93')
   assert.equal(timelineCard.query, 'keyword=%E8%93%9D%E8%8E%93')
+})
+
+test('every registered page explicitly installs friend sharing', () => {
+  const appConfig = JSON.parse(fs.readFileSync(path.join(root, 'app.json'), 'utf8'))
+
+  appConfig.pages.forEach((route) => {
+    const source = fs.readFileSync(path.join(root, `${route}.js`), 'utf8')
+    assert.match(source, /\.\.\.createShareHandlers\(/, `${route} must install friend sharing`)
+  })
+})
+
+test('timeline sharing is installed on safe browsing pages only', () => {
+  const appConfig = JSON.parse(fs.readFileSync(path.join(root, 'app.json'), 'utf8'))
+
+  appConfig.pages.forEach((route) => {
+    const source = fs.readFileSync(path.join(root, `${route}.js`), 'utf8')
+    if (timelineRoutes.has(route)) {
+      assert.match(source, /\.\.\.createShareHandlers\(\{ timeline: true \}\)/,
+        `${route} must install timeline sharing`)
+    } else {
+      assert.doesNotMatch(source, /createShareHandlers\(\{ timeline: true \}\)/,
+        `${route} must not expose timeline sharing`)
+    }
+  })
 })

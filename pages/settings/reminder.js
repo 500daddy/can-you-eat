@@ -1,12 +1,15 @@
 const { getFoodService } = require('../../utils/foodService')
 const { getSubscribeService } = require('../../utils/subscribeService')
 const { buildDailySummaryTimeState } = require('../../utils/reminderTime')
+const { createShareHandlers } = require('../../utils/share')
 
 const foodService = getFoodService()
 const subscribeService = getSubscribeService()
 const defaultDailyTimeState = buildDailySummaryTimeState()
 
 Page({
+  ...createShareHandlers(),
+
   data: {
     reminderEnabled: true,
     beforeDays: '1天前',

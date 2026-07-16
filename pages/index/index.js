@@ -1,6 +1,7 @@
 const { getFoodService } = require('../../utils/foodService')
 const { decorateFoodIconSections } = require('../../utils/foodIconPolicy')
 const { daysBetween, todayString } = require('../../utils/foodRules')
+const { createShareHandlers } = require('../../utils/share')
 
 const foodService = getFoodService()
 const riskSectionTitle = '不建议继续食用'
@@ -135,6 +136,8 @@ function buildDisplaySections(sections, options = {}) {
 }
 
 Page({
+  ...createShareHandlers({ timeline: true }),
+
   data: {
     assets: foodService.getAssets(),
     settings: {},
