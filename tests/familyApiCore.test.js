@@ -181,6 +181,26 @@ async function seedFamily(store, members) {
   }
 }
 
+function withConcurrentMemberUpdates(store, expectedUpdates = 2) {
+  let waiting = 0
+  let release
+  const ready = new Promise((resolve) => {
+    release = resolve
+  })
+
+  return {
+    ...store,
+    async update(collection, predicate, patch) {
+      if (collection === 'family_members' && patch.status === 'inactive') {
+        waiting += 1
+        if (waiting === expectedUpdates) release()
+        await ready
+      }
+      return store.update(collection, predicate, patch)
+    }
+  }
+}
+
 test('owner removes an active member without deleting family records and writes an audit log', async () => {
   const store = createMemoryStore()
   await seedFamily(store, [
@@ -213,8 +233,8 @@ test('owner removes an active member without deleting family records and writes 
   assert.equal(logs[0].actorOpenId, 'owner')
   assert.equal(logs[0].actorName, '小满妈妈')
   assert.equal(logs[0].actorAvatar, 'owner.png')
-  assert.equal(logs[0].before.status, 'active')
-  assert.equal(logs[0].after.status, 'inactive')
+  assert.deepEqual(logs[0].before, { role: 'member', status: 'active' })
+  assert.deepEqual(logs[0].after, { role: 'member', status: 'inactive' })
   assert.match(logs[0].summary, /移出.*外婆/)
   assert.equal(logs[0].createdAt, '2026-07-16')
   assert.equal(nextFamily.ok, true)
@@ -247,8 +267,8 @@ for (const role of ['admin', 'member']) {
     assert.equal(logs[0].actorOpenId, `${role}-a`)
     assert.equal(logs[0].actorName, `${role} name`)
     assert.equal(logs[0].actorAvatar, `${role}.png`)
-    assert.equal(logs[0].before.status, 'active')
-    assert.equal(logs[0].after.status, 'inactive')
+    assert.deepEqual(logs[0].before, { role, status: 'active' })
+    assert.deepEqual(logs[0].after, { role, status: 'inactive' })
     assert.match(logs[0].summary, /退出/)
     assert.equal(nextFamily.data.family.kind, 'personal')
     assert.notEqual(nextFamily.data.family.familyId, 'family-shared')
@@ -279,6 +299,39 @@ test('admin cannot remove another member', async () => {
 
   assert.equal(result.ok, false)
   assert.match(result.error, /权限/)
+})
+
+test('owner can remove an admin', async () => {
+  const store = createMemoryStore()
+  await seedFamily(store, [
+    { openId: 'owner', role: 'owner' },
+    { openId: 'admin-a', role: 'admin' }
+  ])
+  const api = createFamilyApi({ store, userId: 'owner', today: '2026-07-16' })
+
+  const result = await api.handle({ action: 'removeMember', openId: 'admin-a' })
+
+  assert.equal(result.ok, true)
+  assert.equal(result.data.status, 'inactive')
+})
+
+test('member and non-member cannot remove a family member', async () => {
+  const store = createMemoryStore()
+  await seedFamily(store, [
+    { openId: 'owner', role: 'owner' },
+    { openId: 'member-a', role: 'member' },
+    { openId: 'member-b', role: 'member' }
+  ])
+
+  const memberResult = await createFamilyApi({ store, userId: 'member-a', today: '2026-07-16' })
+    .handle({ action: 'removeMember', openId: 'member-b' })
+  const outsiderResult = await createFamilyApi({ store, userId: 'outsider', today: '2026-07-16' })
+    .handle({ action: 'removeMember', openId: 'member-b' })
+
+  assert.equal(memberResult.ok, false)
+  assert.match(memberResult.error, /权限/)
+  assert.equal(outsiderResult.ok, false)
+  assert.match(outsiderResult.error, /请先加入家庭/)
 })
 
 test('owner cannot remove self or another owner', async () => {
@@ -313,4 +366,105 @@ test('removeMember clearly rejects a missing or inactive target', async () => {
   assert.match(missing.error, /成员不存在/)
   assert.equal(inactive.ok, false)
   assert.match(inactive.error, /成员已退出/)
+})
+
+test('removeMember treats a lost conditional update as already exited and skips audit', async () => {
+  const baseStore = createMemoryStore()
+  await seedFamily(baseStore, [
+    { openId: 'owner', role: 'owner' },
+    { openId: 'member-a', role: 'member' }
+  ])
+  const store = {
+    ...baseStore,
+    async update(collection, predicate, patch) {
+      if (collection === 'family_members' && patch.status === 'inactive') return null
+      return baseStore.update(collection, predicate, patch)
+    }
+  }
+  const api = createFamilyApi({ store, userId: 'owner', today: '2026-07-16' })
+
+  const result = await api.handle({ action: 'removeMember', openId: 'member-a' })
+
+  assert.equal(result.ok, false)
+  assert.match(result.error, /已退出|不存在/)
+  assert.equal((await baseStore.list('family_audit_logs')).length, 0)
+})
+
+test('audit failure restores member state for removeMember', async () => {
+  const baseStore = createMemoryStore()
+  await seedFamily(baseStore, [
+    { openId: 'owner', role: 'owner' },
+    {
+      openId: 'member-a',
+      role: 'member',
+      leftAt: 'never',
+      updatedAt: '2026-07-01'
+    }
+  ])
+  const store = {
+    ...baseStore,
+    async add(collection, doc) {
+      if (collection === 'family_audit_logs') throw new Error('audit unavailable')
+      return baseStore.add(collection, doc)
+    }
+  }
+  const api = createFamilyApi({ store, userId: 'owner', today: '2026-07-16' })
+
+  const result = await api.handle({ action: 'removeMember', openId: 'member-a' })
+  const membership = await baseStore.get('family_members', (item) => item.openId === 'member-a')
+
+  assert.equal(result.ok, false)
+  assert.match(result.error, /audit unavailable/)
+  assert.equal(membership.status, 'active')
+  assert.equal(membership.leftAt, 'never')
+  assert.equal(membership.updatedAt, '2026-07-01')
+  assert.equal((await baseStore.list('family_audit_logs')).length, 0)
+})
+
+test('audit failure restores member state for leaveFamily', async () => {
+  const baseStore = createMemoryStore()
+  await seedFamily(baseStore, [
+    { openId: 'owner', role: 'owner' },
+    { openId: 'member-a', role: 'member', updatedAt: '2026-07-01' }
+  ])
+  const store = {
+    ...baseStore,
+    async add(collection, doc) {
+      if (collection === 'family_audit_logs') throw new Error('audit unavailable')
+      return baseStore.add(collection, doc)
+    }
+  }
+  const api = createFamilyApi({ store, userId: 'member-a', today: '2026-07-16' })
+
+  const result = await api.handle({ action: 'leaveFamily' })
+  const membership = await baseStore.get('family_members', (item) => item.openId === 'member-a')
+
+  assert.equal(result.ok, false)
+  assert.match(result.error, /audit unavailable/)
+  assert.equal(membership.status, 'active')
+  assert.equal(membership.leftAt, undefined)
+  assert.equal(membership.updatedAt, '2026-07-01')
+  assert.equal((await baseStore.list('family_audit_logs')).length, 0)
+})
+
+test('concurrent removeMember and leaveFamily succeed and audit at most once', async () => {
+  const baseStore = createMemoryStore()
+  await seedFamily(baseStore, [
+    { openId: 'owner', role: 'owner' },
+    { openId: 'member-a', role: 'member' }
+  ])
+  const store = withConcurrentMemberUpdates(baseStore)
+  const owner = createFamilyApi({ store, userId: 'owner', today: '2026-07-16' })
+  const member = createFamilyApi({ store, userId: 'member-a', today: '2026-07-16' })
+
+  const results = await Promise.all([
+    owner.handle({ action: 'removeMember', openId: 'member-a' }),
+    member.handle({ action: 'leaveFamily' })
+  ])
+  const logs = await baseStore.list('family_audit_logs')
+
+  assert.equal(results.filter((result) => result.ok).length, 1)
+  assert.equal(results.filter((result) => !result.ok).length, 1)
+  assert.match(results.find((result) => !result.ok).error, /已退出|不存在/)
+  assert.equal(logs.length, 1)
 })
