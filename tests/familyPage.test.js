@@ -564,6 +564,170 @@ test('family page reconciles a lost leave response when membership already chang
   assert.deepEqual(toasts.map((item) => item.title), ['已退出家庭'])
 })
 
+test('family page keeps an uncertain leave recoverable when the first reconciliation also fails', async () => {
+  let loads = 0
+  let leaveCalls = 0
+  const toasts = []
+  const page = createPageInstance(loadPage('pages/family/index', {
+    getMyFamily: async () => {
+      loads += 1
+      if (loads === 1) {
+        return {
+          family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+          membership: { familyId: 'family-a', role: 'member' },
+          members: []
+        }
+      }
+      if (loads === 2) throw new Error('network unavailable')
+      return {
+        family: { familyId: 'personal-a', name: '我的家庭', kind: 'personal' },
+        membership: { familyId: 'personal-a', role: 'owner' },
+        members: []
+      }
+    },
+    leaveFamily: async () => {
+      leaveCalls += 1
+      throw new Error('request timed out')
+    }
+  }))
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  await page.loadFamily()
+
+  await page.leaveFamily()
+
+  assert.equal(page.data.family.familyId, 'family-a')
+  assert.equal(page.data.familyConfirmationPending, true)
+  assert.equal(page.data.familySettling, true)
+  assert.equal(page.data.canInvite, false)
+  assert.equal(page.data.canViewMembers, false)
+  assert.equal(page.data.canLeaveFamily, false)
+  assert.match(readText('pages/family/index.wxml'), /familyConfirmationPending/)
+  assert.match(readText('pages/family/index.wxml'), /重新确认/)
+
+  await page.retryFamilySync()
+
+  delete global.wx
+  assert.equal(leaveCalls, 1)
+  assert.equal(loads, 3)
+  assert.equal(page.data.family.familyId, 'personal-a')
+  assert.equal(page.data.familyConfirmationPending, false)
+  assert.equal(page.data.familySettling, false)
+  assert.deepEqual(toasts.map((item) => item.title), [
+    '退出结果待确认，请重新确认',
+    '已退出家庭'
+  ])
+})
+
+test('family page restores the original family when retry confirms it was not left', async () => {
+  let loads = 0
+  const toasts = []
+  const originalFamily = {
+    family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+    membership: { familyId: 'family-a', role: 'admin' },
+    members: []
+  }
+  const page = createPageInstance(loadPage('pages/family/index', {
+    getMyFamily: async () => {
+      loads += 1
+      if (loads === 2) throw new Error('network unavailable')
+      return originalFamily
+    },
+    leaveFamily: async () => { throw new Error('request timed out') }
+  }))
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  await page.loadFamily()
+  await page.leaveFamily()
+
+  await page.retryFamilySync()
+
+  delete global.wx
+  assert.equal(page.data.family.familyId, 'family-a')
+  assert.equal(page.data.familyConfirmationPending, false)
+  assert.equal(page.data.familySettling, false)
+  assert.equal(page.data.canInvite, true)
+  assert.equal(page.data.canViewMembers, true)
+  assert.equal(page.data.canLeaveFamily, true)
+  assert.equal(toasts.at(-1).title, '尚未退出，可重新操作')
+})
+
+test('family page keeps leave confirmation pending when retry is still offline', async () => {
+  let loads = 0
+  const toasts = []
+  const page = createPageInstance(loadPage('pages/family/index', {
+    getMyFamily: async () => {
+      loads += 1
+      if (loads > 1) throw new Error('network unavailable')
+      return {
+        family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+        membership: { familyId: 'family-a', role: 'member' },
+        members: []
+      }
+    },
+    leaveFamily: async () => { throw new Error('request timed out') }
+  }))
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  await page.loadFamily()
+  await page.leaveFamily()
+
+  await page.retryFamilySync()
+
+  delete global.wx
+  assert.equal(loads, 3)
+  assert.equal(page.data.family.familyId, 'family-a')
+  assert.equal(page.data.familyConfirmationPending, true)
+  assert.equal(page.data.familySettling, true)
+  assert.equal(page.data.retryingFamilySync, false)
+  assert.equal(toasts.at(-1).title, '暂时无法确认，请稍后重试')
+})
+
+test('family page invalidates a load started during leave before applying reconciled family', async () => {
+  const pendingLoads = []
+  const page = createPageInstance(loadPage('pages/family/index', {
+    getMyFamily: () => new Promise((resolve, reject) => pendingLoads.push({ resolve, reject })),
+    leaveFamily: async () => { throw new Error('request timed out') }
+  }))
+  global.wx = {
+    showToast() {},
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  page.setData({
+    family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+    membership: { familyId: 'family-a', role: 'member' },
+    canLeaveFamily: true
+  })
+
+  const leaving = page.leaveFamily()
+  await Promise.resolve()
+  await Promise.resolve()
+  const competingLoad = page.loadFamily()
+  await Promise.resolve()
+  pendingLoads[0].resolve({
+    family: { familyId: 'personal-a', name: '我的家庭', kind: 'personal' },
+    membership: { familyId: 'personal-a', role: 'owner' },
+    members: []
+  })
+  await leaving
+  pendingLoads[1].resolve({
+    family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+    membership: { familyId: 'family-a', role: 'member' },
+    members: []
+  })
+  await competingLoad
+
+  delete global.wx
+  assert.equal(page.data.family.familyId, 'personal-a')
+  assert.equal(page.data.canLeaveFamily, false)
+})
+
 test('family page reconciles wrapped transport errors but not business errors', async () => {
   const cases = [
     {
@@ -973,7 +1137,7 @@ test('member page only shows remove actions to owners for non-owner members', as
   assert.equal(page.data.canManageMembers, true)
   assert.match(markup, /wx:if="\{\{canManageMembers && !item\.isOwner\}\}"/)
   assert.match(markup, /bindtap="removeMember"/)
-  assert.match(markup, /\? '处理中' : '移出家庭'/)
+  assert.match(markup, /pendingRemovalOpenId === item\.openId \? '确认状态' : '移出家庭'/)
 })
 
 test('member page ignores an older member load that finishes after the latest load', async () => {
@@ -1128,6 +1292,127 @@ test('member page reconciles a lost removal response when the target is already 
   assert.deepEqual(toasts.map((item) => item.title), ['已移出家庭'])
 })
 
+test('member page confirms an uncertain removal from the current page without repeating the write', async () => {
+  let loads = 0
+  let removeCalls = 0
+  const toasts = []
+  const page = createPageInstance(loadPage('pages/family/member', {
+    getMyFamily: async () => {
+      loads += 1
+      if (loads === 2) throw new Error('network unavailable')
+      return {
+        family: { familyId: 'family-a' },
+        membership: { familyId: 'family-a', role: 'owner' },
+        members: loads === 1
+          ? [{ openId: 'member', nickname: '爸爸', role: 'member' }]
+          : []
+      }
+    },
+    removeMember: async () => {
+      removeCalls += 1
+      throw new Error('request timed out')
+    }
+  }))
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  await page.loadMembers()
+
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
+
+  assert.equal(page.data.pendingRemovalOpenId, 'member')
+  assert.equal(page.data.members.length, 1)
+  assert.equal(page.data.removingOpenId, '')
+  assert.match(readText('pages/family/member.wxml'), /pendingRemovalOpenId === item\.openId \? '确认状态'/)
+
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
+
+  delete global.wx
+  assert.equal(removeCalls, 1)
+  assert.equal(loads, 4)
+  assert.equal(page.data.pendingRemovalOpenId, '')
+  assert.deepEqual(page.data.members, [])
+  assert.deepEqual(toasts.map((item) => item.title), [
+    '状态待确认，请再次点击确认',
+    '已移出家庭'
+  ])
+})
+
+test('member page clears pending removal when confirmation shows the member is still active', async () => {
+  let loads = 0
+  let removeCalls = 0
+  const toasts = []
+  const activeFamily = {
+    family: { familyId: 'family-a' },
+    membership: { familyId: 'family-a', role: 'owner' },
+    members: [{ openId: 'member', nickname: '爸爸', role: 'member' }]
+  }
+  const page = createPageInstance(loadPage('pages/family/member', {
+    getMyFamily: async () => {
+      loads += 1
+      if (loads === 2) throw new Error('network unavailable')
+      return activeFamily
+    },
+    removeMember: async () => {
+      removeCalls += 1
+      throw new Error('request timed out')
+    }
+  }))
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  await page.loadMembers()
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
+
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
+
+  delete global.wx
+  assert.equal(removeCalls, 1)
+  assert.equal(loads, 3)
+  assert.equal(page.data.pendingRemovalOpenId, '')
+  assert.equal(page.data.members.length, 1)
+  assert.equal(toasts.at(-1).title, '成员仍在家庭，可重新移出')
+})
+
+test('member page keeps removal pending when confirmation is still offline', async () => {
+  let loads = 0
+  let removeCalls = 0
+  const toasts = []
+  const page = createPageInstance(loadPage('pages/family/member', {
+    getMyFamily: async () => {
+      loads += 1
+      if (loads > 1) throw new Error('network unavailable')
+      return {
+        family: { familyId: 'family-a' },
+        membership: { familyId: 'family-a', role: 'owner' },
+        members: [{ openId: 'member', nickname: '爸爸', role: 'member' }]
+      }
+    },
+    removeMember: async () => {
+      removeCalls += 1
+      throw new Error('request timed out')
+    }
+  }))
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  await page.loadMembers()
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
+
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
+
+  delete global.wx
+  assert.equal(removeCalls, 1)
+  assert.equal(loads, 3)
+  assert.equal(page.data.pendingRemovalOpenId, 'member')
+  assert.equal(page.data.removingOpenId, '')
+  assert.equal(page.data.members.length, 1)
+  assert.equal(toasts.at(-1).title, '状态待确认，请再次点击确认')
+})
+
 test('member page reconciles wrapped transport errors but not business errors', async () => {
   const cases = [
     {
@@ -1272,7 +1557,8 @@ test('member page keeps one global removal lock across interleaved member clicks
   assert.equal(modals.length, 1)
   const markup = readText('pages/family/member.wxml')
   assert.match(markup, /disabled="\{\{!!removingOpenId \|\| !!updatingOpenId\}\}"/)
-  assert.match(markup, /\{\{removingOpenId === item\.openId \? '处理中' : '移出家庭'\}\}/)
+  assert.match(markup, /removingOpenId === item\.openId \? '处理中'/)
+  assert.match(markup, /pendingRemovalOpenId === item\.openId \? '确认状态' : '移出家庭'/)
   pendingRemovals[0]()
   await Promise.all([firstRemoval, repeatedRemoval])
 
@@ -1406,7 +1692,7 @@ test('member page disables every member action while any write is pending', () =
   const sharedDisabledState = /disabled="\{\{!!removingOpenId \|\| !!updatingOpenId\}\}"/g
 
   assert.equal(markup.match(sharedDisabledState)?.length, 3)
-  assert.match(markup, /\? '处理中' : '移出家庭'/)
+  assert.match(markup, /pendingRemovalOpenId === item\.openId \? '确认状态' : '移出家庭'/)
 })
 
 test('member page keeps local removal and only shows success when refresh fails', async () => {

@@ -59,6 +59,7 @@ Page({
     members: [],
     membership: {},
     canManageMembers: false,
+    pendingRemovalOpenId: '',
     removingOpenId: '',
     updatingOpenId: ''
   },
@@ -149,6 +150,10 @@ Page({
     const { openid } = e.currentTarget.dataset
     const target = this.data.members.find((item) => item.openId === openid)
     if (!target || target.isOwner) return
+    if (this.data.pendingRemovalOpenId === openid) {
+      await this.confirmPendingRemoval(openid)
+      return
+    }
     const originalFamilyId = this.data.family.familyId || this.data.membership.familyId || ''
     this.setData({ removingOpenId: openid })
     try {
@@ -178,7 +183,9 @@ Page({
           ))
           reconciled = Boolean(originalFamilyId && currentFamilyId === originalFamilyId && !targetStillActive)
         } catch (reconcileError) {
-          reconciled = false
+          this.setData({ pendingRemovalOpenId: openid })
+          wx.showToast({ title: '状态待确认，请再次点击确认', icon: 'none' })
+          return
         }
         if (!reconciled) throw error
       }
@@ -193,6 +200,48 @@ Page({
         title: (error && error.message) || '移出失败，请重试',
         icon: 'none'
       })
+    } finally {
+      if (this.data.removingOpenId === openid) {
+        this.setData({ removingOpenId: '' })
+      }
+    }
+  },
+
+  async confirmPendingRemoval(openid) {
+    if (this.data.removingOpenId || this.data.updatingOpenId) return
+    if (this.data.pendingRemovalOpenId !== openid) return
+    const originalFamilyId = this.data.family.familyId || this.data.membership.familyId || ''
+    this.setData({ removingOpenId: openid })
+    const requestId = ++this._loadRequestId
+    try {
+      const result = await familyService.getMyFamily()
+      if (requestId !== this._loadRequestId) return
+      const currentFamilyId = (result.family && result.family.familyId) ||
+        (result.membership && result.membership.familyId) || ''
+      if (!originalFamilyId || currentFamilyId !== originalFamilyId) {
+        wx.showToast({ title: '暂时无法确认，请稍后重试', icon: 'none' })
+        return
+      }
+      const targetStillActive = (result.members || []).some((item) => (
+        item.openId === openid && item.status !== 'inactive'
+      ))
+      if (targetStillActive) {
+        this.setData({
+          members: decorateMembers(result.members || []),
+          pendingRemovalOpenId: ''
+        })
+        wx.showToast({ title: '成员仍在家庭，可重新移出', icon: 'none' })
+        return
+      }
+      this._loadRequestId += 1
+      this.setData({
+        members: this.data.members.filter((item) => item.openId !== openid),
+        pendingRemovalOpenId: ''
+      })
+      wx.showToast({ title: '已移出家庭', icon: 'success' })
+      this.loadMembers({ silent: true }).catch(() => {})
+    } catch (error) {
+      wx.showToast({ title: '状态待确认，请再次点击确认', icon: 'none' })
     } finally {
       if (this.data.removingOpenId === openid) {
         this.setData({ removingOpenId: '' })

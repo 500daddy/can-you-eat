@@ -60,6 +60,30 @@ function confirmsFamilyExit(result, originalFamilyId) {
   return Boolean(nextFamilyId && nextFamilyId !== originalFamilyId)
 }
 
+function familyViewData(result = {}) {
+  const membership = result.membership || {}
+  const members = (result.members || []).map((item) => ({
+    ...item,
+    avatarText: item.nickname ? String(item.nickname).slice(0, 1) : '家',
+    roleText: roleText(item.role),
+    isOwner: item.role === 'owner'
+  }))
+  return {
+    loading: false,
+    loadError: false,
+    family: result.family || {},
+    members,
+    membership,
+    canInvite: ['owner', 'admin'].includes(membership.role),
+    canViewMembers: ['owner', 'admin', 'member'].includes(membership.role),
+    canManageMembers: membership.role === 'owner',
+    canLeaveFamily: ['admin', 'member'].includes(membership.role),
+    roleLabel: roleText(membership.role),
+    familySettling: false,
+    familyConfirmationPending: false
+  }
+}
+
 function isUncertainRequestError(error) {
   if (!error) return false
   const codes = [error.code, error.errCode]
@@ -109,6 +133,7 @@ Page({
     joining: false,
     leaving: false,
     familySettling: false,
+    familyConfirmationPending: false,
     retryingFamilySync: false,
     loginPrompted: false,
     needsLogin: false,
@@ -138,26 +163,7 @@ Page({
         if (!silent) this.setData({ loading: false })
         return false
       }
-      const membership = result.membership || {}
-      const members = (result.members || []).map((item) => ({
-        ...item,
-        avatarText: item.nickname ? String(item.nickname).slice(0, 1) : '家',
-        roleText: roleText(item.role),
-        isOwner: item.role === 'owner'
-      }))
-      this.setData({
-        loading: false,
-        loadError: false,
-        family: result.family || {},
-        members,
-        membership,
-        canInvite: ['owner', 'admin'].includes(membership.role),
-        canViewMembers: ['owner', 'admin', 'member'].includes(membership.role),
-        canManageMembers: membership.role === 'owner',
-        canLeaveFamily: ['admin', 'member'].includes(membership.role),
-        roleLabel: roleText(membership.role),
-        familySettling: false
-      })
+      this.setData(familyViewData(result))
       this._settlingFromFamilyId = ''
       return true
     } catch (error) {
@@ -343,7 +349,18 @@ Page({
         try {
           result = await familyService.getMyFamily(parentIdentity())
         } catch (reconcileError) {
-          throw error
+          this._settlingFromFamilyId = originalFamilyId
+          this.setData({
+            familySettling: true,
+            familyConfirmationPending: true,
+            canInvite: false,
+            canViewMembers: false,
+            canManageMembers: false,
+            canLeaveFamily: false,
+            roleLabel: '待确认'
+          })
+          wx.showToast({ title: '退出结果待确认，请重新确认', icon: 'none' })
+          return
         }
         if (!confirmsFamilyExit(result, originalFamilyId)) throw error
         confirmedFamily = result
@@ -367,28 +384,13 @@ Page({
         canManageMembers: false,
         canLeaveFamily: false,
         roleLabel: '同步中',
-        familySettling: true
+        familySettling: true,
+        familyConfirmationPending: false
       })
       let settled = false
       if (confirmedFamily) {
-        const membership = confirmedFamily.membership || {}
-        const members = (confirmedFamily.members || []).map((item) => ({
-          ...item,
-          avatarText: item.nickname ? String(item.nickname).slice(0, 1) : '家',
-          roleText: roleText(item.role),
-          isOwner: item.role === 'owner'
-        }))
-        this.setData({
-          family: confirmedFamily.family || {},
-          members,
-          membership,
-          canInvite: ['owner', 'admin'].includes(membership.role),
-          canViewMembers: ['owner', 'admin', 'member'].includes(membership.role),
-          canManageMembers: membership.role === 'owner',
-          canLeaveFamily: ['admin', 'member'].includes(membership.role),
-          roleLabel: roleText(membership.role),
-          familySettling: false
-        })
+        this._familyLoadRequestId = (this._familyLoadRequestId || 0) + 1
+        this.setData(familyViewData(confirmedFamily))
         this._settlingFromFamilyId = ''
         settled = true
       } else {
@@ -411,6 +413,33 @@ Page({
     if (!this.data.familySettling || this.data.retryingFamilySync) return
     this.setData({ retryingFamilySync: true })
     try {
+      if (this.data.familyConfirmationPending) {
+        const originalFamilyId = this._settlingFromFamilyId
+        const requestId = (this._familyLoadRequestId || 0) + 1
+        this._familyLoadRequestId = requestId
+        let result
+        try {
+          result = await familyService.getMyFamily(parentIdentity())
+        } catch (error) {
+          if (requestId !== this._familyLoadRequestId) return
+          wx.showToast({ title: '暂时无法确认，请稍后重试', icon: 'none' })
+          return
+        }
+        if (requestId !== this._familyLoadRequestId) return
+        const currentFamilyId = familyIdOf(result)
+        if (!currentFamilyId) {
+          wx.showToast({ title: '暂时无法确认，请稍后重试', icon: 'none' })
+          return
+        }
+        this._familyLoadRequestId += 1
+        this.setData(familyViewData(result))
+        this._settlingFromFamilyId = ''
+        wx.showToast({
+          title: currentFamilyId !== originalFamilyId ? '已退出家庭' : '尚未退出，可重新操作',
+          icon: currentFamilyId !== originalFamilyId ? 'success' : 'none'
+        })
+        return
+      }
       const synced = await this.loadFamily({ silent: true })
       wx.showToast({
         title: synced ? '家庭信息已同步' : '暂时未同步成功，请稍后重试',
