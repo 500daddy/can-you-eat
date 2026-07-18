@@ -28,7 +28,8 @@ Page({
     loading: true,
     members: [],
     membership: {},
-    canManageMembers: false
+    canManageMembers: false,
+    removingOpenId: ''
   },
 
   async onShow() {
@@ -84,5 +85,41 @@ Page({
         }
       }
     })
+  },
+
+  async removeMember(e) {
+    if (!this.data.canManageMembers) {
+      wx.showToast({ title: '只有创建者可移出家庭成员', icon: 'none' })
+      return
+    }
+    const { openid } = e.currentTarget.dataset
+    const target = this.data.members.find((item) => item.openId === openid)
+    if (!target || target.isOwner || this.data.removingOpenId === openid) return
+    this.setData({ removingOpenId: openid })
+    try {
+      const confirmed = await new Promise((resolve) => {
+        wx.showModal({
+          title: '移出家庭',
+          content: '移出后将无法继续查看和管理这个家庭的食材，历史记录仍会保留',
+          confirmText: '确认移出',
+          confirmColor: '#a64038',
+          success: (res) => resolve(res.confirm),
+          fail: () => resolve(false)
+        })
+      })
+      if (!confirmed) return
+      await familyService.removeMember({ openId: openid })
+      await this.loadMembers()
+      wx.showToast({ title: '已移出家庭', icon: 'success' })
+    } catch (error) {
+      wx.showToast({
+        title: (error && error.message) || '移出失败，请重试',
+        icon: 'none'
+      })
+    } finally {
+      if (this.data.removingOpenId === openid) {
+        this.setData({ removingOpenId: '' })
+      }
+    }
   }
 })

@@ -378,6 +378,173 @@ test('member page only lets owner manage member roles', async () => {
   assert.match(toasts[0].title, /创建者/)
 })
 
+test('member page only shows remove actions to owners for non-owner members', async () => {
+  const page = createPageInstance(loadPage('pages/family/member', {
+    getMyFamily: async () => ({
+      membership: { role: 'owner' },
+      members: [
+        { openId: 'owner', nickname: '妈妈', role: 'owner' },
+        { openId: 'member', nickname: '爸爸', role: 'member' }
+      ]
+    })
+  }))
+  global.wx = { showToast() {} }
+
+  await page.onShow()
+
+  delete global.wx
+  const markup = readText('pages/family/member.wxml')
+  assert.equal(page.data.canManageMembers, true)
+  assert.match(markup, /wx:if="\{\{canManageMembers && !item\.isOwner\}\}"/)
+  assert.match(markup, /bindtap="removeMember"[^>]*>移出家庭<\/button>/)
+})
+
+test('member page rejects forged remove attempts without permission or against owner', async () => {
+  const removed = []
+  const service = {
+    getMyFamily: async () => ({
+      membership: { role: 'member' },
+      members: [
+        { openId: 'owner', nickname: '妈妈', role: 'owner' },
+        { openId: 'member', nickname: '爸爸', role: 'member' }
+      ]
+    }),
+    removeMember: async (input) => removed.push(input)
+  }
+  const page = createPageInstance(loadPage('pages/family/member', service))
+  global.wx = { showToast() {} }
+  await page.onShow()
+
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
+  page.setData({ canManageMembers: true })
+  await page.removeMember({ currentTarget: { dataset: { openid: 'owner' } } })
+
+  delete global.wx
+  assert.deepEqual(removed, [])
+})
+
+test('member page confirms removal details and does not call service when cancelled', async () => {
+  const removed = []
+  const page = createPageInstance(loadPage('pages/family/member', {
+    getMyFamily: async () => ({
+      membership: { role: 'owner' },
+      members: [{ openId: 'member', nickname: '爸爸', role: 'member' }]
+    }),
+    removeMember: async (input) => removed.push(input)
+  }))
+  const modals = []
+  global.wx = {
+    showToast() {},
+    showModal(input) {
+      modals.push(input)
+      input.success({ confirm: false, cancel: true })
+    }
+  }
+  await page.onShow()
+
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
+
+  delete global.wx
+  assert.equal(modals[0].title, '移出家庭')
+  assert.equal(modals[0].content, '移出后将无法继续查看和管理这个家庭的食材，历史记录仍会保留')
+  assert.equal(modals[0].confirmText, '确认移出')
+  assert.equal(modals[0].confirmColor, '#a64038')
+  assert.deepEqual(removed, [])
+})
+
+test('member page removes a confirmed member and refreshes before success toast', async () => {
+  let loads = 0
+  const removed = []
+  const page = createPageInstance(loadPage('pages/family/member', {
+    getMyFamily: async () => {
+      loads += 1
+      return {
+        membership: { role: 'owner' },
+        members: loads === 1
+          ? [{ openId: 'member', nickname: '爸爸', role: 'member' }]
+          : []
+      }
+    },
+    removeMember: async (input) => removed.push(input)
+  }))
+  const toasts = []
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  await page.onShow()
+
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
+
+  delete global.wx
+  assert.deepEqual(removed, [{ openId: 'member' }])
+  assert.equal(loads, 2)
+  assert.deepEqual(page.data.members, [])
+  assert.equal(toasts.at(-1).title, '已移出家庭')
+})
+
+test('member page keeps members and surfaces removal errors with a fallback', async () => {
+  const errors = [new Error('无权移出该成员'), {}]
+  const page = createPageInstance(loadPage('pages/family/member', {
+    getMyFamily: async () => ({
+      membership: { role: 'owner' },
+      members: [{ openId: 'member', nickname: '爸爸', role: 'member' }]
+    }),
+    removeMember: async () => {
+      throw errors.shift()
+    }
+  }))
+  const toasts = []
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  await page.onShow()
+
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
+
+  delete global.wx
+  assert.equal(page.data.members.length, 1)
+  assert.deepEqual(toasts.map((item) => item.title), [
+    '无权移出该成员',
+    '移出失败，请重试'
+  ])
+})
+
+test('member page ignores duplicate removal while the same member is pending', async () => {
+  let finishRemoval
+  const calls = []
+  const page = createPageInstance(loadPage('pages/family/member', {
+    getMyFamily: async () => ({
+      membership: { role: 'owner' },
+      members: [{ openId: 'member', nickname: '爸爸', role: 'member' }]
+    }),
+    removeMember: async (input) => {
+      calls.push(input)
+      await new Promise((resolve) => { finishRemoval = resolve })
+    }
+  }))
+  global.wx = {
+    showToast() {},
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  await page.onShow()
+
+  const firstRemoval = page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
+  await Promise.resolve()
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
+
+  assert.equal(page.data.removingOpenId, 'member')
+  assert.deepEqual(calls, [{ openId: 'member' }])
+  assert.match(readText('pages/family/member.wxml'), /disabled="\{\{removingOpenId === item\.openId\}\}"/)
+  finishRemoval()
+  await firstRemoval
+
+  delete global.wx
+  assert.equal(page.data.removingOpenId, '')
+})
+
 test('member page explains all family role permissions in a modal', () => {
   const page = createPageInstance(loadPage('pages/family/member', {}))
   const modals = []
