@@ -294,6 +294,9 @@ async function removeMember(store, userId, event, today, compensateOnAuditFailur
     return { ok: false, error: previous ? '成员已退出' : '成员不存在' }
   }
   if (target.role === 'owner') return { ok: false, error: '不能移出创建者' }
+  if (!['admin', 'member'].includes(target.role)) {
+    return { ok: false, error: '当前角色不可移出' }
+  }
   const updated = await deactivateMember(
     store,
     target,
@@ -382,6 +385,9 @@ async function removeMemberInTransaction(store, userId, event, today) {
     }
     if (target.openId === actor.openId) return { ok: false, error: '创建者不能移出自己' }
     if (target.role === 'owner') return { ok: false, error: '不能移出创建者' }
+    if (!['admin', 'member'].includes(target.role)) {
+      return { ok: false, error: '当前角色不可移出' }
+    }
 
     const updated = await deactivateMemberById(
       transactionStore,

@@ -392,6 +392,23 @@ test('owner can remove an admin', async () => {
   assert.equal(result.data.status, 'inactive')
 })
 
+test('owner cannot remove an unknown role through the fallback path', async () => {
+  const store = createMemoryStore()
+  await seedFamily(store, [
+    { openId: 'owner', role: 'owner' },
+    { openId: 'viewer-a', role: 'viewer' }
+  ])
+  const api = createFamilyApi({ store, userId: 'owner', today: '2026-07-16' })
+
+  const result = await api.handle({ action: 'removeMember', openId: 'viewer-a' })
+  const membership = await store.get('family_members', (item) => item.openId === 'viewer-a')
+
+  assert.equal(result.ok, false)
+  assert.match(result.error, /没有权限|不可移出/)
+  assert.equal(membership.status, 'active')
+  assert.equal((await store.list('family_audit_logs')).length, 0)
+})
+
 test('member and non-member cannot remove a family member', async () => {
   const store = createMemoryStore()
   await seedFamily(store, [
@@ -594,6 +611,25 @@ test('removeMember uses one transaction for membership checks, update, and audit
   assert.equal(store.rootCalls, 2)
   assert.equal((await baseStore.get('family_members', (item) => item.openId === 'member-a')).status, 'inactive')
   assert.equal((await baseStore.list('family_audit_logs')).length, 1)
+})
+
+test('owner cannot remove an unknown role through the transaction path', async () => {
+  const baseStore = createMemoryStore()
+  await seedFamily(baseStore, [
+    { openId: 'owner', role: 'owner' },
+    { openId: 'viewer-a', role: 'viewer' }
+  ])
+  const store = createRollbackTransactionStore(baseStore)
+  const api = createFamilyApi({ store, userId: 'owner', today: '2026-07-16' })
+
+  const result = await api.handle({ action: 'removeMember', openId: 'viewer-a' })
+  const membership = await baseStore.get('family_members', (item) => item.openId === 'viewer-a')
+
+  assert.equal(result.ok, false)
+  assert.match(result.error, /没有权限|不可移出/)
+  assert.equal(store.transactionCalls, 1)
+  assert.equal(membership.status, 'active')
+  assert.equal((await baseStore.list('family_audit_logs')).length, 0)
 })
 
 test('removeMember uses exact field queries to locate members before a transaction', async () => {
