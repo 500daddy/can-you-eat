@@ -664,6 +664,48 @@ test('member page serializes role updates with every member write action', async
   assert.equal(page.data.updatingOpenId, '')
 })
 
+test('member page keeps local role update and only shows success when refresh fails', async () => {
+  let loads = 0
+  const page = createPageInstance(loadPage('pages/family/member', {
+    getMyFamily: async () => {
+      loads += 1
+      if (loads > 1) throw new Error('refresh failed')
+      return {
+        membership: { role: 'owner' },
+        members: [
+          {
+            openId: 'member-a',
+            nickname: '爸爸',
+            avatarUrl: '/dad.jpg',
+            role: 'member'
+          }
+        ]
+      }
+    },
+    updateMemberRole: async () => {}
+  }))
+  const toasts = []
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  await page.onShow()
+
+  await page.updateRole({ currentTarget: { dataset: { openid: 'member-a', role: 'admin' } } })
+
+  delete global.wx
+  assert.equal(loads, 2)
+  assert.deepEqual(page.data.members, [{
+    openId: 'member-a',
+    nickname: '爸爸',
+    avatarUrl: '/dad.jpg',
+    role: 'admin',
+    roleText: '管理员',
+    isOwner: false
+  }])
+  assert.deepEqual(toasts.map((item) => item.title), ['已更新'])
+})
+
 test('member page disables every member action while any write is pending', () => {
   const markup = readText('pages/family/member.wxml')
   const sharedDisabledState = /disabled="\{\{!!removingOpenId \|\| !!updatingOpenId\}\}"/g

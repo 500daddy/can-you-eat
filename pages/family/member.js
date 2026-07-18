@@ -94,7 +94,12 @@ Page({
       })
       if (!confirmed) return
       await familyService.updateMemberRole({ openId: openid, role })
-      await this.loadMembers()
+      this.setData({
+        members: this.data.members.map((item) => item.openId === openid
+          ? { ...item, role, roleText: roleTextMap[role] || '成员' }
+          : item)
+      })
+      await this.loadMembers({ silent: true })
       wx.showToast({ title: '已更新', icon: 'success' })
     } catch (error) {
       wx.showToast({ title: '更新失败', icon: 'none' })
