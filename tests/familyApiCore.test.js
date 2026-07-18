@@ -215,47 +215,40 @@ function createRollbackTransactionStore(baseStore, { failAudit = false } = {}) {
     async runTransaction(callback) {
       transactionCalls += 1
       const stagedUpdates = []
-      const stagedAdds = []
+      const stagedSets = []
       const transactionStore = {
-        async list(collection, predicate = () => true) {
-          const items = await baseStore.list(collection)
-          return items.map((item) => {
-            const staged = stagedUpdates.find((entry) => entry.collection === collection && entry.predicate(item))
-            return staged ? { ...item, ...staged.patch } : item
-          }).filter(predicate)
+        async getById(collection, id) {
+          const item = await baseStore.get(collection, (entry) => entry._id === id)
+          const staged = stagedUpdates.find((entry) => entry.collection === collection && entry.id === id)
+          return staged && item ? { ...item, ...staged.patch } : item
         },
-        async get(collection, predicate) {
-          return (await this.list(collection, predicate))[0] || null
+        async updateById(collection, id, patch) {
+          stagedUpdates.push({ collection, id, patch })
+          return patch
         },
-        async update(collection, predicate, patch) {
-          const found = await this.get(collection, predicate)
-          if (!found) return null
-          stagedUpdates.push({ collection, predicate, patch })
-          return { ...found, ...patch }
-        },
-        async add(collection, doc) {
+        async setById(collection, id, doc) {
           if (failAudit && collection === 'family_audit_logs') throw new Error('transaction audit unavailable')
-          stagedAdds.push({ collection, doc })
+          stagedSets.push({ collection, id, doc })
           return doc
         }
       }
 
       const result = await callback(transactionStore)
       for (const entry of stagedUpdates) {
-        await baseStore.update(entry.collection, entry.predicate, entry.patch)
+        await baseStore.update(entry.collection, (item) => item._id === entry.id, entry.patch)
       }
-      for (const entry of stagedAdds) {
-        await baseStore.add(entry.collection, entry.doc)
+      for (const entry of stagedSets) {
+        await baseStore.add(entry.collection, { ...entry.doc, _id: entry.id })
       }
       return result
     },
-    async get() {
+    async get(collection, predicate) {
       rootCalls += 1
-      throw new Error('root get used outside transaction')
+      return baseStore.get(collection, predicate)
     },
-    async list() {
+    async list(collection, predicate) {
       rootCalls += 1
-      throw new Error('root list used outside transaction')
+      return baseStore.list(collection, predicate)
     },
     async update() {
       rootCalls += 1
@@ -527,7 +520,7 @@ test('removeMember uses one transaction for membership checks, update, and audit
 
   assert.equal(result.ok, true)
   assert.equal(store.transactionCalls, 1)
-  assert.equal(store.rootCalls, 0)
+  assert.equal(store.rootCalls, 2)
   assert.equal((await baseStore.get('family_members', (item) => item.openId === 'member-a')).status, 'inactive')
   assert.equal((await baseStore.list('family_audit_logs')).length, 1)
 })
@@ -547,10 +540,71 @@ test('leaveFamily rolls back the transaction when audit writing fails', async ()
   assert.equal(result.ok, false)
   assert.match(result.error, /transaction audit unavailable/)
   assert.equal(store.transactionCalls, 1)
-  assert.equal(store.rootCalls, 0)
+  assert.equal(store.rootCalls, 1)
   assert.equal(membership.status, 'active')
   assert.equal(membership.updatedAt, '2026-07-01')
   assert.equal((await baseStore.list('family_audit_logs')).length, 0)
+})
+
+test('transaction retry re-reads an inactive target and commits no duplicate audit', async () => {
+  const baseStore = createMemoryStore()
+  await seedFamily(baseStore, [
+    { openId: 'owner', role: 'owner' },
+    { openId: 'member-a', role: 'member' }
+  ])
+  const attemptedAuditIds = []
+  let callbackCalls = 0
+  const store = {
+    async get(collection, predicate) {
+      return baseStore.get(collection, predicate)
+    },
+    async runTransaction(callback) {
+      const runAttempt = () => callback({
+        async getById(collection, id) {
+          return baseStore.get(collection, (item) => item._id === id)
+        },
+        async updateById() {},
+        async setById(collection, id) {
+          attemptedAuditIds.push(id)
+        }
+      })
+
+      callbackCalls += 1
+      const first = await runAttempt()
+      assert.equal(first.ok, true)
+      await baseStore.update(
+        'family_members',
+        (item) => item.openId === 'member-a',
+        { status: 'inactive' }
+      )
+      callbackCalls += 1
+      return runAttempt()
+    }
+  }
+  const api = createFamilyApi({ store, userId: 'owner', today: '2026-07-16' })
+
+  const result = await api.handle({ action: 'removeMember', openId: 'member-a' })
+
+  assert.equal(result.ok, false)
+  assert.match(result.error, /已退出|不存在/)
+  assert.equal(callbackCalls, 2)
+  assert.equal(attemptedAuditIds.length, 1)
+  assert.equal((await baseStore.list('family_audit_logs')).length, 0)
+})
+
+test('storage TypeError is surfaced instead of being treated as a missing collection', async () => {
+  const expected = "Cannot read properties of undefined (reading 'collection')"
+  const store = {
+    async get() {
+      throw new TypeError(expected)
+    }
+  }
+  const api = createFamilyApi({ store, userId: 'owner', today: '2026-07-16' })
+
+  const result = await api.handle({ action: 'leaveFamily' })
+
+  assert.equal(result.ok, false)
+  assert.equal(result.error, expected)
 })
 
 test('concurrent removeMember and leaveFamily succeed and audit at most once', async () => {

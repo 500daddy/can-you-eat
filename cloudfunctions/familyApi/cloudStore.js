@@ -106,11 +106,32 @@ function createStore(client, rootDb, includeTransaction) {
 
   if (includeTransaction) {
     store.runTransaction = (callback) => rootDb.runTransaction((transaction) => (
-      callback(createStore(transaction, rootDb, false))
+      callback(createTransactionStore(transaction, rootDb))
     ))
   }
 
   return store
+}
+
+function createTransactionStore(transaction, rootDb) {
+  return {
+    async getById(collection, id) {
+      const res = await transaction.collection(collection).doc(id).get()
+      return res.data || null
+    },
+
+    async updateById(collection, id, patch) {
+      const removeValue = rootDb.command && rootDb.command.remove ? rootDb.command.remove() : undefined
+      const data = buildCloudUpdateData({}, patch, removeValue)
+      await transaction.collection(collection).doc(id).update({ data })
+      return compactObject({ ...patch })
+    },
+
+    async setById(collection, id, doc) {
+      await transaction.collection(collection).doc(id).set({ data: doc })
+      return doc
+    }
+  }
 }
 
 function createCloudStore(db) {

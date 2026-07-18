@@ -84,34 +84,28 @@ test('family cloud store updates all matching family records by fields', async (
   assert.deepEqual(result, { stats: { updated: 2 } })
 })
 
-test('family cloud store runs reads and writes on the cloud transaction', async () => {
+test('family cloud store exposes only document operations on the cloud transaction', async () => {
   const calls = []
   const removeCommand = { __remove: true }
   const transaction = {
     collection(collection) {
       calls.push(`transaction:collection:${collection}`)
       return {
-        skip() {
-          return this
-        },
-        limit() {
-          return {
-            async get() {
-              calls.push(`transaction:get:${collection}`)
-              return { data: [{ _id: 'member-cloud-id', status: 'active', note: 'old' }] }
-            }
-          }
-        },
         doc(id) {
           return {
+            async get() {
+              calls.push(`transaction:get:${collection}:${id}`)
+              return { data: { _id: 'member-cloud-id', status: 'active', note: 'old' } }
+            },
             async update(input) {
               calls.push(`transaction:update:${collection}:${id}`)
               assert.equal(input.data.note, removeCommand)
+            },
+            async set(input) {
+              calls.push(`transaction:set:${collection}:${id}`)
+              assert.equal(input.data.id, id)
             }
           }
-        },
-        async add() {
-          calls.push(`transaction:add:${collection}`)
         }
       }
     }
@@ -134,20 +128,22 @@ test('family cloud store runs reads and writes on the cloud transaction', async 
   }
 
   const result = await familyCloudStore.createCloudStore(db).runTransaction(async (store) => {
-    const member = await store.get('family_members', (item) => item.status === 'active')
-    const updated = await store.update('family_members', (item) => item._id === member._id, { note: undefined })
-    await store.add('family_audit_logs', { id: 'audit-1' })
+    const member = await store.getById('family_members', 'member-cloud-id')
+    const updated = await store.updateById('family_members', member._id, { note: undefined })
+    await store.setById('family_audit_logs', 'audit-1', { id: 'audit-1' })
     assert.equal(store.runTransaction, undefined)
+    assert.equal(store.list, undefined)
+    assert.equal(store.get, undefined)
     return updated
   })
 
-  assert.equal(result._id, 'member-cloud-id')
+  assert.deepEqual(result, {})
   assert.equal(calls.includes('root:runTransaction'), true)
   assert.equal(calls.includes('root:command:remove'), true)
   assert.equal(calls.some((call) => call.startsWith('root:collection:')), false)
-  assert.equal(calls.some((call) => call === 'transaction:get:family_members'), true)
+  assert.equal(calls.some((call) => call === 'transaction:get:family_members:member-cloud-id'), true)
   assert.equal(calls.some((call) => call === 'transaction:update:family_members:member-cloud-id'), true)
-  assert.equal(calls.some((call) => call === 'transaction:add:family_audit_logs'), true)
+  assert.equal(calls.some((call) => call === 'transaction:set:family_audit_logs:audit-1'), true)
 })
 
 test('family cloud store propagates cloud transaction failures', async () => {
