@@ -82,6 +82,11 @@ function createStore(client, rootDb, includeTransaction) {
       return list[0] || null
     },
 
+    async getByFields(collection, fields) {
+      const res = await client.collection(collection).where(fields).limit(1).get()
+      return res.data[0] || null
+    },
+
     async add(collection, doc) {
       await client.collection(collection).add({ data: doc })
       return doc

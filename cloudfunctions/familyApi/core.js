@@ -44,6 +44,15 @@ async function getItem(store, collection, predicate) {
   }
 }
 
+async function getItemByFields(store, collection, fields) {
+  if (typeof store.getByFields === 'function') {
+    return store.getByFields(collection, fields)
+  }
+  return getItem(store, collection, (item) => (
+    Object.entries(fields).every(([key, value]) => item[key] === value)
+  ))
+}
+
 async function addItem(store, collection, doc) {
   try {
     return await store.add(collection, doc)
@@ -106,7 +115,7 @@ function roleCan(role, permission) {
 }
 
 async function getActiveMembership(store, userId) {
-  return getItem(store, 'family_members', (item) => item.openId === userId && item.status === 'active')
+  return getItemByFields(store, 'family_members', { openId: userId, status: 'active' })
 }
 
 function addDays(day, days) {
@@ -239,13 +248,28 @@ async function deactivateMember(store, member, actor, audit, today, compensateOn
     )
   } catch (error) {
     if (compensateOnAuditFailure) {
-      await updateItem(store, 'family_members', (item) => (
-        (item._id === member._id || item.id === member.id) && item.status === 'inactive'
-      ), {
-        status: member.status,
-        leftAt: member.leftAt,
-        updatedAt: member.updatedAt
-      })
+      try {
+        await updateItem(store, 'family_members', (item) => (
+          (item._id === member._id || item.id === member.id) && item.status === 'inactive'
+        ), {
+          status: member.status,
+          leftAt: member.leftAt,
+          updatedAt: member.updatedAt
+        })
+      } catch (compensationError) {
+        const auditMessage = error && error.message ? error.message : String(error)
+        const compensationMessage = compensationError && compensationError.message
+          ? compensationError.message
+          : String(compensationError)
+        if (error && typeof error === 'object') {
+          error.message = `${auditMessage}; compensation failed: ${compensationMessage}`
+          error.compensationError = compensationError
+          throw error
+        }
+        const combinedError = new Error(`${auditMessage}; compensation failed: ${compensationMessage}`, { cause: error })
+        combinedError.compensationError = compensationError
+        throw combinedError
+      }
     }
     throw error
   }
@@ -256,13 +280,16 @@ async function deactivateMember(store, member, actor, audit, today, compensateOn
 async function removeMember(store, userId, event, today, compensateOnAuditFailure) {
   const actor = await requirePermission(store, userId, 'manage_members')
   if (event.openId === actor.openId) return { ok: false, error: '创建者不能移出自己' }
-  const target = await getItem(store, 'family_members', (item) => (
-    item.familyId === actor.familyId && item.openId === event.openId && item.status === 'active'
-  ))
+  const target = await getItemByFields(store, 'family_members', {
+    familyId: actor.familyId,
+    openId: event.openId,
+    status: 'active'
+  })
   if (!target) {
-    const previous = await getItem(store, 'family_members', (item) => (
-      item.familyId === actor.familyId && item.openId === event.openId
-    ))
+    const previous = await getItemByFields(store, 'family_members', {
+      familyId: actor.familyId,
+      openId: event.openId
+    })
     return { ok: false, error: previous ? '成员已退出' : '成员不存在' }
   }
   if (target.role === 'owner') return { ok: false, error: '不能移出创建者' }
@@ -321,18 +348,19 @@ async function deactivateMemberById(store, member, actor, auditId, audit, today)
 }
 
 async function removeMemberInTransaction(store, userId, event, today) {
-  const actorCandidate = await getItem(store, 'family_members', (item) => (
-    item.openId === userId && item.status === 'active'
-  ))
+  const actorCandidate = await getActiveMembership(store, userId)
   if (!actorCandidate) return { ok: false, error: '请先加入家庭' }
 
-  const targetCandidate = await getItem(store, 'family_members', (item) => (
-    item.familyId === actorCandidate.familyId && item.openId === event.openId && item.status === 'active'
-  ))
+  const targetCandidate = await getItemByFields(store, 'family_members', {
+    familyId: actorCandidate.familyId,
+    openId: event.openId,
+    status: 'active'
+  })
   if (!targetCandidate) {
-    const previous = await getItem(store, 'family_members', (item) => (
-      item.familyId === actorCandidate.familyId && item.openId === event.openId
-    ))
+    const previous = await getItemByFields(store, 'family_members', {
+      familyId: actorCandidate.familyId,
+      openId: event.openId
+    })
     return { ok: false, error: previous ? '成员已退出' : '成员不存在' }
   }
 
@@ -367,9 +395,7 @@ async function removeMemberInTransaction(store, userId, event, today) {
 }
 
 async function leaveFamilyInTransaction(store, userId, today) {
-  const memberCandidate = await getItem(store, 'family_members', (item) => (
-    item.openId === userId && item.status === 'active'
-  ))
+  const memberCandidate = await getActiveMembership(store, userId)
   if (!memberCandidate) return { ok: false, error: '请先加入家庭' }
 
   const auditId = makeId('audit')

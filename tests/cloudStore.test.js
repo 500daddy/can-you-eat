@@ -84,6 +84,48 @@ test('family cloud store updates all matching family records by fields', async (
   assert.deepEqual(result, { stats: { updated: 2 } })
 })
 
+test('family cloud store gets one record by exact fields without listing the collection', async () => {
+  const calls = []
+  const expected = { _id: 'member-cloud-id', openId: 'owner', status: 'active' }
+  const db = {
+    collection(collection) {
+      calls.push({ operation: 'collection', collection })
+      return {
+        where(fields) {
+          calls.push({ operation: 'where', fields })
+          return {
+            limit(value) {
+              calls.push({ operation: 'limit', value })
+              return {
+                async get() {
+                  calls.push({ operation: 'get' })
+                  return { data: [expected] }
+                }
+              }
+            }
+          }
+        },
+        skip() {
+          throw new Error('paginated list must not be used')
+        }
+      }
+    }
+  }
+
+  const result = await familyCloudStore.createCloudStore(db).getByFields(
+    'family_members',
+    { openId: 'owner', status: 'active' }
+  )
+
+  assert.equal(result, expected)
+  assert.deepEqual(calls, [
+    { operation: 'collection', collection: 'family_members' },
+    { operation: 'where', fields: { openId: 'owner', status: 'active' } },
+    { operation: 'limit', value: 1 },
+    { operation: 'get' }
+  ])
+})
+
 test('family cloud store exposes only document operations on the cloud transaction', async () => {
   const calls = []
   const removeCommand = { __remove: true }

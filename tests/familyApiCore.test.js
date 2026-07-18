@@ -481,6 +481,34 @@ test('audit failure restores member state for removeMember', async () => {
   assert.equal((await baseStore.list('family_audit_logs')).length, 0)
 })
 
+test('fallback reports both audit and compensation failures', async () => {
+  const baseStore = createMemoryStore()
+  await seedFamily(baseStore, [
+    { openId: 'owner', role: 'owner' },
+    { openId: 'member-a', role: 'member' }
+  ])
+  const store = {
+    ...baseStore,
+    async add(collection, doc) {
+      if (collection === 'family_audit_logs') throw new Error('audit unavailable')
+      return baseStore.add(collection, doc)
+    },
+    async update(collection, predicate, patch) {
+      if (collection === 'family_members' && patch.status === 'active') {
+        throw new Error('compensation unavailable')
+      }
+      return baseStore.update(collection, predicate, patch)
+    }
+  }
+  const api = createFamilyApi({ store, userId: 'owner', today: '2026-07-16' })
+
+  const result = await api.handle({ action: 'removeMember', openId: 'member-a' })
+
+  assert.equal(result.ok, false)
+  assert.match(result.error, /audit unavailable/)
+  assert.match(result.error, /compensation unavailable/)
+})
+
 test('audit failure restores member state for leaveFamily', async () => {
   const baseStore = createMemoryStore()
   await seedFamily(baseStore, [
@@ -523,6 +551,43 @@ test('removeMember uses one transaction for membership checks, update, and audit
   assert.equal(store.rootCalls, 2)
   assert.equal((await baseStore.get('family_members', (item) => item.openId === 'member-a')).status, 'inactive')
   assert.equal((await baseStore.list('family_audit_logs')).length, 1)
+})
+
+test('removeMember uses exact field queries to locate members before a transaction', async () => {
+  const baseStore = createMemoryStore()
+  await seedFamily(baseStore, [
+    { openId: 'owner', role: 'owner' },
+    { openId: 'member-a', role: 'member' }
+  ])
+  const transactionStore = createRollbackTransactionStore(baseStore)
+  const fieldQueries = []
+  const store = {
+    ...transactionStore,
+    async getByFields(collection, fields) {
+      fieldQueries.push({ collection, fields })
+      return baseStore.get(collection, (item) => (
+        Object.entries(fields).every(([key, value]) => item[key] === value)
+      ))
+    },
+    async get() {
+      throw new Error('full collection lookup must not be used')
+    }
+  }
+  const api = createFamilyApi({ store, userId: 'owner', today: '2026-07-16' })
+
+  const result = await api.handle({ action: 'removeMember', openId: 'member-a' })
+
+  assert.equal(result.ok, true)
+  assert.deepEqual(fieldQueries, [
+    {
+      collection: 'family_members',
+      fields: { openId: 'owner', status: 'active' }
+    },
+    {
+      collection: 'family_members',
+      fields: { familyId: 'family-shared', openId: 'member-a', status: 'active' }
+    }
+  ])
 })
 
 test('leaveFamily rolls back the transaction when audit writing fails', async () => {
