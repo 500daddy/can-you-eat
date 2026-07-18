@@ -201,6 +201,73 @@ function withConcurrentMemberUpdates(store, expectedUpdates = 2) {
   }
 }
 
+function createRollbackTransactionStore(baseStore, { failAudit = false } = {}) {
+  let transactionCalls = 0
+  let rootCalls = 0
+
+  return {
+    get transactionCalls() {
+      return transactionCalls
+    },
+    get rootCalls() {
+      return rootCalls
+    },
+    async runTransaction(callback) {
+      transactionCalls += 1
+      const stagedUpdates = []
+      const stagedAdds = []
+      const transactionStore = {
+        async list(collection, predicate = () => true) {
+          const items = await baseStore.list(collection)
+          return items.map((item) => {
+            const staged = stagedUpdates.find((entry) => entry.collection === collection && entry.predicate(item))
+            return staged ? { ...item, ...staged.patch } : item
+          }).filter(predicate)
+        },
+        async get(collection, predicate) {
+          return (await this.list(collection, predicate))[0] || null
+        },
+        async update(collection, predicate, patch) {
+          const found = await this.get(collection, predicate)
+          if (!found) return null
+          stagedUpdates.push({ collection, predicate, patch })
+          return { ...found, ...patch }
+        },
+        async add(collection, doc) {
+          if (failAudit && collection === 'family_audit_logs') throw new Error('transaction audit unavailable')
+          stagedAdds.push({ collection, doc })
+          return doc
+        }
+      }
+
+      const result = await callback(transactionStore)
+      for (const entry of stagedUpdates) {
+        await baseStore.update(entry.collection, entry.predicate, entry.patch)
+      }
+      for (const entry of stagedAdds) {
+        await baseStore.add(entry.collection, entry.doc)
+      }
+      return result
+    },
+    async get() {
+      rootCalls += 1
+      throw new Error('root get used outside transaction')
+    },
+    async list() {
+      rootCalls += 1
+      throw new Error('root list used outside transaction')
+    },
+    async update() {
+      rootCalls += 1
+      throw new Error('root update used outside transaction')
+    },
+    async add() {
+      rootCalls += 1
+      throw new Error('root add used outside transaction')
+    }
+  }
+}
+
 test('owner removes an active member without deleting family records and writes an audit log', async () => {
   const store = createMemoryStore()
   await seedFamily(store, [
@@ -443,6 +510,45 @@ test('audit failure restores member state for leaveFamily', async () => {
   assert.match(result.error, /audit unavailable/)
   assert.equal(membership.status, 'active')
   assert.equal(membership.leftAt, undefined)
+  assert.equal(membership.updatedAt, '2026-07-01')
+  assert.equal((await baseStore.list('family_audit_logs')).length, 0)
+})
+
+test('removeMember uses one transaction for membership checks, update, and audit', async () => {
+  const baseStore = createMemoryStore()
+  await seedFamily(baseStore, [
+    { openId: 'owner', role: 'owner' },
+    { openId: 'member-a', role: 'member' }
+  ])
+  const store = createRollbackTransactionStore(baseStore)
+  const api = createFamilyApi({ store, userId: 'owner', today: '2026-07-16' })
+
+  const result = await api.handle({ action: 'removeMember', openId: 'member-a' })
+
+  assert.equal(result.ok, true)
+  assert.equal(store.transactionCalls, 1)
+  assert.equal(store.rootCalls, 0)
+  assert.equal((await baseStore.get('family_members', (item) => item.openId === 'member-a')).status, 'inactive')
+  assert.equal((await baseStore.list('family_audit_logs')).length, 1)
+})
+
+test('leaveFamily rolls back the transaction when audit writing fails', async () => {
+  const baseStore = createMemoryStore()
+  await seedFamily(baseStore, [
+    { openId: 'owner', role: 'owner' },
+    { openId: 'member-a', role: 'member', updatedAt: '2026-07-01' }
+  ])
+  const store = createRollbackTransactionStore(baseStore, { failAudit: true })
+  const api = createFamilyApi({ store, userId: 'member-a', today: '2026-07-16' })
+
+  const result = await api.handle({ action: 'leaveFamily' })
+  const membership = await baseStore.get('family_members', (item) => item.openId === 'member-a')
+
+  assert.equal(result.ok, false)
+  assert.match(result.error, /transaction audit unavailable/)
+  assert.equal(store.transactionCalls, 1)
+  assert.equal(store.rootCalls, 0)
+  assert.equal(membership.status, 'active')
   assert.equal(membership.updatedAt, '2026-07-01')
   assert.equal((await baseStore.list('family_audit_logs')).length, 0)
 })

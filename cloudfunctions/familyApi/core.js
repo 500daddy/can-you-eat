@@ -204,7 +204,7 @@ async function writeMemberAudit(store, actor, target, updated, action, summary, 
   })
 }
 
-async function deactivateMember(store, member, actor, audit, today) {
+async function deactivateMember(store, member, actor, audit, today, compensateOnAuditFailure = true) {
   const matchesMember = (item) => (
     (item._id === member._id || item.id === member.id) && item.status === 'active'
   )
@@ -226,17 +226,65 @@ async function deactivateMember(store, member, actor, audit, today) {
       today
     )
   } catch (error) {
-    await updateItem(store, 'family_members', (item) => (
-      (item._id === member._id || item.id === member.id) && item.status === 'inactive'
-    ), {
-      status: member.status,
-      leftAt: member.leftAt,
-      updatedAt: member.updatedAt
-    })
+    if (compensateOnAuditFailure) {
+      await updateItem(store, 'family_members', (item) => (
+        (item._id === member._id || item.id === member.id) && item.status === 'inactive'
+      ), {
+        status: member.status,
+        leftAt: member.leftAt,
+        updatedAt: member.updatedAt
+      })
+    }
     throw error
   }
 
   return updated
+}
+
+async function removeMember(store, userId, event, today, compensateOnAuditFailure) {
+  const actor = await requirePermission(store, userId, 'manage_members')
+  if (event.openId === actor.openId) return { ok: false, error: '创建者不能移出自己' }
+  const target = await getItem(store, 'family_members', (item) => (
+    item.familyId === actor.familyId && item.openId === event.openId && item.status === 'active'
+  ))
+  if (!target) {
+    const previous = await getItem(store, 'family_members', (item) => (
+      item.familyId === actor.familyId && item.openId === event.openId
+    ))
+    return { ok: false, error: previous ? '成员已退出' : '成员不存在' }
+  }
+  if (target.role === 'owner') return { ok: false, error: '不能移出创建者' }
+  const updated = await deactivateMember(
+    store,
+    target,
+    actor,
+    {
+      action: 'member_removed',
+      summary: `移出家庭成员：${target.nickname || target.openId}`
+    },
+    today,
+    compensateOnAuditFailure
+  )
+  if (!updated) return { ok: false, error: '成员已退出或不存在' }
+  return { ok: true, data: updated }
+}
+
+async function leaveFamily(store, userId, today, compensateOnAuditFailure) {
+  const membership = await requireMembership(store, userId)
+  if (membership.role === 'owner') return { ok: false, error: '创建者不能退出家庭' }
+  const updated = await deactivateMember(
+    store,
+    membership,
+    membership,
+    {
+      action: 'member_left',
+      summary: `${membership.nickname || membership.openId}退出家庭`
+    },
+    today,
+    compensateOnAuditFailure
+  )
+  if (!updated) return { ok: false, error: '成员已退出或不存在' }
+  return { ok: true, data: updated }
 }
 
 function createFamilyApi({ store, userId, today = '2026-07-09' }) {
@@ -364,47 +412,21 @@ function createFamilyApi({ store, userId, today = '2026-07-09' }) {
         }
 
         if (event.action === 'removeMember') {
-          const actor = await requirePermission(store, userId, 'manage_members')
-          if (event.openId === actor.openId) return { ok: false, error: '创建者不能移出自己' }
-          const target = await getItem(store, 'family_members', (item) => (
-            item.familyId === actor.familyId && item.openId === event.openId && item.status === 'active'
-          ))
-          if (!target) {
-            const previous = await getItem(store, 'family_members', (item) => (
-              item.familyId === actor.familyId && item.openId === event.openId
+          if (typeof store.runTransaction === 'function') {
+            return await store.runTransaction((transactionStore) => (
+              removeMember(transactionStore, userId, event, today, false)
             ))
-            return { ok: false, error: previous ? '成员已退出' : '成员不存在' }
           }
-          if (target.role === 'owner') return { ok: false, error: '不能移出创建者' }
-          const updated = await deactivateMember(
-            store,
-            target,
-            actor,
-            {
-              action: 'member_removed',
-              summary: `移出家庭成员：${target.nickname || target.openId}`
-            },
-            today
-          )
-          if (!updated) return { ok: false, error: '成员已退出或不存在' }
-          return { ok: true, data: updated }
+          return await removeMember(store, userId, event, today, true)
         }
 
         if (event.action === 'leaveFamily') {
-          const membership = await requireMembership(store, userId)
-          if (membership.role === 'owner') return { ok: false, error: '创建者不能退出家庭' }
-          const updated = await deactivateMember(
-            store,
-            membership,
-            membership,
-            {
-              action: 'member_left',
-              summary: `${membership.nickname || membership.openId}退出家庭`
-            },
-            today
-          )
-          if (!updated) return { ok: false, error: '成员已退出或不存在' }
-          return { ok: true, data: updated }
+          if (typeof store.runTransaction === 'function') {
+            return await store.runTransaction((transactionStore) => (
+              leaveFamily(transactionStore, userId, today, false)
+            ))
+          }
+          return await leaveFamily(store, userId, today, true)
         }
 
         return { ok: false, error: `Unknown action: ${event.action || 'empty'}` }
