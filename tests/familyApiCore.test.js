@@ -509,6 +509,32 @@ test('fallback reports both audit and compensation failures', async () => {
   assert.match(result.error, /compensation unavailable/)
 })
 
+test('fallback reports audit failure when compensation does not restore the member', async () => {
+  const baseStore = createMemoryStore()
+  await seedFamily(baseStore, [
+    { openId: 'owner', role: 'owner' },
+    { openId: 'member-a', role: 'member' }
+  ])
+  const store = {
+    ...baseStore,
+    async add(collection, doc) {
+      if (collection === 'family_audit_logs') throw new Error('audit unavailable')
+      return baseStore.add(collection, doc)
+    },
+    async update(collection, predicate, patch) {
+      if (collection === 'family_members' && patch.status === 'active') return null
+      return baseStore.update(collection, predicate, patch)
+    }
+  }
+  const api = createFamilyApi({ store, userId: 'owner', today: '2026-07-16' })
+
+  const result = await api.handle({ action: 'removeMember', openId: 'member-a' })
+
+  assert.equal(result.ok, false)
+  assert.match(result.error, /audit unavailable/)
+  assert.match(result.error, /compensation failed: member state was not restored/)
+})
+
 test('audit failure restores member state for leaveFamily', async () => {
   const baseStore = createMemoryStore()
   await seedFamily(baseStore, [

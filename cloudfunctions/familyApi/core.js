@@ -249,13 +249,14 @@ async function deactivateMember(store, member, actor, audit, today, compensateOn
   } catch (error) {
     if (compensateOnAuditFailure) {
       try {
-        await updateItem(store, 'family_members', (item) => (
+        const compensated = await updateItem(store, 'family_members', (item) => (
           (item._id === member._id || item.id === member.id) && item.status === 'inactive'
         ), {
           status: member.status,
           leftAt: member.leftAt,
           updatedAt: member.updatedAt
         })
+        if (!compensated) throw new Error('member state was not restored')
       } catch (compensationError) {
         const auditMessage = error && error.message ? error.message : String(error)
         const compensationMessage = compensationError && compensationError.message
