@@ -564,6 +564,58 @@ test('family page reconciles a lost leave response when membership already chang
   assert.deepEqual(toasts.map((item) => item.title), ['已退出家庭'])
 })
 
+test('family page reconciles wrapped transport errors but not business errors', async () => {
+  const cases = [
+    {
+      error: { errCode: -504002, errMsg: 'request timed out' },
+      shouldReconcile: true
+    },
+    {
+      error: { code: 'FUNCTION_ERROR', errCode: -1, message: 'request:fail timeout' },
+      shouldReconcile: true
+    },
+    {
+      error: { code: 'PERMISSION_DENIED', message: 'permission denied' },
+      shouldReconcile: false
+    },
+    {
+      error: { code: 'INVALID_TARGET', errMsg: 'invalid member' },
+      shouldReconcile: false
+    }
+  ]
+
+  global.wx = {
+    showToast() {},
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  for (const { error, shouldReconcile } of cases) {
+    let loads = 0
+    const page = createPageInstance(loadPage('pages/family/index', {
+      getMyFamily: async () => {
+        loads += 1
+        return loads === 1
+          ? {
+              family: { familyId: 'family-a', kind: 'shared' },
+              membership: { familyId: 'family-a', role: 'member' },
+              members: []
+            }
+          : {
+              family: { familyId: 'personal-a', kind: 'personal' },
+              membership: { familyId: 'personal-a', role: 'owner' },
+              members: []
+            }
+      },
+      leaveFamily: async () => { throw error }
+    }))
+    await page.loadFamily()
+    await page.leaveFamily()
+
+    assert.equal(loads, shouldReconcile ? 2 : 1, JSON.stringify(error))
+    assert.equal(page.data.family.familyId, shouldReconcile ? 'personal-a' : 'family-a')
+  }
+  delete global.wx
+})
+
 test('family page keeps the original family when leave reconciliation is not confirmed', async () => {
   let loads = 0
   const toasts = []
@@ -1074,6 +1126,54 @@ test('member page reconciles a lost removal response when the target is already 
   assert.equal(loads, 3)
   assert.deepEqual(page.data.members, [])
   assert.deepEqual(toasts.map((item) => item.title), ['已移出家庭'])
+})
+
+test('member page reconciles wrapped transport errors but not business errors', async () => {
+  const cases = [
+    {
+      error: { errCode: -504002, errMsg: 'request timed out' },
+      shouldReconcile: true
+    },
+    {
+      error: { code: 'FUNCTION_ERROR', errCode: -1, message: 'request:fail timeout' },
+      shouldReconcile: true
+    },
+    {
+      error: { code: 'PERMISSION_DENIED', message: 'permission denied' },
+      shouldReconcile: false
+    },
+    {
+      error: { code: 'INVALID_TARGET', errMsg: 'invalid member' },
+      shouldReconcile: false
+    }
+  ]
+
+  global.wx = {
+    showToast() {},
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  for (const { error, shouldReconcile } of cases) {
+    let loads = 0
+    const page = createPageInstance(loadPage('pages/family/member', {
+      getMyFamily: async () => {
+        loads += 1
+        return {
+          family: { familyId: 'family-a' },
+          membership: { familyId: 'family-a', role: 'owner' },
+          members: loads === 1 || !shouldReconcile
+            ? [{ openId: 'member', nickname: '爸爸', role: 'member' }]
+            : []
+        }
+      },
+      removeMember: async () => { throw error }
+    }))
+    await page.loadMembers()
+    await page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
+
+    assert.equal(loads, shouldReconcile ? 3 : 1, JSON.stringify(error))
+    assert.equal(page.data.members.length, shouldReconcile ? 0 : 1)
+  }
+  delete global.wx
 })
 
 test('member page preserves the target when removal reconciliation is not confirmed', async () => {

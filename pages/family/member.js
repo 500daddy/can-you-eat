@@ -23,7 +23,11 @@ function decorateMembers(members = []) {
 
 function isUncertainRequestError(error) {
   if (!error) return false
-  const code = String(error.code || error.errCode || '').trim().toUpperCase()
+  const codes = [error.code, error.errCode]
+    .map((value) => String(value == null ? '' : value).trim().toUpperCase())
+    .filter(Boolean)
+  const isBusinessCode = (code) => /(?:^|_)(?:PERMISSION|UNAUTHORIZED|FORBIDDEN|INVALID|MEMBER|INVITE|OWNER|NOT_FOUND|NOT_EXIST|ALREADY)(?:_|$)/.test(code)
+  if (codes.some(isBusinessCode)) return false
   const uncertainCodes = new Set([
     '-1',
     'ECONNRESET',
@@ -37,8 +41,10 @@ function isUncertainRequestError(error) {
     'SOCKET_CLOSED',
     'TIMEOUT'
   ])
-  if (code) return uncertainCodes.has(code)
-  const message = String(error.message || error.errMsg || '')
+  if (codes.some((code) => uncertainCodes.has(code))) return true
+  const message = [error.message, error.errMsg]
+    .map((value) => String(value == null ? '' : value))
+    .join(' ')
   return /timed?\s*out|timeout|network|request:\s*fail|connection|socket|ECONNRESET|ETIMEDOUT/i.test(message)
 }
 
