@@ -21,6 +21,27 @@ function decorateMembers(members = []) {
   }))
 }
 
+function isUncertainRequestError(error) {
+  if (!error) return false
+  const code = String(error.code || error.errCode || '').trim().toUpperCase()
+  const uncertainCodes = new Set([
+    '-1',
+    'ECONNRESET',
+    'ECONNREFUSED',
+    'ENETUNREACH',
+    'EHOSTUNREACH',
+    'EAI_AGAIN',
+    'ETIMEDOUT',
+    'NETWORK_ERROR',
+    'REQUEST_TIMEOUT',
+    'SOCKET_CLOSED',
+    'TIMEOUT'
+  ])
+  if (code) return uncertainCodes.has(code)
+  const message = String(error.message || error.errMsg || '')
+  return /timed?\s*out|timeout|network|request:\s*fail|connection|socket|ECONNRESET|ETIMEDOUT/i.test(message)
+}
+
 Page({
   ...createShareHandlers(),
 
@@ -140,6 +161,7 @@ Page({
       try {
         await familyService.removeMember({ openId: openid })
       } catch (error) {
+        if (!isUncertainRequestError(error)) throw error
         let reconciled = false
         try {
           const result = await familyService.getMyFamily()

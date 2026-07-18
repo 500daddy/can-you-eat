@@ -57,10 +57,28 @@ function familyIdOf(result = {}) {
 function confirmsFamilyExit(result, originalFamilyId) {
   if (!result || !originalFamilyId) return false
   const nextFamilyId = familyIdOf(result)
-  if (nextFamilyId && nextFamilyId !== originalFamilyId) return true
-  const family = result.family || {}
-  const membership = result.membership || {}
-  return family.kind === 'personal' && membership.role === 'owner' && nextFamilyId !== originalFamilyId
+  return Boolean(nextFamilyId && nextFamilyId !== originalFamilyId)
+}
+
+function isUncertainRequestError(error) {
+  if (!error) return false
+  const code = String(error.code || error.errCode || '').trim().toUpperCase()
+  const uncertainCodes = new Set([
+    '-1',
+    'ECONNRESET',
+    'ECONNREFUSED',
+    'ENETUNREACH',
+    'EHOSTUNREACH',
+    'EAI_AGAIN',
+    'ETIMEDOUT',
+    'NETWORK_ERROR',
+    'REQUEST_TIMEOUT',
+    'SOCKET_CLOSED',
+    'TIMEOUT'
+  ])
+  if (code) return uncertainCodes.has(code)
+  const message = String(error.message || error.errMsg || '')
+  return /timed?\s*out|timeout|network|request:\s*fail|connection|socket|ECONNRESET|ETIMEDOUT/i.test(message)
 }
 
 Page({
@@ -74,6 +92,7 @@ Page({
     invite: null,
     inviteCode: '',
     canInvite: false,
+    canViewMembers: false,
     canManageMembers: false,
     canLeaveFamily: false,
     roleLabel: '加载中',
@@ -84,6 +103,7 @@ Page({
     joining: false,
     leaving: false,
     familySettling: false,
+    retryingFamilySync: false,
     loginPrompted: false,
     needsLogin: false,
     showInviteCode: false
@@ -126,6 +146,7 @@ Page({
         members,
         membership,
         canInvite: ['owner', 'admin'].includes(membership.role),
+        canViewMembers: ['owner', 'admin', 'member'].includes(membership.role),
         canManageMembers: membership.role === 'owner',
         canLeaveFamily: ['admin', 'member'].includes(membership.role),
         roleLabel: roleText(membership.role),
@@ -311,6 +332,7 @@ Page({
       try {
         await familyService.leaveFamily()
       } catch (error) {
+        if (!isUncertainRequestError(error)) throw error
         let result
         try {
           result = await familyService.getMyFamily(parentIdentity())
@@ -335,12 +357,12 @@ Page({
         needsLogin: false,
         showInviteCode: false,
         canInvite: false,
+        canViewMembers: false,
         canManageMembers: false,
         canLeaveFamily: false,
         roleLabel: '同步中',
         familySettling: true
       })
-      wx.showToast({ title: '已退出家庭', icon: 'success' })
       let settled = false
       if (confirmedFamily) {
         const membership = confirmedFamily.membership || {}
@@ -355,6 +377,7 @@ Page({
           members,
           membership,
           canInvite: ['owner', 'admin'].includes(membership.role),
+          canViewMembers: ['owner', 'admin', 'member'].includes(membership.role),
           canManageMembers: membership.role === 'owner',
           canLeaveFamily: ['admin', 'member'].includes(membership.role),
           roleLabel: roleText(membership.role),
@@ -365,9 +388,9 @@ Page({
       } else {
         settled = await this.loadFamily({ silent: true })
       }
-      if (!settled) {
-        wx.showToast({ title: '已退出，家庭信息同步中', icon: 'none' })
-      }
+      wx.showToast(settled
+        ? { title: '已退出家庭', icon: 'success' }
+        : { title: '已退出家庭，新的家庭信息待同步', icon: 'none' })
     } catch (error) {
       wx.showToast({
         title: userMessage(error, '退出失败，请重试'),
@@ -378,13 +401,27 @@ Page({
     }
   },
 
+  async retryFamilySync() {
+    if (!this.data.familySettling || this.data.retryingFamilySync) return
+    this.setData({ retryingFamilySync: true })
+    try {
+      const synced = await this.loadFamily({ silent: true })
+      wx.showToast({
+        title: synced ? '家庭信息已同步' : '暂时未同步成功，请稍后重试',
+        icon: synced ? 'success' : 'none'
+      })
+    } finally {
+      this.setData({ retryingFamilySync: false })
+    }
+  },
+
   goMemberManage() {
     if (this.data.familySettling) {
       wx.showToast({ title: '家庭信息同步中，请稍候', icon: 'none' })
       return
     }
-    if (this.data.loading || (this.data.membership.role && !this.data.canManageMembers)) {
-      wx.showToast({ title: '当前身份不能管理成员', icon: 'none' })
+    if (this.data.loading || !this.data.canViewMembers) {
+      wx.showToast({ title: '当前身份不能查看成员', icon: 'none' })
       return
     }
     wx.navigateTo({ url: '/pages/family/member' })

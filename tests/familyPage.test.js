@@ -460,14 +460,22 @@ test('family page leaves a shared family and displays the new personal family', 
 })
 
 test('family page keeps the current family when leaving fails', async () => {
+  let loads = 0
   const toasts = []
   const page = createPageInstance(loadPage('pages/family/index', {
-    getMyFamily: async () => ({
-      family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
-      membership: { role: 'member' },
-      members: []
-    }),
-    leaveFamily: async () => { throw new Error('暂时无法退出') }
+    getMyFamily: async () => {
+      loads += 1
+      return {
+        family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+        membership: { role: 'member' },
+        members: []
+      }
+    },
+    leaveFamily: async () => {
+      const error = new Error('无权退出该家庭')
+      error.code = 'PERMISSION_DENIED'
+      throw error
+    }
   }))
   global.wx = {
     showToast: (input) => toasts.push(input),
@@ -478,9 +486,45 @@ test('family page keeps the current family when leaving fails', async () => {
   await page.leaveFamily()
 
   delete global.wx
+  assert.equal(loads, 1)
   assert.equal(page.data.family.familyId, 'family-a')
   assert.equal(page.data.canLeaveFamily, true)
   assert.equal(page.data.leaving, false)
+  assert.deepEqual(toasts.map((item) => item.title), ['退出失败，请重试'])
+})
+
+test('family page does not confirm a lost leave response without a new family id', async () => {
+  let loads = 0
+  const toasts = []
+  const page = createPageInstance(loadPage('pages/family/index', {
+    getMyFamily: async () => {
+      loads += 1
+      return loads === 1
+        ? {
+            family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+            membership: { familyId: 'family-a', role: 'member' },
+            members: []
+          }
+        : {
+            family: { kind: 'personal', name: '我的家庭' },
+            membership: { role: 'owner' },
+            members: []
+          }
+    },
+    leaveFamily: async () => { throw new Error('request timed out') }
+  }))
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  await page.loadFamily()
+
+  await page.leaveFamily()
+
+  delete global.wx
+  assert.equal(loads, 2)
+  assert.equal(page.data.family.familyId, 'family-a')
+  assert.equal(page.data.canLeaveFamily, true)
   assert.deepEqual(toasts.map((item) => item.title), ['退出失败，请重试'])
 })
 
@@ -622,8 +666,59 @@ test('family page keeps shared actions disabled when personal-family confirmatio
   assert.equal(page.data.loadError, false)
   assert.equal(page.data.familySettling, true)
   assert.equal(page.data.canInvite, false)
+  assert.equal(page.data.canViewMembers, false)
   assert.equal(page.data.canManageMembers, false)
-  assert.deepEqual(toasts.map((item) => item.title), ['已退出家庭', '已退出，家庭信息同步中'])
+  assert.match(readText('pages/family/index.wxml'), /bindtap="retryFamilySync"/)
+  assert.deepEqual(toasts.map((item) => item.title), ['已退出家庭，新的家庭信息待同步'])
+})
+
+test('family page retries pending family sync from the current page', async () => {
+  let loads = 0
+  const toasts = []
+  const originalConsoleError = console.error
+  console.error = () => {}
+  const page = createPageInstance(loadPage('pages/family/index', {
+    getMyFamily: async () => {
+      loads += 1
+      if (loads === 1) {
+        return {
+          family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+          membership: { familyId: 'family-a', role: 'member' },
+          members: []
+        }
+      }
+      if (loads === 2) throw new Error('network unavailable')
+      return {
+        family: { familyId: 'personal-a', name: '我的家庭', kind: 'personal' },
+        membership: { familyId: 'personal-a', role: 'owner' },
+        members: []
+      }
+    },
+    leaveFamily: async () => {}
+  }))
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  await page.loadFamily()
+  await page.leaveFamily()
+
+  const firstRetry = page.retryFamilySync()
+  const repeatedRetry = page.retryFamilySync()
+  await Promise.all([firstRetry, repeatedRetry])
+
+  console.error = originalConsoleError
+  delete global.wx
+  assert.equal(loads, 3)
+  assert.equal(page.data.family.familyId, 'personal-a')
+  assert.equal(page.data.familySettling, false)
+  assert.equal(page.data.retryingFamilySync, false)
+  assert.equal(page.data.canViewMembers, true)
+  assert.equal(page.data.canManageMembers, true)
+  assert.deepEqual(toasts.map((item) => item.title), [
+    '已退出家庭，新的家庭信息待同步',
+    '家庭信息已同步'
+  ])
 })
 
 test('family page does not treat a stale original-family response as exit confirmation', async () => {
@@ -653,8 +748,9 @@ test('family page does not treat a stale original-family response as exit confir
   assert.equal(page.data.family.kind, 'personal')
   assert.equal(page.data.familySettling, true)
   assert.equal(page.data.canInvite, false)
+  assert.equal(page.data.canViewMembers, false)
   assert.equal(page.data.canManageMembers, false)
-  assert.deepEqual(toasts.map((item) => item.title), ['已退出家庭', '已退出，家庭信息同步中'])
+  assert.deepEqual(toasts.map((item) => item.title), ['已退出家庭，新的家庭信息待同步'])
 })
 
 test('family page disables and guards family actions until the new personal family is confirmed', async () => {
@@ -709,7 +805,39 @@ test('family page disables and guards family actions until the new personal fami
   delete global.wx
   assert.equal(page.data.familySettling, false)
   assert.equal(page.data.canInvite, true)
+  assert.equal(page.data.canViewMembers, true)
   assert.equal(page.data.canManageMembers, true)
+})
+
+test('family page lets every formal family role view members while only owner can manage', async () => {
+  const navigations = []
+  global.wx = {
+    showToast() {},
+    navigateTo: (input) => navigations.push(input.url)
+  }
+
+  for (const role of ['owner', 'admin', 'member']) {
+    const page = createPageInstance(loadPage('pages/family/index', {
+      getMyFamily: async () => ({
+        family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+        membership: { familyId: 'family-a', role },
+        members: []
+      })
+    }))
+    await page.loadFamily()
+    assert.equal(page.data.canViewMembers, true, `${role} can view`)
+    assert.equal(page.data.canManageMembers, role === 'owner', `${role} can manage`)
+    page.goMemberManage()
+  }
+
+  delete global.wx
+  assert.deepEqual(navigations, [
+    '/pages/family/member',
+    '/pages/family/member',
+    '/pages/family/member'
+  ])
+  const markup = readText('pages/family/index.wxml')
+  assert.match(markup, /loading \|\| familySettling \|\| !canViewMembers/)
 })
 
 test('family page ignores an old family load that resolves after leaving', async () => {
@@ -971,7 +1099,7 @@ test('member page preserves the target when removal reconciliation is not confir
   await page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
 
   delete global.wx
-  assert.equal(loads, 2)
+  assert.equal(loads, 1)
   assert.equal(page.data.members.length, 1)
   assert.deepEqual(toasts.map((item) => item.title), ['无权移出该成员'])
 })

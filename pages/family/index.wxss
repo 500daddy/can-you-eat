@@ -184,6 +184,41 @@
   text-align: center;
 }
 
+.family-sync-state {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  margin-top: 20rpx;
+  padding-top: 18rpx;
+  border-top: 2rpx solid #eadfbd;
+}
+
+.family-sync-note {
+  flex: 1;
+}
+
+.family-sync-retry {
+  flex: none;
+  margin: 0;
+  padding: 0 22rpx;
+  border: 2rpx solid #7fb870;
+  border-radius: 14rpx;
+  background: #fffdf4;
+  color: var(--green-800);
+  font-size: 24rpx;
+  font-weight: 800;
+  line-height: 64rpx;
+}
+
+.family-sync-retry::after {
+  border: 0;
+}
+
+.family-sync-retry[disabled] {
+  opacity: 0.65;
+}
+
 .family-exit-btn {
   width: 280rpx;
   border: 2rpx solid #cf9993;
