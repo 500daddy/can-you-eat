@@ -61,12 +61,14 @@ Page({
     inviteCode: '',
     canInvite: false,
     canManageMembers: false,
+    canLeaveFamily: false,
     roleLabel: '加载中',
     loadError: false,
     invitePreview: null,
     incomingInviteId: '',
     preparingInvite: false,
     joining: false,
+    leaving: false,
     loginPrompted: false,
     needsLogin: false,
     showInviteCode: false
@@ -84,10 +86,13 @@ Page({
     if (!handledInvite) await this.loadFamily()
   },
 
-  async loadFamily() {
-    this.setData({ loading: true })
+  async loadFamily({ silent = false } = {}) {
+    const requestId = (this._familyLoadRequestId || 0) + 1
+    this._familyLoadRequestId = requestId
+    if (!silent) this.setData({ loading: true })
     try {
       const result = await familyService.getMyFamily(parentIdentity())
+      if (requestId !== this._familyLoadRequestId) return false
       const membership = result.membership || {}
       const members = (result.members || []).map((item) => ({
         ...item,
@@ -103,18 +108,23 @@ Page({
         membership,
         canInvite: ['owner', 'admin'].includes(membership.role),
         canManageMembers: membership.role === 'owner',
+        canLeaveFamily: ['admin', 'member'].includes(membership.role),
         roleLabel: roleText(membership.role)
       })
+      return true
     } catch (error) {
+      if (requestId !== this._familyLoadRequestId) return false
       if (typeof console !== 'undefined' && console.error) {
         console.error('family getMyFamily failed', error)
       }
+      if (silent) return false
       this.setData({
         loading: false,
         loadError: true,
         roleLabel: '未加载'
       })
       wx.showToast({ title: userMessage(error, '家庭信息加载失败'), icon: 'none' })
+      return false
     }
   },
 
@@ -242,6 +252,59 @@ Page({
       await this.loadFamily()
     } catch (error) {
       wx.showToast({ title: error && error.message ? error.message : '加入失败', icon: 'none' })
+    }
+  },
+
+  async leaveFamily() {
+    if (this.data.leaving || !this.data.canLeaveFamily) return
+    this.setData({ leaving: true })
+
+    const confirmed = await new Promise((resolve) => {
+      wx.showModal({
+        title: '退出家庭组',
+        content: '退出后不能继续查看和管理该家庭食材，家庭中的历史记录仍会保留',
+        confirmText: '确认退出',
+        confirmColor: '#a65d57',
+        success: (result) => resolve(Boolean(result.confirm)),
+        fail: () => resolve(false)
+      })
+    })
+
+    if (!confirmed) {
+      this.setData({ leaving: false })
+      return
+    }
+
+    try {
+      await familyService.leaveFamily()
+      this._familyLoadRequestId = (this._familyLoadRequestId || 0) + 1
+      inviteContext.clear()
+      this.setData({
+        loading: false,
+        loadError: false,
+        family: { kind: 'personal', name: '我的家庭' },
+        members: [],
+        membership: { role: 'owner' },
+        invite: null,
+        inviteCode: '',
+        invitePreview: null,
+        incomingInviteId: '',
+        needsLogin: false,
+        showInviteCode: false,
+        canInvite: true,
+        canManageMembers: true,
+        canLeaveFamily: false,
+        roleLabel: '创建者'
+      })
+      wx.showToast({ title: '已退出家庭', icon: 'success' })
+      await this.loadFamily({ silent: true })
+    } catch (error) {
+      wx.showToast({
+        title: userMessage(error, '退出失败，请重试'),
+        icon: 'none'
+      })
+    } finally {
+      this.setData({ leaving: false })
     }
   },
 

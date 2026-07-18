@@ -69,5 +69,11 @@
         <view class="role-badge {{item.role}}">{{item.roleText}}</view>
       </view>
     </view>
+
+    <view wx:if="{{canLeaveFamily}}" class="family-exit-card">
+      <button class="family-exit-btn" bindtap="leaveFamily" disabled="{{leaving}}">
+        {{leaving ? '处理中' : '退出家庭组'}}
+      </button>
+    </view>
   </block>
 </view>

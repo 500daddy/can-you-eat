@@ -9,7 +9,12 @@ function readText(projectPath) {
   return fs.readFileSync(path.join(root, projectPath), 'utf8')
 }
 
-function loadPage(projectPath, familyService, accountService = { getSession: () => ({}) }, inviteContext = { peek: () => '' }) {
+function loadPage(
+  projectPath,
+  familyService,
+  accountService = { getSession: () => ({}) },
+  inviteContext = { peek: () => '', clear: () => {} }
+) {
   const familyServicePath = require.resolve('../utils/familyService')
   const accountServicePath = require.resolve('../utils/accountService')
   const inviteContextPath = require.resolve('../utils/inviteContext')
@@ -353,6 +358,243 @@ test('logged-in recipient previews and confirms a shared family invite', async (
     nickname: '外婆',
     avatarUrl: 'cloud://avatar.jpg'
   }])
+})
+
+test('family page only lets admins and members leave the family', async () => {
+  const markup = readText('pages/family/index.wxml')
+  assert.match(markup, /wx:if="\{\{canLeaveFamily\}\}"[^>]*class="family-exit-card"/)
+  assert.match(markup, /bindtap="leaveFamily"/)
+
+  for (const [role, expected] of [
+    ['owner', false],
+    ['admin', true],
+    ['member', true]
+  ]) {
+    const page = createPageInstance(loadPage('pages/family/index', {
+      getMyFamily: async () => ({
+        family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+        membership: { role },
+        members: []
+      })
+    }))
+    global.wx = { showToast() {} }
+
+    await page.loadFamily()
+
+    assert.equal(page.data.canLeaveFamily, expected, `${role} leave visibility`)
+  }
+  delete global.wx
+})
+
+test('family page does not leave when the exit confirmation is cancelled', async () => {
+  let leaveCalls = 0
+  const modals = []
+  const page = createPageInstance(loadPage('pages/family/index', {
+    getMyFamily: async () => ({
+      family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+      membership: { role: 'member' },
+      members: []
+    }),
+    leaveFamily: async () => { leaveCalls += 1 }
+  }))
+  global.wx = {
+    showToast() {},
+    showModal(input) {
+      modals.push(input)
+      input.success({ confirm: false, cancel: true })
+    }
+  }
+  await page.loadFamily()
+
+  await page.leaveFamily()
+
+  delete global.wx
+  assert.equal(modals[0].title, '退出家庭组')
+  assert.match(modals[0].content, /不能继续查看和管理该家庭食材/)
+  assert.equal(leaveCalls, 0)
+  assert.equal(page.data.leaving, false)
+})
+
+test('family page leaves a shared family and displays the new personal family', async () => {
+  let loads = 0
+  let leaveCalls = 0
+  let inviteClears = 0
+  const toasts = []
+  const inviteContext = {
+    peek: () => '',
+    clear: () => { inviteClears += 1 }
+  }
+  const page = createPageInstance(loadPage('pages/family/index', {
+    getMyFamily: async () => {
+      loads += 1
+      return loads === 1
+        ? {
+            family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+            membership: { role: 'member' },
+            members: [{ openId: 'member', nickname: '外婆', role: 'member' }]
+          }
+        : {
+            family: { familyId: 'personal-a', name: '我的家庭', kind: 'personal' },
+            membership: { role: 'owner' },
+            members: [{ openId: 'member', nickname: '外婆', role: 'owner' }]
+          }
+    },
+    leaveFamily: async () => { leaveCalls += 1 }
+  }, { getSession: () => ({}) }, inviteContext))
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  await page.loadFamily()
+
+  await page.leaveFamily()
+
+  delete global.wx
+  assert.equal(leaveCalls, 1)
+  assert.equal(inviteClears, 1)
+  assert.equal(loads, 2)
+  assert.equal(page.data.family.kind, 'personal')
+  assert.equal(page.data.canLeaveFamily, false)
+  assert.equal(page.data.leaving, false)
+  assert.deepEqual(toasts.map((item) => item.title), ['已退出家庭'])
+})
+
+test('family page keeps the current family when leaving fails', async () => {
+  const toasts = []
+  const page = createPageInstance(loadPage('pages/family/index', {
+    getMyFamily: async () => ({
+      family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+      membership: { role: 'member' },
+      members: []
+    }),
+    leaveFamily: async () => { throw new Error('暂时无法退出') }
+  }))
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  await page.loadFamily()
+
+  await page.leaveFamily()
+
+  delete global.wx
+  assert.equal(page.data.family.familyId, 'family-a')
+  assert.equal(page.data.canLeaveFamily, true)
+  assert.equal(page.data.leaving, false)
+  assert.deepEqual(toasts.map((item) => item.title), ['退出失败，请重试'])
+})
+
+test('family page ignores repeated exit taps while one request is pending', async () => {
+  let resolveLeave
+  let leaveCalls = 0
+  let modalCalls = 0
+  const page = createPageInstance(loadPage('pages/family/index', {
+    getMyFamily: async () => ({
+      family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+      membership: { role: 'member' },
+      members: []
+    }),
+    leaveFamily: async () => {
+      leaveCalls += 1
+      await new Promise((resolve) => { resolveLeave = resolve })
+    }
+  }))
+  global.wx = {
+    showToast() {},
+    showModal(input) {
+      modalCalls += 1
+      input.success({ confirm: true, cancel: false })
+    }
+  }
+  await page.loadFamily()
+
+  const first = page.leaveFamily()
+  await Promise.resolve()
+  const repeated = page.leaveFamily()
+  await Promise.resolve()
+
+  assert.equal(page.data.leaving, true)
+  assert.equal(modalCalls, 1)
+  assert.equal(leaveCalls, 1)
+  assert.match(readText('pages/family/index.wxml'), /disabled="\{\{leaving\}\}"/)
+  assert.match(readText('pages/family/index.wxml'), /\{\{leaving \? '处理中' : '退出家庭组'\}\}/)
+
+  resolveLeave()
+  await Promise.all([first, repeated])
+  delete global.wx
+})
+
+test('family page keeps the successful exit state when personal-family refresh fails', async () => {
+  let loads = 0
+  const toasts = []
+  const originalConsoleError = console.error
+  console.error = () => {}
+  const page = createPageInstance(loadPage('pages/family/index', {
+    getMyFamily: async () => {
+      loads += 1
+      if (loads > 1) throw new Error('refresh failed')
+      return {
+        family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+        membership: { role: 'admin' },
+        members: []
+      }
+    },
+    leaveFamily: async () => {}
+  }))
+  global.wx = {
+    showToast: (input) => toasts.push(input),
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  await page.loadFamily()
+
+  await page.leaveFamily()
+
+  console.error = originalConsoleError
+  delete global.wx
+  assert.equal(loads, 2)
+  assert.equal(page.data.family.kind, 'personal')
+  assert.equal(page.data.canLeaveFamily, false)
+  assert.equal(page.data.loadError, false)
+  assert.deepEqual(toasts.map((item) => item.title), ['已退出家庭'])
+})
+
+test('family page ignores an old family load that resolves after leaving', async () => {
+  const pendingLoads = []
+  const page = createPageInstance(loadPage('pages/family/index', {
+    getMyFamily: () => new Promise((resolve) => pendingLoads.push(resolve)),
+    leaveFamily: async () => {}
+  }))
+  global.wx = {
+    showToast() {},
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+
+  const oldLoad = page.loadFamily()
+  page.setData({
+    family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+    membership: { role: 'member' },
+    canLeaveFamily: true
+  })
+  const leaving = page.leaveFamily()
+  await Promise.resolve()
+  await Promise.resolve()
+  await Promise.resolve()
+  pendingLoads[1]({
+    family: { familyId: 'personal-a', name: '我的家庭', kind: 'personal' },
+    membership: { role: 'owner' },
+    members: []
+  })
+  await leaving
+  pendingLoads[0]({
+    family: { familyId: 'family-a', name: '小满家', kind: 'shared' },
+    membership: { role: 'member' },
+    members: []
+  })
+  await oldLoad
+
+  delete global.wx
+  assert.equal(page.data.family.familyId, 'personal-a')
+  assert.equal(page.data.canLeaveFamily, false)
 })
 
 test('member page only lets owner manage member roles', async () => {

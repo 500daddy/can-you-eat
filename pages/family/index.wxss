@@ -173,3 +173,30 @@
   background: #e7f4d8;
   color: var(--green-800);
 }
+
+.family-exit-card {
+  margin: 42rpx 0 20rpx;
+  text-align: center;
+}
+
+.family-exit-btn {
+  width: 280rpx;
+  border: 2rpx solid #cf9993;
+  border-radius: 16rpx;
+  background: transparent;
+  color: #a65d57;
+  font-size: 25rpx;
+  font-weight: 700;
+  line-height: 76rpx;
+}
+
+.family-exit-btn::after {
+  border: 0;
+}
+
+.family-exit-btn[disabled] {
+  border-color: #d8b9b5;
+  background: transparent;
+  color: #b98a85;
+  opacity: 0.72;
+}
