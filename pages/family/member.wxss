@@ -53,6 +53,18 @@
   gap: 10rpx;
 }
 
+.member-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12rpx;
+}
+
+.remove-actions {
+  padding-top: 10rpx;
+  border-top: 2rpx solid rgba(216, 201, 157, 0.45);
+}
+
 .role-btn {
   min-width: 112rpx;
   height: 58rpx;
@@ -68,6 +80,21 @@
   border-color: #8ebf7b;
   background: #e7f4d8;
   color: var(--green-800);
+}
+
+.remove-member-btn {
+  min-width: 112rpx;
+  height: 52rpx;
+  border: 2rpx solid #d9a09a;
+  border-radius: 14rpx;
+  background: #fff6f5;
+  color: #a64038;
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+.remove-member-btn[disabled] {
+  opacity: 0.55;
 }
 
 .role-owner {

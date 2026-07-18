@@ -4,8 +4,12 @@
 
   <view class="profile-card">
     <button class="avatar-button" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
-      <image class="avatar-preview" src="{{avatarUrl || assets.account.defaultAvatar}}" mode="aspectFill" />
-      <view class="avatar-badge">更换</view>
+      <image
+        class="avatar-preview {{avatarUrl ? 'has-avatar' : 'is-placeholder'}}"
+        src="{{avatarUrl || assets.account.defaultAvatar}}"
+        mode="{{avatarUrl ? 'aspectFill' : 'aspectFit'}}"
+      />
+      <view class="avatar-badge">{{avatarUrl ? '更换' : '添加'}}</view>
     </button>
     <view class="profile-main">
       <view class="label">昵称</view>

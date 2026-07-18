@@ -83,3 +83,122 @@ test('family cloud store updates all matching family records by fields', async (
   assert.deepEqual(updateCalls, [{ data: { familyId: 'formal-b' } }])
   assert.deepEqual(result, { stats: { updated: 2 } })
 })
+
+test('family cloud store gets one record by exact fields without listing the collection', async () => {
+  const calls = []
+  const expected = { _id: 'member-cloud-id', openId: 'owner', status: 'active' }
+  const db = {
+    collection(collection) {
+      calls.push({ operation: 'collection', collection })
+      return {
+        where(fields) {
+          calls.push({ operation: 'where', fields })
+          return {
+            limit(value) {
+              calls.push({ operation: 'limit', value })
+              return {
+                async get() {
+                  calls.push({ operation: 'get' })
+                  return { data: [expected] }
+                }
+              }
+            }
+          }
+        },
+        skip() {
+          throw new Error('paginated list must not be used')
+        }
+      }
+    }
+  }
+
+  const result = await familyCloudStore.createCloudStore(db).getByFields(
+    'family_members',
+    { openId: 'owner', status: 'active' }
+  )
+
+  assert.equal(result, expected)
+  assert.deepEqual(calls, [
+    { operation: 'collection', collection: 'family_members' },
+    { operation: 'where', fields: { openId: 'owner', status: 'active' } },
+    { operation: 'limit', value: 1 },
+    { operation: 'get' }
+  ])
+})
+
+test('family cloud store exposes only document operations on the cloud transaction', async () => {
+  const calls = []
+  const removeCommand = { __remove: true }
+  const transaction = {
+    collection(collection) {
+      calls.push(`transaction:collection:${collection}`)
+      return {
+        doc(id) {
+          return {
+            async get() {
+              calls.push(`transaction:get:${collection}:${id}`)
+              return { data: { _id: 'member-cloud-id', status: 'active', note: 'old' } }
+            },
+            async update(input) {
+              calls.push(`transaction:update:${collection}:${id}`)
+              assert.equal(input.data.note, removeCommand)
+            },
+            async set(input) {
+              calls.push(`transaction:set:${collection}:${id}`)
+              assert.equal(input.data.id, id)
+            }
+          }
+        }
+      }
+    }
+  }
+  const db = {
+    command: {
+      remove() {
+        calls.push('root:command:remove')
+        return removeCommand
+      }
+    },
+    collection(collection) {
+      calls.push(`root:collection:${collection}`)
+      throw new Error('root collection must not be used in transaction')
+    },
+    async runTransaction(callback) {
+      calls.push('root:runTransaction')
+      return callback(transaction)
+    }
+  }
+
+  const result = await familyCloudStore.createCloudStore(db).runTransaction(async (store) => {
+    const member = await store.getById('family_members', 'member-cloud-id')
+    const updated = await store.updateById('family_members', member._id, { note: undefined })
+    await store.setById('family_audit_logs', 'audit-1', { id: 'audit-1' })
+    assert.equal(store.runTransaction, undefined)
+    assert.equal(store.list, undefined)
+    assert.equal(store.get, undefined)
+    return updated
+  })
+
+  assert.deepEqual(result, {})
+  assert.equal(calls.includes('root:runTransaction'), true)
+  assert.equal(calls.includes('root:command:remove'), true)
+  assert.equal(calls.some((call) => call.startsWith('root:collection:')), false)
+  assert.equal(calls.some((call) => call === 'transaction:get:family_members:member-cloud-id'), true)
+  assert.equal(calls.some((call) => call === 'transaction:update:family_members:member-cloud-id'), true)
+  assert.equal(calls.some((call) => call === 'transaction:set:family_audit_logs:audit-1'), true)
+})
+
+test('family cloud store propagates cloud transaction failures', async () => {
+  const expected = new Error('transaction aborted')
+  const db = {
+    async runTransaction(callback) {
+      await callback({})
+      throw expected
+    }
+  }
+
+  await assert.rejects(
+    familyCloudStore.createCloudStore(db).runTransaction(async () => 'unused'),
+    expected
+  )
+})

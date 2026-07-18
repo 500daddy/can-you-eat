@@ -58,22 +58,22 @@ async function ensureCollections(db, collections) {
   return result
 }
 
-function createCloudStore(db) {
-  return {
+function createStore(client, rootDb, includeTransaction) {
+  const store = {
     async list(collection, predicate) {
       if (predicate) {
         const all = []
         let skip = 0
         const limit = 100
         while (true) {
-          const res = await db.collection(collection).skip(skip).limit(limit).get()
+          const res = await client.collection(collection).skip(skip).limit(limit).get()
           all.push(...res.data)
           if (res.data.length < limit) break
           skip += limit
         }
         return all.filter(predicate)
       }
-      const res = await db.collection(collection).limit(100).get()
+      const res = await client.collection(collection).limit(100).get()
       return res.data
     },
 
@@ -82,8 +82,13 @@ function createCloudStore(db) {
       return list[0] || null
     },
 
+    async getByFields(collection, fields) {
+      const res = await client.collection(collection).where(fields).limit(1).get()
+      return res.data[0] || null
+    },
+
     async add(collection, doc) {
-      await db.collection(collection).add({ data: doc })
+      await client.collection(collection).add({ data: doc })
       return doc
     },
 
@@ -91,18 +96,51 @@ function createCloudStore(db) {
       const found = await this.get(collection, predicate)
       if (!found) return null
       const id = found._id
-      const removeValue = db.command && db.command.remove ? db.command.remove() : undefined
+      const removeValue = rootDb.command && rootDb.command.remove ? rootDb.command.remove() : undefined
       const next = buildCloudUpdateData(found, patch, removeValue)
-      await db.collection(collection).doc(id).update({ data: next })
+      await client.collection(collection).doc(id).update({ data: next })
       return { ...compactObject({ ...found, ...patch }), _id: id }
     },
 
     async updateManyByFields(collection, fields, patch) {
-      const removeValue = db.command && db.command.remove ? db.command.remove() : undefined
+      const removeValue = rootDb.command && rootDb.command.remove ? rootDb.command.remove() : undefined
       const data = buildCloudUpdateData({}, patch, removeValue)
-      return db.collection(collection).where(fields).update({ data })
+      return client.collection(collection).where(fields).update({ data })
     }
   }
+
+  if (includeTransaction) {
+    store.runTransaction = (callback) => rootDb.runTransaction((transaction) => (
+      callback(createTransactionStore(transaction, rootDb))
+    ))
+  }
+
+  return store
+}
+
+function createTransactionStore(transaction, rootDb) {
+  return {
+    async getById(collection, id) {
+      const res = await transaction.collection(collection).doc(id).get()
+      return res.data || null
+    },
+
+    async updateById(collection, id, patch) {
+      const removeValue = rootDb.command && rootDb.command.remove ? rootDb.command.remove() : undefined
+      const data = buildCloudUpdateData({}, patch, removeValue)
+      await transaction.collection(collection).doc(id).update({ data })
+      return compactObject({ ...patch })
+    },
+
+    async setById(collection, id, doc) {
+      await transaction.collection(collection).doc(id).set({ data: doc })
+      return doc
+    }
+  }
+}
+
+function createCloudStore(db) {
+  return createStore(db, db, true)
 }
 
 module.exports = {

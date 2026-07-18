@@ -3,7 +3,7 @@ const sprite = '/assets/sprites/'
 module.exports = {
   sprite,
   account: {
-    defaultAvatar: `${sprite}nav/nav_pixel_mine_active.png`
+    defaultAvatar: `${sprite}actions/action_camera.png`
   },
   ui: {
     bannerVillage: `${sprite}ui/ui_banner_village.png`,

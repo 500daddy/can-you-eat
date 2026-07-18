@@ -19,12 +19,18 @@
 }
 
 .account-avatar {
+  box-sizing: border-box;
   flex: 0 0 auto;
   width: 104rpx;
   height: 104rpx;
   border: 3rpx solid #51351f;
   border-radius: 20rpx;
   background: #fff9e9;
+}
+
+.account-avatar.is-placeholder {
+  padding: 25rpx;
+  opacity: 0.78;
 }
 
 .account-main {

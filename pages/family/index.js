@@ -49,6 +49,68 @@ function parentIdentity() {
   return identity
 }
 
+function familyIdOf(result = {}) {
+  return (result.family && result.family.familyId) ||
+    (result.membership && result.membership.familyId) || ''
+}
+
+function confirmsFamilyExit(result, originalFamilyId) {
+  if (!result || !originalFamilyId) return false
+  const nextFamilyId = familyIdOf(result)
+  return Boolean(nextFamilyId && nextFamilyId !== originalFamilyId)
+}
+
+function familyViewData(result = {}) {
+  const membership = result.membership || {}
+  const members = (result.members || []).map((item) => ({
+    ...item,
+    avatarText: item.nickname ? String(item.nickname).slice(0, 1) : '家',
+    roleText: roleText(item.role),
+    isOwner: item.role === 'owner'
+  }))
+  return {
+    loading: false,
+    loadError: false,
+    family: result.family || {},
+    members,
+    membership,
+    canInvite: ['owner', 'admin'].includes(membership.role),
+    canViewMembers: ['owner', 'admin', 'member'].includes(membership.role),
+    canManageMembers: membership.role === 'owner',
+    canLeaveFamily: ['admin', 'member'].includes(membership.role),
+    roleLabel: roleText(membership.role),
+    familySettling: false,
+    familyConfirmationPending: false
+  }
+}
+
+function isUncertainRequestError(error) {
+  if (!error) return false
+  const codes = [error.code, error.errCode]
+    .map((value) => String(value == null ? '' : value).trim().toUpperCase())
+    .filter(Boolean)
+  const isBusinessCode = (code) => /(?:^|_)(?:PERMISSION|UNAUTHORIZED|FORBIDDEN|INVALID|MEMBER|INVITE|OWNER|NOT_FOUND|NOT_EXIST|ALREADY)(?:_|$)/.test(code)
+  if (codes.some(isBusinessCode)) return false
+  const uncertainCodes = new Set([
+    '-1',
+    'ECONNRESET',
+    'ECONNREFUSED',
+    'ENETUNREACH',
+    'EHOSTUNREACH',
+    'EAI_AGAIN',
+    'ETIMEDOUT',
+    'NETWORK_ERROR',
+    'REQUEST_TIMEOUT',
+    'SOCKET_CLOSED',
+    'TIMEOUT'
+  ])
+  if (codes.some((code) => uncertainCodes.has(code))) return true
+  const message = [error.message, error.errMsg]
+    .map((value) => String(value == null ? '' : value))
+    .join(' ')
+  return /timed?\s*out|timeout|network|request:\s*fail|connection|socket|ECONNRESET|ETIMEDOUT/i.test(message)
+}
+
 Page({
   ...createShareHandlers(),
 
@@ -60,13 +122,19 @@ Page({
     invite: null,
     inviteCode: '',
     canInvite: false,
+    canViewMembers: false,
     canManageMembers: false,
+    canLeaveFamily: false,
     roleLabel: '加载中',
     loadError: false,
     invitePreview: null,
     incomingInviteId: '',
     preparingInvite: false,
     joining: false,
+    leaving: false,
+    familySettling: false,
+    familyConfirmationPending: false,
+    retryingFamilySync: false,
     loginPrompted: false,
     needsLogin: false,
     showInviteCode: false
@@ -84,44 +152,48 @@ Page({
     if (!handledInvite) await this.loadFamily()
   },
 
-  async loadFamily() {
-    this.setData({ loading: true })
+  async loadFamily({ silent = false } = {}) {
+    const requestId = (this._familyLoadRequestId || 0) + 1
+    this._familyLoadRequestId = requestId
+    if (!silent) this.setData({ loading: true })
     try {
       const result = await familyService.getMyFamily(parentIdentity())
-      const membership = result.membership || {}
-      const members = (result.members || []).map((item) => ({
-        ...item,
-        avatarText: item.nickname ? String(item.nickname).slice(0, 1) : '家',
-        roleText: roleText(item.role),
-        isOwner: item.role === 'owner'
-      }))
-      this.setData({
-        loading: false,
-        loadError: false,
-        family: result.family || {},
-        members,
-        membership,
-        canInvite: ['owner', 'admin'].includes(membership.role),
-        canManageMembers: membership.role === 'owner',
-        roleLabel: roleText(membership.role)
-      })
+      if (requestId !== this._familyLoadRequestId) return false
+      if (this.data.familySettling && !confirmsFamilyExit(result, this._settlingFromFamilyId)) {
+        if (!silent) this.setData({ loading: false })
+        return false
+      }
+      this.setData(familyViewData(result))
+      this._settlingFromFamilyId = ''
+      return true
     } catch (error) {
+      if (requestId !== this._familyLoadRequestId) return false
       if (typeof console !== 'undefined' && console.error) {
         console.error('family getMyFamily failed', error)
       }
+      if (silent) return false
       this.setData({
         loading: false,
         loadError: true,
         roleLabel: '未加载'
       })
       wx.showToast({ title: userMessage(error, '家庭信息加载失败'), icon: 'none' })
+      return false
     }
   },
 
   async prepareInvite() {
     if (this.data.preparingInvite) return
+    if (this.data.familySettling) {
+      wx.showToast({ title: '家庭信息同步中，请稍候', icon: 'none' })
+      return
+    }
     if (this.data.loading) {
       wx.showToast({ title: '家庭信息加载中', icon: 'none' })
+      return
+    }
+    if (this.data.membership.role && !this.data.canInvite) {
+      wx.showToast({ title: '当前身份不能邀请成员', icon: 'none' })
       return
     }
     this.setData({ preparingInvite: true })
@@ -245,7 +317,148 @@ Page({
     }
   },
 
+  async leaveFamily() {
+    if (this.data.leaving || !this.data.canLeaveFamily) return
+    const originalFamilyId = familyIdOf(this.data)
+    this.setData({ leaving: true })
+
+    const confirmed = await new Promise((resolve) => {
+      wx.showModal({
+        title: '退出家庭组',
+        content: '退出后不能继续查看和管理该家庭食材，家庭中的历史记录仍会保留',
+        confirmText: '确认退出',
+        confirmColor: '#a65d57',
+        success: (result) => resolve(Boolean(result.confirm)),
+        fail: () => resolve(false)
+      })
+    })
+
+    if (!confirmed) {
+      this.setData({ leaving: false })
+      return
+    }
+
+    this._familyLoadRequestId = (this._familyLoadRequestId || 0) + 1
+    let confirmedFamily = null
+    try {
+      try {
+        await familyService.leaveFamily()
+      } catch (error) {
+        if (!isUncertainRequestError(error)) throw error
+        let result
+        try {
+          result = await familyService.getMyFamily(parentIdentity())
+        } catch (reconcileError) {
+          this._settlingFromFamilyId = originalFamilyId
+          this.setData({
+            familySettling: true,
+            familyConfirmationPending: true,
+            canInvite: false,
+            canViewMembers: false,
+            canManageMembers: false,
+            canLeaveFamily: false,
+            roleLabel: '待确认'
+          })
+          wx.showToast({ title: '退出结果待确认，请重新确认', icon: 'none' })
+          return
+        }
+        if (!confirmsFamilyExit(result, originalFamilyId)) throw error
+        confirmedFamily = result
+      }
+      inviteContext.clear()
+      this._settlingFromFamilyId = originalFamilyId
+      this.setData({
+        loading: false,
+        loadError: false,
+        family: { kind: 'personal', name: '我的家庭' },
+        members: [],
+        membership: { role: 'owner' },
+        invite: null,
+        inviteCode: '',
+        invitePreview: null,
+        incomingInviteId: '',
+        needsLogin: false,
+        showInviteCode: false,
+        canInvite: false,
+        canViewMembers: false,
+        canManageMembers: false,
+        canLeaveFamily: false,
+        roleLabel: '同步中',
+        familySettling: true,
+        familyConfirmationPending: false
+      })
+      let settled = false
+      if (confirmedFamily) {
+        this._familyLoadRequestId = (this._familyLoadRequestId || 0) + 1
+        this.setData(familyViewData(confirmedFamily))
+        this._settlingFromFamilyId = ''
+        settled = true
+      } else {
+        settled = await this.loadFamily({ silent: true })
+      }
+      wx.showToast(settled
+        ? { title: '已退出家庭', icon: 'success' }
+        : { title: '已退出家庭，新的家庭信息待同步', icon: 'none' })
+    } catch (error) {
+      wx.showToast({
+        title: userMessage(error, '退出失败，请重试'),
+        icon: 'none'
+      })
+    } finally {
+      this.setData({ leaving: false })
+    }
+  },
+
+  async retryFamilySync() {
+    if (!this.data.familySettling || this.data.retryingFamilySync) return
+    this.setData({ retryingFamilySync: true })
+    try {
+      if (this.data.familyConfirmationPending) {
+        const originalFamilyId = this._settlingFromFamilyId
+        const requestId = (this._familyLoadRequestId || 0) + 1
+        this._familyLoadRequestId = requestId
+        let result
+        try {
+          result = await familyService.getMyFamily(parentIdentity())
+        } catch (error) {
+          if (requestId !== this._familyLoadRequestId) return
+          wx.showToast({ title: '暂时无法确认，请稍后重试', icon: 'none' })
+          return
+        }
+        if (requestId !== this._familyLoadRequestId) return
+        const currentFamilyId = familyIdOf(result)
+        if (!currentFamilyId) {
+          wx.showToast({ title: '暂时无法确认，请稍后重试', icon: 'none' })
+          return
+        }
+        this._familyLoadRequestId += 1
+        this.setData(familyViewData(result))
+        this._settlingFromFamilyId = ''
+        wx.showToast({
+          title: currentFamilyId !== originalFamilyId ? '已退出家庭' : '尚未退出，可重新操作',
+          icon: currentFamilyId !== originalFamilyId ? 'success' : 'none'
+        })
+        return
+      }
+      const synced = await this.loadFamily({ silent: true })
+      wx.showToast({
+        title: synced ? '家庭信息已同步' : '暂时未同步成功，请稍后重试',
+        icon: synced ? 'success' : 'none'
+      })
+    } finally {
+      this.setData({ retryingFamilySync: false })
+    }
+  },
+
   goMemberManage() {
+    if (this.data.familySettling) {
+      wx.showToast({ title: '家庭信息同步中，请稍候', icon: 'none' })
+      return
+    }
+    if (this.data.loading || !this.data.canViewMembers) {
+      wx.showToast({ title: '当前身份不能查看成员', icon: 'none' })
+      return
+    }
     wx.navigateTo({ url: '/pages/family/member' })
   }
 })

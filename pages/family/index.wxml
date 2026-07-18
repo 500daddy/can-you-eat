@@ -28,11 +28,20 @@
         <view class="member-count">{{members.length}}人</view>
       </view>
       <view class="button-row">
-        <button wx:if="{{!invite}}" class="pixel-btn" bindtap="prepareInvite">
+        <button wx:if="{{!invite}}" class="pixel-btn" bindtap="prepareInvite"
+          disabled="{{loading || familySettling || preparingInvite || (membership.role && !canInvite)}}">
           {{preparingInvite ? '正在准备…' : '邀请家人'}}
         </button>
-        <button wx:else class="pixel-btn share-ready-btn" open-type="share">发送给微信家人</button>
-        <button class="pixel-btn ghost" bindtap="goMemberManage">成员管理</button>
+        <button wx:else class="pixel-btn share-ready-btn" open-type="share"
+          disabled="{{loading || familySettling || (membership.role && !canInvite)}}">发送给微信家人</button>
+        <button class="pixel-btn ghost" bindtap="goMemberManage"
+          disabled="{{loading || familySettling || !canViewMembers}}">{{canManageMembers ? '成员管理' : '查看成员'}}</button>
+      </view>
+      <view wx:if="{{familySettling}}" class="family-sync-state">
+        <view class="subtitle family-sync-note">{{familyConfirmationPending ? '退出结果暂时无法确认，原家庭信息会保留。' : '已退出原家庭，新的家庭信息还未同步完成。'}}</view>
+        <button class="family-sync-retry" bindtap="retryFamilySync" disabled="{{retryingFamilySync}}">
+          {{retryingFamilySync ? '正在确认…' : (familyConfirmationPending ? '重新确认' : '重新同步')}}
+        </button>
       </view>
     </view>
 
@@ -68,6 +77,12 @@
         </view>
         <view class="role-badge {{item.role}}">{{item.roleText}}</view>
       </view>
+    </view>
+
+    <view wx:if="{{canLeaveFamily}}" class="family-exit-card">
+      <button class="family-exit-btn" bindtap="leaveFamily" disabled="{{leaving}}">
+        {{leaving ? '处理中' : '退出家庭组'}}
+      </button>
     </view>
   </block>
 </view>

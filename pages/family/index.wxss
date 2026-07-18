@@ -2,6 +2,11 @@
   margin-top: 22rpx;
 }
 
+.family-sync-note {
+  margin-top: 16rpx;
+  color: #8a7447;
+}
+
 .family-main,
 .card-head,
 .member-row {
@@ -172,4 +177,66 @@
   border-color: #8ebf7b;
   background: #e7f4d8;
   color: var(--green-800);
+}
+
+.family-exit-card {
+  margin: 42rpx 0 20rpx;
+  text-align: center;
+}
+
+.family-sync-state {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  margin-top: 20rpx;
+  padding-top: 18rpx;
+  border-top: 2rpx solid #eadfbd;
+}
+
+.family-sync-note {
+  flex: 1;
+}
+
+.family-sync-retry {
+  flex: none;
+  margin: 0;
+  padding: 0 22rpx;
+  border: 2rpx solid #7fb870;
+  border-radius: 14rpx;
+  background: #fffdf4;
+  color: var(--green-800);
+  font-size: 24rpx;
+  font-weight: 800;
+  line-height: 64rpx;
+}
+
+.family-sync-retry::after {
+  border: 0;
+}
+
+.family-sync-retry[disabled] {
+  opacity: 0.65;
+}
+
+.family-exit-btn {
+  width: 280rpx;
+  border: 2rpx solid #cf9993;
+  border-radius: 16rpx;
+  background: transparent;
+  color: #a65d57;
+  font-size: 25rpx;
+  font-weight: 700;
+  line-height: 76rpx;
+}
+
+.family-exit-btn::after {
+  border: 0;
+}
+
+.family-exit-btn[disabled] {
+  border-color: #d8b9b5;
+  background: transparent;
+  color: #b98a85;
+  opacity: 0.72;
 }
