@@ -18,11 +18,11 @@
       </view>
       <view class="member-actions" wx:if="{{!item.isOwner}}">
         <view class="role-actions">
-          <button class="role-btn {{item.role === 'member' ? 'active' : ''}}" data-openid="{{item.openId}}" data-role="member" bindtap="updateRole">成员</button>
-          <button class="role-btn {{item.role === 'admin' ? 'active' : ''}}" data-openid="{{item.openId}}" data-role="admin" bindtap="updateRole">管理员</button>
+          <button class="role-btn {{item.role === 'member' ? 'active' : ''}}" data-openid="{{item.openId}}" data-role="member" bindtap="updateRole" disabled="{{!!removingOpenId || !!updatingOpenId}}">成员</button>
+          <button class="role-btn {{item.role === 'admin' ? 'active' : ''}}" data-openid="{{item.openId}}" data-role="admin" bindtap="updateRole" disabled="{{!!removingOpenId || !!updatingOpenId}}">管理员</button>
         </view>
         <view class="remove-actions" wx:if="{{canManageMembers && !item.isOwner}}">
-          <button class="remove-member-btn" data-openid="{{item.openId}}" bindtap="removeMember" disabled="{{!!removingOpenId}}">{{removingOpenId === item.openId ? '处理中' : '移出家庭'}}</button>
+          <button class="remove-member-btn" data-openid="{{item.openId}}" bindtap="removeMember" disabled="{{!!removingOpenId || !!updatingOpenId}}">{{removingOpenId === item.openId ? '处理中' : '移出家庭'}}</button>
         </view>
       </view>
       <view wx:else class="role-owner">创建者</view>

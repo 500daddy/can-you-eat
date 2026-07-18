@@ -400,6 +400,31 @@ test('member page only shows remove actions to owners for non-owner members', as
   assert.match(markup, /\? '处理中' : '移出家庭'/)
 })
 
+test('member page ignores an older member load that finishes after the latest load', async () => {
+  const pendingLoads = []
+  const page = createPageInstance(loadPage('pages/family/member', {
+    getMyFamily: () => new Promise((resolve) => pendingLoads.push(resolve))
+  }))
+  global.wx = { showToast() {} }
+
+  const olderLoad = page.loadMembers()
+  const latestLoad = page.loadMembers()
+  pendingLoads[1]({
+    membership: { role: 'owner' },
+    members: []
+  })
+  await latestLoad
+  pendingLoads[0]({
+    membership: { role: 'owner' },
+    members: [{ openId: 'removed-member', nickname: '爸爸', role: 'member' }]
+  })
+  await olderLoad
+
+  delete global.wx
+  assert.deepEqual(page.data.members, [])
+  assert.equal(page.data.loading, false)
+})
+
 test('member page rejects forged remove attempts without permission or against owner', async () => {
   const removed = []
   const service = {
@@ -551,13 +576,100 @@ test('member page keeps one global removal lock across interleaved member clicks
   assert.deepEqual(calls, [{ openId: 'member-a' }])
   assert.equal(modals.length, 1)
   const markup = readText('pages/family/member.wxml')
-  assert.match(markup, /disabled="\{\{!!removingOpenId\}\}"/)
+  assert.match(markup, /disabled="\{\{!!removingOpenId \|\| !!updatingOpenId\}\}"/)
   assert.match(markup, /\{\{removingOpenId === item\.openId \? '处理中' : '移出家庭'\}\}/)
   pendingRemovals[0]()
   await Promise.all([firstRemoval, repeatedRemoval])
 
   delete global.wx
   assert.equal(page.data.removingOpenId, '')
+})
+
+test('member page ignores role updates while a removal is pending', async () => {
+  let finishRemoval
+  const calls = []
+  const page = createPageInstance(loadPage('pages/family/member', {
+    getMyFamily: async () => ({
+      membership: { role: 'owner' },
+      members: [{ openId: 'member-a', nickname: '爸爸', role: 'member' }]
+    }),
+    removeMember: async (input) => {
+      calls.push({ action: 'removeMember', input })
+      await new Promise((resolve) => { finishRemoval = resolve })
+    },
+    updateMemberRole: async (input) => {
+      calls.push({ action: 'updateMemberRole', input })
+    }
+  }))
+  global.wx = {
+    showToast() {},
+    showModal: (input) => input.success({ confirm: true, cancel: false })
+  }
+  await page.onShow()
+
+  const removal = page.removeMember({ currentTarget: { dataset: { openid: 'member-a' } } })
+  await Promise.resolve()
+  page.updateRole({ currentTarget: { dataset: { openid: 'member-a', role: 'admin' } } })
+  await Promise.resolve()
+
+  assert.deepEqual(calls, [
+    { action: 'removeMember', input: { openId: 'member-a' } }
+  ])
+  finishRemoval()
+  await removal
+
+  delete global.wx
+})
+
+test('member page serializes role updates with every member write action', async () => {
+  let finishUpdate
+  const calls = []
+  const modals = []
+  const page = createPageInstance(loadPage('pages/family/member', {
+    getMyFamily: async () => ({
+      membership: { role: 'owner' },
+      members: [{ openId: 'member-a', nickname: '爸爸', role: 'member' }]
+    }),
+    updateMemberRole: async (input) => {
+      calls.push({ action: 'updateMemberRole', input })
+      await new Promise((resolve) => { finishUpdate = resolve })
+    },
+    removeMember: async (input) => {
+      calls.push({ action: 'removeMember', input })
+    }
+  }))
+  global.wx = {
+    showToast() {},
+    showModal(input) {
+      modals.push(input)
+      input.success({ confirm: true, cancel: false })
+    }
+  }
+  await page.onShow()
+
+  const update = page.updateRole({ currentTarget: { dataset: { openid: 'member-a', role: 'admin' } } })
+  await Promise.resolve()
+  const repeatedUpdate = page.updateRole({ currentTarget: { dataset: { openid: 'member-a', role: 'admin' } } })
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member-a' } } })
+
+  assert.equal(page.data.updatingOpenId, 'member-a')
+  assert.deepEqual(calls, [
+    { action: 'updateMemberRole', input: { openId: 'member-a', role: 'admin' } }
+  ])
+  assert.equal(modals.length, 1)
+  finishUpdate()
+  await Promise.all([update, repeatedUpdate])
+
+  delete global.wx
+  assert.equal(page.data.updatingOpenId, '')
+})
+
+test('member page disables every member action while any write is pending', () => {
+  const markup = readText('pages/family/member.wxml')
+  const sharedDisabledState = /disabled="\{\{!!removingOpenId \|\| !!updatingOpenId\}\}"/g
+
+  assert.equal(markup.match(sharedDisabledState)?.length, 3)
+  assert.match(markup, /\? '处理中' : '移出家庭'/)
 })
 
 test('member page keeps local removal and only shows success when refresh fails', async () => {

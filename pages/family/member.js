@@ -24,12 +24,15 @@ function decorateMembers(members = []) {
 Page({
   ...createShareHandlers(),
 
+  _loadRequestId: 0,
+
   data: {
     loading: true,
     members: [],
     membership: {},
     canManageMembers: false,
-    removingOpenId: ''
+    removingOpenId: '',
+    updatingOpenId: ''
   },
 
   async onShow() {
@@ -37,9 +40,11 @@ Page({
   },
 
   async loadMembers({ silent = false } = {}) {
+    const requestId = ++this._loadRequestId
     this.setData({ loading: true })
     try {
       const result = await familyService.getMyFamily()
+      if (requestId !== this._loadRequestId) return false
       const membership = result.membership || {}
       this.setData({
         loading: false,
@@ -49,6 +54,7 @@ Page({
       })
       return true
     } catch (error) {
+      if (requestId !== this._loadRequestId) return false
       this.setData({ loading: false })
       if (!silent) {
         wx.showToast({ title: '成员加载失败', icon: 'none' })
@@ -66,7 +72,8 @@ Page({
     })
   },
 
-  updateRole(e) {
+  async updateRole(e) {
+    if (this.data.removingOpenId || this.data.updatingOpenId) return
     if (!this.data.canManageMembers) {
       wx.showToast({ title: '只有创建者可调整成员身份', icon: 'none' })
       return
@@ -74,25 +81,32 @@ Page({
     const { openid, role } = e.currentTarget.dataset
     const target = this.data.members.find((item) => item.openId === openid)
     if (!target || target.role === role || target.isOwner) return
-    wx.showModal({
-      title: '调整成员身份',
-      content: `确认把 ${target.nickname || '这位家人'} 设为${roleTextMap[role]}吗？`,
-      confirmText: '确认',
-      success: async (res) => {
-        if (!res.confirm) return
-        try {
-          await familyService.updateMemberRole({ openId: openid, role })
-          await this.loadMembers()
-          wx.showToast({ title: '已更新', icon: 'success' })
-        } catch (error) {
-          wx.showToast({ title: '更新失败', icon: 'none' })
-        }
+    this.setData({ updatingOpenId: openid })
+    try {
+      const confirmed = await new Promise((resolve) => {
+        wx.showModal({
+          title: '调整成员身份',
+          content: `确认把 ${target.nickname || '这位家人'} 设为${roleTextMap[role]}吗？`,
+          confirmText: '确认',
+          success: (res) => resolve(res.confirm),
+          fail: () => resolve(false)
+        })
+      })
+      if (!confirmed) return
+      await familyService.updateMemberRole({ openId: openid, role })
+      await this.loadMembers()
+      wx.showToast({ title: '已更新', icon: 'success' })
+    } catch (error) {
+      wx.showToast({ title: '更新失败', icon: 'none' })
+    } finally {
+      if (this.data.updatingOpenId === openid) {
+        this.setData({ updatingOpenId: '' })
       }
-    })
+    }
   },
 
   async removeMember(e) {
-    if (this.data.removingOpenId) return
+    if (this.data.removingOpenId || this.data.updatingOpenId) return
     if (!this.data.canManageMembers) {
       wx.showToast({ title: '只有创建者可移出家庭成员', icon: 'none' })
       return
