@@ -396,7 +396,8 @@ test('member page only shows remove actions to owners for non-owner members', as
   const markup = readText('pages/family/member.wxml')
   assert.equal(page.data.canManageMembers, true)
   assert.match(markup, /wx:if="\{\{canManageMembers && !item\.isOwner\}\}"/)
-  assert.match(markup, /bindtap="removeMember"[^>]*>移出家庭<\/button>/)
+  assert.match(markup, /bindtap="removeMember"/)
+  assert.match(markup, /\? '处理中' : '移出家庭'/)
 })
 
 test('member page rejects forged remove attempts without permission or against owner', async () => {
@@ -512,37 +513,82 @@ test('member page keeps members and surfaces removal errors with a fallback', as
   ])
 })
 
-test('member page ignores duplicate removal while the same member is pending', async () => {
-  let finishRemoval
+test('member page keeps one global removal lock across interleaved member clicks', async () => {
+  const pendingRemovals = []
   const calls = []
   const page = createPageInstance(loadPage('pages/family/member', {
     getMyFamily: async () => ({
       membership: { role: 'owner' },
-      members: [{ openId: 'member', nickname: '爸爸', role: 'member' }]
+      members: [
+        { openId: 'member-a', nickname: '爸爸', role: 'member' },
+        { openId: 'member-b', nickname: '外婆', role: 'member' }
+      ]
     }),
     removeMember: async (input) => {
       calls.push(input)
-      await new Promise((resolve) => { finishRemoval = resolve })
+      await new Promise((resolve) => { pendingRemovals.push(resolve) })
     }
   }))
+  const modals = []
   global.wx = {
     showToast() {},
+    showModal(input) {
+      modals.push(input)
+      if (modals.length === 1) input.success({ confirm: true, cancel: false })
+    }
+  }
+  await page.onShow()
+
+  const firstRemoval = page.removeMember({ currentTarget: { dataset: { openid: 'member-a' } } })
+  await Promise.resolve()
+  const secondRemoval = page.removeMember({ currentTarget: { dataset: { openid: 'member-b' } } })
+  if (modals[1]) modals[1].success({ confirm: false, cancel: true })
+  await secondRemoval
+  const repeatedRemoval = page.removeMember({ currentTarget: { dataset: { openid: 'member-a' } } })
+  await Promise.resolve()
+
+  assert.equal(page.data.removingOpenId, 'member-a')
+  assert.deepEqual(calls, [{ openId: 'member-a' }])
+  assert.equal(modals.length, 1)
+  const markup = readText('pages/family/member.wxml')
+  assert.match(markup, /disabled="\{\{!!removingOpenId\}\}"/)
+  assert.match(markup, /\{\{removingOpenId === item\.openId \? '处理中' : '移出家庭'\}\}/)
+  pendingRemovals[0]()
+  await Promise.all([firstRemoval, repeatedRemoval])
+
+  delete global.wx
+  assert.equal(page.data.removingOpenId, '')
+})
+
+test('member page keeps local removal and only shows success when refresh fails', async () => {
+  let loads = 0
+  const page = createPageInstance(loadPage('pages/family/member', {
+    getMyFamily: async () => {
+      loads += 1
+      if (loads > 1) throw new Error('refresh failed')
+      return {
+        membership: { role: 'owner' },
+        members: [
+          { openId: 'member-a', nickname: '爸爸', role: 'member' },
+          { openId: 'member-b', nickname: '外婆', role: 'member' }
+        ]
+      }
+    },
+    removeMember: async () => {}
+  }))
+  const toasts = []
+  global.wx = {
+    showToast: (input) => toasts.push(input),
     showModal: (input) => input.success({ confirm: true, cancel: false })
   }
   await page.onShow()
 
-  const firstRemoval = page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
-  await Promise.resolve()
-  await page.removeMember({ currentTarget: { dataset: { openid: 'member' } } })
-
-  assert.equal(page.data.removingOpenId, 'member')
-  assert.deepEqual(calls, [{ openId: 'member' }])
-  assert.match(readText('pages/family/member.wxml'), /disabled="\{\{removingOpenId === item\.openId\}\}"/)
-  finishRemoval()
-  await firstRemoval
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member-a' } } })
 
   delete global.wx
-  assert.equal(page.data.removingOpenId, '')
+  assert.equal(loads, 2)
+  assert.deepEqual(page.data.members.map((item) => item.openId), ['member-b'])
+  assert.deepEqual(toasts.map((item) => item.title), ['已移出家庭'])
 })
 
 test('member page explains all family role permissions in a modal', () => {

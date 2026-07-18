@@ -36,7 +36,7 @@ Page({
     await this.loadMembers()
   },
 
-  async loadMembers() {
+  async loadMembers({ silent = false } = {}) {
     this.setData({ loading: true })
     try {
       const result = await familyService.getMyFamily()
@@ -47,9 +47,13 @@ Page({
         membership,
         canManageMembers: membership.role === 'owner'
       })
+      return true
     } catch (error) {
       this.setData({ loading: false })
-      wx.showToast({ title: '成员加载失败', icon: 'none' })
+      if (!silent) {
+        wx.showToast({ title: '成员加载失败', icon: 'none' })
+      }
+      return false
     }
   },
 
@@ -88,13 +92,14 @@ Page({
   },
 
   async removeMember(e) {
+    if (this.data.removingOpenId) return
     if (!this.data.canManageMembers) {
       wx.showToast({ title: '只有创建者可移出家庭成员', icon: 'none' })
       return
     }
     const { openid } = e.currentTarget.dataset
     const target = this.data.members.find((item) => item.openId === openid)
-    if (!target || target.isOwner || this.data.removingOpenId === openid) return
+    if (!target || target.isOwner) return
     this.setData({ removingOpenId: openid })
     try {
       const confirmed = await new Promise((resolve) => {
@@ -109,7 +114,10 @@ Page({
       })
       if (!confirmed) return
       await familyService.removeMember({ openId: openid })
-      await this.loadMembers()
+      this.setData({
+        members: this.data.members.filter((item) => item.openId !== openid)
+      })
+      await this.loadMembers({ silent: true })
       wx.showToast({ title: '已移出家庭', icon: 'success' })
     } catch (error) {
       wx.showToast({
