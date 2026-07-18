@@ -1,6 +1,7 @@
 const cloud = require('wx-server-sdk')
 const { createFamilyApi } = require('./core')
 const { createCloudStore, ensureCollections } = require('./cloudStore')
+const { formatShanghaiDate } = require('./serverDate')
 
 const familyCollections = [
   'families',
@@ -43,7 +44,7 @@ exports.main = async (event = {}) => {
   const api = createFamilyApi({
     store: createCloudStore(db),
     userId: wxContext.OPENID,
-    today: event.today
+    today: formatShanghaiDate(new Date())
   })
   return api.handle(event)
 }
