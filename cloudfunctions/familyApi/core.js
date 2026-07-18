@@ -312,6 +312,9 @@ async function removeMember(store, userId, event, today, compensateOnAuditFailur
 async function leaveFamily(store, userId, today, compensateOnAuditFailure) {
   const membership = await requireMembership(store, userId)
   if (membership.role === 'owner') return { ok: false, error: '创建者不能退出家庭' }
+  if (!['admin', 'member'].includes(membership.role)) {
+    return { ok: false, error: '当前身份没有权限退出家庭' }
+  }
   const updated = await deactivateMember(
     store,
     membership,
@@ -407,6 +410,9 @@ async function leaveFamilyInTransaction(store, userId, today) {
     }
     if (member.familyId !== memberCandidate.familyId) return { ok: false, error: '成员已退出或不存在' }
     if (member.role === 'owner') return { ok: false, error: '创建者不能退出家庭' }
+    if (!['admin', 'member'].includes(member.role)) {
+      return { ok: false, error: '当前身份没有权限退出家庭' }
+    }
 
     const updated = await deactivateMemberById(
       transactionStore,

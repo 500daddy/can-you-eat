@@ -346,6 +346,23 @@ test('owner cannot leave a family', async () => {
   assert.match(result.error, /创建者不能退出/)
 })
 
+test('unknown roles cannot leave a family through the fallback path', async () => {
+  const store = createMemoryStore()
+  await seedFamily(store, [
+    { openId: 'owner', role: 'owner' },
+    { openId: 'viewer-a', role: 'viewer' }
+  ])
+  const api = createFamilyApi({ store, userId: 'viewer-a', today: '2026-07-16' })
+
+  const result = await api.handle({ action: 'leaveFamily' })
+  const membership = await store.get('family_members', (item) => item.openId === 'viewer-a')
+
+  assert.equal(result.ok, false)
+  assert.match(result.error, /没有权限/)
+  assert.equal(membership.status, 'active')
+  assert.equal((await store.list('family_audit_logs')).length, 0)
+})
+
 test('admin cannot remove another member', async () => {
   const store = createMemoryStore()
   await seedFamily(store, [
@@ -634,6 +651,25 @@ test('leaveFamily rolls back the transaction when audit writing fails', async ()
   assert.equal(store.rootCalls, 1)
   assert.equal(membership.status, 'active')
   assert.equal(membership.updatedAt, '2026-07-01')
+  assert.equal((await baseStore.list('family_audit_logs')).length, 0)
+})
+
+test('unknown roles cannot leave a family through the transaction path', async () => {
+  const baseStore = createMemoryStore()
+  await seedFamily(baseStore, [
+    { openId: 'owner', role: 'owner' },
+    { openId: 'viewer-a', role: 'viewer' }
+  ])
+  const store = createRollbackTransactionStore(baseStore)
+  const api = createFamilyApi({ store, userId: 'viewer-a', today: '2026-07-16' })
+
+  const result = await api.handle({ action: 'leaveFamily' })
+  const membership = await baseStore.get('family_members', (item) => item.openId === 'viewer-a')
+
+  assert.equal(result.ok, false)
+  assert.match(result.error, /没有权限/)
+  assert.equal(store.transactionCalls, 1)
+  assert.equal(membership.status, 'active')
   assert.equal((await baseStore.list('family_audit_logs')).length, 0)
 })
 
