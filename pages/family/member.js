@@ -28,6 +28,7 @@ Page({
 
   data: {
     loading: true,
+    family: {},
     members: [],
     membership: {},
     canManageMembers: false,
@@ -41,13 +42,14 @@ Page({
 
   async loadMembers({ silent = false } = {}) {
     const requestId = ++this._loadRequestId
-    this.setData({ loading: true })
+    if (!silent) this.setData({ loading: true })
     try {
       const result = await familyService.getMyFamily()
       if (requestId !== this._loadRequestId) return false
       const membership = result.membership || {}
       this.setData({
         loading: false,
+        family: result.family || {},
         members: decorateMembers(result.members || []),
         membership,
         canManageMembers: membership.role === 'owner'
@@ -97,10 +99,11 @@ Page({
       this.setData({
         members: this.data.members.map((item) => item.openId === openid
           ? { ...item, role, roleText: roleTextMap[role] || '成员' }
-          : item)
+          : item),
+        updatingOpenId: ''
       })
-      await this.loadMembers({ silent: true })
       wx.showToast({ title: '已更新', icon: 'success' })
+      this.loadMembers({ silent: true }).catch(() => {})
     } catch (error) {
       wx.showToast({ title: '更新失败', icon: 'none' })
     } finally {
@@ -119,6 +122,7 @@ Page({
     const { openid } = e.currentTarget.dataset
     const target = this.data.members.find((item) => item.openId === openid)
     if (!target || target.isOwner) return
+    const originalFamilyId = this.data.family.familyId || this.data.membership.familyId || ''
     this.setData({ removingOpenId: openid })
     try {
       const confirmed = await new Promise((resolve) => {
@@ -132,12 +136,30 @@ Page({
         })
       })
       if (!confirmed) return
-      await familyService.removeMember({ openId: openid })
+      this._loadRequestId += 1
+      try {
+        await familyService.removeMember({ openId: openid })
+      } catch (error) {
+        let reconciled = false
+        try {
+          const result = await familyService.getMyFamily()
+          const currentFamilyId = (result.family && result.family.familyId) ||
+            (result.membership && result.membership.familyId) || ''
+          const targetStillActive = (result.members || []).some((item) => (
+            item.openId === openid && item.status !== 'inactive'
+          ))
+          reconciled = Boolean(originalFamilyId && currentFamilyId === originalFamilyId && !targetStillActive)
+        } catch (reconcileError) {
+          reconciled = false
+        }
+        if (!reconciled) throw error
+      }
       this.setData({
-        members: this.data.members.filter((item) => item.openId !== openid)
+        members: this.data.members.filter((item) => item.openId !== openid),
+        removingOpenId: ''
       })
-      await this.loadMembers({ silent: true })
       wx.showToast({ title: '已移出家庭', icon: 'success' })
+      this.loadMembers({ silent: true }).catch(() => {})
     } catch (error) {
       wx.showToast({
         title: (error && error.message) || '移出失败，请重试',

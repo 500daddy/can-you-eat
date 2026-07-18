@@ -28,12 +28,16 @@
         <view class="member-count">{{members.length}}人</view>
       </view>
       <view class="button-row">
-        <button wx:if="{{!invite}}" class="pixel-btn" bindtap="prepareInvite">
+        <button wx:if="{{!invite}}" class="pixel-btn" bindtap="prepareInvite"
+          disabled="{{loading || familySettling || preparingInvite || (membership.role && !canInvite)}}">
           {{preparingInvite ? '正在准备…' : '邀请家人'}}
         </button>
-        <button wx:else class="pixel-btn share-ready-btn" open-type="share">发送给微信家人</button>
-        <button class="pixel-btn ghost" bindtap="goMemberManage">成员管理</button>
+        <button wx:else class="pixel-btn share-ready-btn" open-type="share"
+          disabled="{{loading || familySettling || (membership.role && !canInvite)}}">发送给微信家人</button>
+        <button class="pixel-btn ghost" bindtap="goMemberManage"
+          disabled="{{loading || familySettling || (membership.role && !canManageMembers)}}">成员管理</button>
       </view>
+      <view wx:if="{{familySettling}}" class="subtitle family-sync-note">已退出原家庭，正在同步新的家庭信息…</view>
     </view>
 
     <view wx:if="{{invite}}" class="paper-card yellow invite-card">
