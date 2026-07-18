@@ -1556,7 +1556,7 @@ test('member page keeps one global removal lock across interleaved member clicks
   assert.deepEqual(calls, [{ openId: 'member-a' }])
   assert.equal(modals.length, 1)
   const markup = readText('pages/family/member.wxml')
-  assert.match(markup, /disabled="\{\{!!removingOpenId \|\| !!updatingOpenId\}\}"/)
+  assert.match(markup, /disabled="\{\{!!removingOpenId \|\| !!updatingOpenId \|\| !!pendingRemovalOpenId\}\}"/)
   assert.match(markup, /removingOpenId === item\.openId \? '处理中'/)
   assert.match(markup, /pendingRemovalOpenId === item\.openId \? '确认状态' : '移出家庭'/)
   pendingRemovals[0]()
@@ -1689,10 +1689,68 @@ test('member page keeps local role update and only shows success when refresh fa
 
 test('member page disables every member action while any write is pending', () => {
   const markup = readText('pages/family/member.wxml')
-  const sharedDisabledState = /disabled="\{\{!!removingOpenId \|\| !!updatingOpenId\}\}"/g
+  const roleDisabledState = /disabled="\{\{!!removingOpenId \|\| !!updatingOpenId \|\| !!pendingRemovalOpenId\}\}"/g
 
-  assert.equal(markup.match(sharedDisabledState)?.length, 3)
+  assert.equal(markup.match(roleDisabledState)?.length, 2)
+  assert.match(markup, /disabled="\{\{!!removingOpenId \|\| !!updatingOpenId \|\| \(!!pendingRemovalOpenId && pendingRemovalOpenId !== item\.openId\)\}\}"/)
   assert.match(markup, /pendingRemovalOpenId === item\.openId \? '确认状态' : '移出家庭'/)
+})
+
+test('member page locks other writes while an uncertain removal remains confirmable', async () => {
+  let loads = 0
+  const calls = []
+  const modals = []
+  const page = createPageInstance(loadPage('pages/family/member', {
+    getMyFamily: async () => {
+      loads += 1
+      if (loads === 2) throw new Error('network unavailable')
+      return {
+        family: { familyId: 'family-a' },
+        membership: { familyId: 'family-a', role: 'owner' },
+        members: loads === 1
+          ? [
+              { openId: 'member-a', nickname: '爸爸', role: 'member' },
+              { openId: 'member-b', nickname: '外婆', role: 'member' }
+            ]
+          : [{ openId: 'member-b', nickname: '外婆', role: 'member' }]
+      }
+    },
+    removeMember: async (input) => {
+      calls.push({ action: 'removeMember', input })
+      throw new Error('request timed out')
+    },
+    updateMemberRole: async (input) => {
+      calls.push({ action: 'updateMemberRole', input })
+    }
+  }))
+  global.wx = {
+    showToast() {},
+    showModal(input) {
+      modals.push(input)
+      input.success({ confirm: true, cancel: false })
+    }
+  }
+  await page.loadMembers()
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member-a' } } })
+
+  await page.updateRole({ currentTarget: { dataset: { openid: 'member-b', role: 'admin' } } })
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member-b' } } })
+
+  assert.equal(page.data.pendingRemovalOpenId, 'member-a')
+  assert.deepEqual(calls, [
+    { action: 'removeMember', input: { openId: 'member-a' } }
+  ])
+  assert.equal(modals.length, 1)
+
+  await page.removeMember({ currentTarget: { dataset: { openid: 'member-a' } } })
+
+  delete global.wx
+  assert.equal(loads, 4)
+  assert.equal(page.data.pendingRemovalOpenId, '')
+  assert.deepEqual(page.data.members.map((item) => item.openId), ['member-b'])
+  assert.deepEqual(calls, [
+    { action: 'removeMember', input: { openId: 'member-a' } }
+  ])
 })
 
 test('member page keeps local removal and only shows success when refresh fails', async () => {

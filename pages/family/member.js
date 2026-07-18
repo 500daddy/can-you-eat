@@ -103,7 +103,7 @@ Page({
   },
 
   async updateRole(e) {
-    if (this.data.removingOpenId || this.data.updatingOpenId) return
+    if (this.data.removingOpenId || this.data.updatingOpenId || this.data.pendingRemovalOpenId) return
     if (!this.data.canManageMembers) {
       wx.showToast({ title: '只有创建者可调整成员身份', icon: 'none' })
       return
@@ -143,11 +143,12 @@ Page({
 
   async removeMember(e) {
     if (this.data.removingOpenId || this.data.updatingOpenId) return
+    const { openid } = e.currentTarget.dataset
+    if (this.data.pendingRemovalOpenId && this.data.pendingRemovalOpenId !== openid) return
     if (!this.data.canManageMembers) {
       wx.showToast({ title: '只有创建者可移出家庭成员', icon: 'none' })
       return
     }
-    const { openid } = e.currentTarget.dataset
     const target = this.data.members.find((item) => item.openId === openid)
     if (!target || target.isOwner) return
     if (this.data.pendingRemovalOpenId === openid) {
