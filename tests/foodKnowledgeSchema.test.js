@@ -113,3 +113,168 @@ test('normalizes missing optional conditions without treating zero as missing', 
 
   assert.deepEqual(validateFoodKnowledge(zeroFixture).errors, [])
 })
+
+test('requires an object input with all four collections explicitly provided as arrays', () => {
+  for (const input of [null, [], 'invalid', 0, true]) {
+    assert.deepEqual(validateFoodKnowledge(input), {
+      ok: false,
+      errors: ['input: expected object']
+    })
+  }
+
+  for (const field of ['foods', 'searchTerms', 'storageRules', 'evidenceSources']) {
+    const missingFixture = createFoodKnowledgeFixture()
+    delete missingFixture[field]
+    const missingResult = validateFoodKnowledge(missingFixture)
+    assert.equal(missingResult.ok, false, `${field} should be required`)
+    assert.ok(missingResult.errors.includes(`${field}: expected array`))
+
+    const invalidFixture = createFoodKnowledgeFixture()
+    invalidFixture[field] = null
+    const invalidResult = validateFoodKnowledge(invalidFixture)
+    assert.equal(invalidResult.ok, false, `${field} should reject non-arrays`)
+    assert.ok(invalidResult.errors.includes(`${field}: expected array`))
+  }
+
+  assert.deepEqual(validateFoodKnowledge({
+    foods: [],
+    searchTerms: [],
+    storageRules: [],
+    evidenceSources: []
+  }), {
+    ok: true,
+    errors: []
+  })
+})
+
+test('reports indexed errors instead of throwing for invalid collection elements', () => {
+  const cases = [
+    {
+      label: 'foods',
+      arrange(fixture) { fixture.foods[0] = null },
+      error: 'foods[0]: expected object'
+    },
+    {
+      label: 'searchTerms',
+      arrange(fixture) { fixture.searchTerms[0] = [] },
+      error: 'searchTerms[0]: expected object'
+    },
+    {
+      label: 'storageRules',
+      arrange(fixture) { fixture.storageRules[0] = 'invalid-rule' },
+      error: 'storageRules[0]: expected object'
+    },
+    {
+      label: 'evidenceSources',
+      arrange(fixture) { fixture.evidenceSources[0] = 42 },
+      error: 'evidenceSources[0]: expected object'
+    },
+    {
+      label: 'evidenceBindings',
+      arrange(fixture) { fixture.storageRules[0].evidenceBindings[0] = false },
+      error: 'storageRules[0].evidenceBindings[0]: expected object'
+    }
+  ]
+
+  for (const item of cases) {
+    const fixture = createFoodKnowledgeFixture()
+    item.arrange(fixture)
+    let result
+
+    assert.doesNotThrow(() => {
+      result = validateFoodKnowledge(fixture)
+    }, item.label)
+    assert.equal(result.ok, false, item.label)
+    assert.ok(result.errors.includes(item.error), item.label)
+  }
+})
+
+test('requires primary ids and complete evidence binding fields', () => {
+  const fixture = createFoodKnowledgeFixture()
+  delete fixture.foods[0].foodId
+  delete fixture.searchTerms[0].termId
+  delete fixture.storageRules[0].ruleId
+  delete fixture.evidenceSources[0].sourceId
+  delete fixture.storageRules[0].evidenceBindings[0].sourceId
+  delete fixture.storageRules[0].evidenceBindings[0].locator
+
+  const result = validateFoodKnowledge(fixture)
+
+  assert.equal(result.ok, false)
+  assert.ok(result.errors.includes('foods[0]: missing foodId'))
+  assert.ok(result.errors.includes('search_terms[0]: missing termId'))
+  assert.ok(result.errors.includes('storage_rules[0]: missing ruleId'))
+  assert.ok(result.errors.includes('evidence_sources[0]: missing sourceId'))
+  assert.ok(result.errors.includes('storageRules[0].evidenceBindings[0]: missing sourceId'))
+  assert.ok(result.errors.includes('storageRules[0].evidenceBindings[0]: missing locator'))
+  assert.ok(result.errors.includes('storage_rules[0]: adult deadline requires general or adult evidence'))
+})
+
+test('requires complete evidence source metadata and a controlled source status', () => {
+  for (const field of ['organization', 'title', 'url', 'sourceType', 'locale', 'applicableScope']) {
+    const fixture = createFoodKnowledgeFixture()
+    fixture.evidenceSources[0][field] = '   '
+
+    assert.ok(
+      validateFoodKnowledge(fixture).errors.includes(`evidence_sources source-general-storage: missing ${field}`),
+      field
+    )
+  }
+
+  const fixture = createFoodKnowledgeFixture()
+  fixture.evidenceSources[0].status = 'archived'
+  assert.ok(validateFoodKnowledge(fixture).errors.includes(
+    'evidence_sources source-general-storage: invalid status archived'
+  ))
+})
+
+test('treats null and omitted deadline fields alike while preserving zero', () => {
+  const fixture = createFoodKnowledgeFixture()
+  const sameConclusionRule = {
+    ...fixture.storageRules[0],
+    ruleId: 'tomato-cut-fridge-omitted-baby-v1',
+    evidenceBindings: fixture.storageRules[0].evidenceBindings.map((binding) => ({ ...binding }))
+  }
+  delete sameConclusionRule.babyDaysMin
+  delete sameConclusionRule.babyDaysMax
+  fixture.storageRules.push(sameConclusionRule)
+
+  assert.deepEqual(validateFoodKnowledge(fixture).errors, [])
+
+  const zeroFixture = createFoodKnowledgeFixture()
+  zeroFixture.storageRules.push({
+    ...zeroFixture.storageRules[0],
+    ruleId: 'tomato-cut-fridge-zero-deadline-v1',
+    adultDaysMin: 0,
+    evidenceBindings: zeroFixture.storageRules[0].evidenceBindings.map((binding) => ({ ...binding }))
+  })
+  assert.deepEqual(validateFoodKnowledge(zeroFixture).errors, [
+    'storage_rules: conflicting rules tomato-cut-fridge-v1,tomato-cut-fridge-zero-deadline-v1'
+  ])
+})
+
+test('does not allow callers to extend exported controlled vocabularies', () => {
+  const originalLength = STORAGE_METHODS.length
+  let result
+
+  try {
+    try {
+      STORAGE_METHODS.push('cupboard')
+    } catch (error) {
+      assert.ok(error instanceof TypeError)
+    }
+
+    const fixture = createFoodKnowledgeFixture()
+    fixture.storageRules[0].storageMethod = 'cupboard'
+    result = validateFoodKnowledge(fixture)
+  } finally {
+    if (STORAGE_METHODS.length > originalLength) {
+      STORAGE_METHODS.splice(originalLength)
+    }
+  }
+
+  assert.equal(Object.isFrozen(STORAGE_METHODS), true)
+  assert.ok(result.errors.includes(
+    'storage_rules tomato-cut-fridge-v1: invalid storageMethod cupboard'
+  ))
+})
