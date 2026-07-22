@@ -63,6 +63,17 @@ function transactionArtifacts(outputDirectory) {
   return readdirSync(parentDirectory).filter((name) => name.startsWith(prefix)).sort()
 }
 
+function snapshotJsonValues(files) {
+  return Object.fromEntries(
+    Object.entries(files)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([name, value]) => [
+        name,
+        Buffer.from(`${JSON.stringify(value, null, 2)}\n`).toString('base64')
+      ])
+  )
+}
+
 test('build CLI writes a checksummed release and defaults previousReleaseId to null', (t) => {
   const tempDirectory = createTempDir(t)
   const inputDirectory = path.join(tempDirectory, 'input')
@@ -200,6 +211,76 @@ test('transactional writer preserves existing output byte-for-byte when a stagin
   )
   assert.deepEqual(snapshotDirectory(outputDirectory), before)
   assert.deepEqual(transactionArtifacts(outputDirectory), [])
+})
+
+test('transactional writer restores old output when staging cannot be renamed into place', (t) => {
+  const tempDirectory = createTempDir(t)
+  const outputDirectory = path.join(tempDirectory, 'release')
+  mkdirSync(outputDirectory)
+  writeFileSync(path.join(outputDirectory, 'manifest.json'), '{"old":"manifest"}\n')
+  writeFileSync(path.join(outputDirectory, 'snapshot.json'), '{"old":"snapshot"}\n')
+  const before = snapshotDirectory(outputDirectory)
+  let renameCount = 0
+  const failingFs = {
+    ...fs,
+    renameSync(from, to) {
+      renameCount += 1
+      if (renameCount === 2) {
+        throw new Error('simulated staging commit failure')
+      }
+      return fs.renameSync(from, to)
+    }
+  }
+
+  assert.throws(
+    () => writeJsonDirectoryTransaction(outputDirectory, {
+      'manifest.json': { releaseId: 'new' },
+      'snapshot.json': { releaseId: 'new' }
+    }, { fs: failingFs, token: 'rename-failure' }),
+    /simulated staging commit failure/
+  )
+  assert.deepEqual(snapshotDirectory(outputDirectory), before)
+  assert.deepEqual(transactionArtifacts(outputDirectory), [])
+})
+
+test('transactional writer keeps committed output when backup cleanup partially fails', (t) => {
+  const tempDirectory = createTempDir(t)
+  const outputDirectory = path.join(tempDirectory, 'release')
+  const token = 'backup-cleanup-failure'
+  const backupDirectory = path.join(tempDirectory, `.release.backup-${token}`)
+  mkdirSync(outputDirectory)
+  writeFileSync(path.join(outputDirectory, 'manifest.json'), '{"old":"manifest"}\n')
+  writeFileSync(path.join(outputDirectory, 'snapshot.json'), '{"old":"snapshot"}\n')
+  const newFiles = {
+    'manifest.json': { releaseId: 'new', counts: { foods: 1 } },
+    'snapshot.json': { releaseId: 'new', foods: [] }
+  }
+  const warnings = []
+  const partiallyFailingFs = {
+    ...fs,
+    rmSync(directory, options) {
+      if (directory === backupDirectory) {
+        fs.unlinkSync(path.join(directory, 'manifest.json'))
+        throw new Error('simulated partial backup cleanup failure')
+      }
+      return fs.rmSync(directory, options)
+    }
+  }
+
+  assert.doesNotThrow(() => writeJsonDirectoryTransaction(outputDirectory, newFiles, {
+    fs: partiallyFailingFs,
+    token,
+    onWarning(message) {
+      warnings.push(message)
+    }
+  }))
+  assert.deepEqual(snapshotDirectory(outputDirectory), snapshotJsonValues(newFiles))
+  assert.deepEqual(transactionArtifacts(outputDirectory), [`.release.backup-${token}`])
+  assert.deepEqual(readdirSync(backupDirectory), ['snapshot.json'])
+  assert.equal(warnings.length, 1)
+  assert.match(warnings[0], /committed output .* failed to remove backup/)
+  assert.match(warnings[0], new RegExp(backupDirectory.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
+  assert.match(warnings[0], /simulated partial backup cleanup failure/)
 })
 
 test('legacy export refuses an unexpected existing file without modifying the directory', (t) => {

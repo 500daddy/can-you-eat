@@ -165,18 +165,16 @@ function writeJsonDirectoryTransaction(outputDirectory, files, dependencies = {}
   try {
     removeGeneratedDirectory(backupDirectory, fsAdapter)
   } catch (error) {
-    let rollbackError = null
+    const message = `committed output ${outputDirectory}; failed to remove backup ${backupDirectory}: ${error instanceof Error ? error.message : String(error)}`
     try {
-      fsAdapter.renameSync(outputDirectory, stagingDirectory)
-      fsAdapter.renameSync(backupDirectory, outputDirectory)
-      removeGeneratedDirectory(stagingDirectory, fsAdapter)
-    } catch (caught) {
-      rollbackError = caught
+      if (dependencies.onWarning) {
+        dependencies.onWarning(message)
+      } else {
+        process.stderr.write(`warning: ${message}\n`)
+      }
+    } catch {
+      // The output is already committed; warning delivery must not change its result.
     }
-    const detail = rollbackError
-      ? `; rollback failed: ${rollbackError instanceof Error ? rollbackError.message : String(rollbackError)}`
-      : ''
-    throw new Error(`failed to clean up output backup: ${error instanceof Error ? error.message : String(error)}${detail}`)
   }
 }
 
