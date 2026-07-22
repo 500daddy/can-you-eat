@@ -86,16 +86,70 @@ test('preserves storage payloads only as unverified migration candidates', () =>
     migrationStatus: 'legacy_unverified',
     legacyPayload: legacyTomato.fridge
   })
-  assert.strictEqual(candidate.legacyPayload, legacyTomato.fridge)
+  assert.notStrictEqual(candidate.legacyPayload, legacyTomato.fridge)
   assert.equal(typeof candidate.legacyPayload.adultDaysMax, 'number')
   assert.equal(candidate.adultDaysMax, undefined)
   assert.equal(candidate.babyDaysMax, undefined)
 })
 
+test('deep copies legacy storage payloads so output mutations cannot pollute the source', () => {
+  const sourcePayload = {
+    adultDaysMax: 10,
+    text: 'legacy only',
+    nested: {
+      notes: ['keep source unchanged']
+    }
+  }
+  const sourceFoodBase = [{
+    id: 'nestedStorage',
+    name: '嵌套保存',
+    aliases: [],
+    category: '蔬菜',
+    subCategory: '叶菜类',
+    fridge: sourcePayload
+  }]
+
+  const result = exportLegacyFoodKnowledge(sourceFoodBase)
+  const exportedPayload = result.storageCandidates[0].legacyPayload
+
+  assert.deepEqual(exportedPayload, sourcePayload)
+  assert.notStrictEqual(exportedPayload, sourcePayload)
+  assert.notStrictEqual(exportedPayload.nested, sourcePayload.nested)
+  assert.notStrictEqual(exportedPayload.nested.notes, sourcePayload.nested.notes)
+
+  exportedPayload.adultDaysMax = 99
+  exportedPayload.nested.notes[0] = 'mutated export'
+
+  assert.equal(sourceFoodBase[0].fridge.adultDaysMax, 10)
+  assert.equal(sourceFoodBase[0].fridge.nested.notes[0], 'keep source unchanged')
+})
+
+test('keeps one canonical-preferred term for each food and normalized term pair', () => {
+  const { searchTerms } = exportLegacyFoodKnowledge(foodBase)
+  const pairKeys = searchTerms.map((term) => `${term.foodId}\0${term.normalizedTerm}`)
+
+  assert.equal(new Set(pairKeys).size, pairKeys.length)
+
+  for (const [foodId, normalizedTerm] of [
+    ['babyPuree', '辅食泥'],
+    ['bass', '鲈鱼'],
+    ['potato', '土豆'],
+    ['salmon', '三文鱼']
+  ]) {
+    const matchingTerms = searchTerms.filter((term) => (
+      term.foodId === foodId && term.normalizedTerm === normalizedTerm
+    ))
+
+    assert.equal(matchingTerms.length, 1, `${foodId}/${normalizedTerm}`)
+    assert.equal(matchingTerms[0].type, 'canonical', `${foodId}/${normalizedTerm}`)
+    assert.equal(matchingTerms[0].weight, 100, `${foodId}/${normalizedTerm}`)
+  }
+})
+
 test('normalizes string and array aliases, removes blanks and duplicates, and tolerates missing aliases', () => {
   const storage = { adultDaysMax: 2, babyDaysMax: 1, text: 'legacy only' }
   const customFoodBase = [
-    { id: 'stringAliases', name: ' Name ', aliases: '  Alpha 、alpha,,， Beta  ', category: '蔬菜', subCategory: '叶菜类', room: storage },
+    { id: 'stringAliases', name: ' Name ', aliases: '  Name、 Alpha 、alpha,,， Beta  ', category: '蔬菜', subCategory: '叶菜类', room: storage },
     { id: 'arrayAliases', name: '数组', aliases: [' 甲 ', '', null, undefined, '  ', '甲', '乙'], category: '蔬菜', subCategory: '叶菜类', fridge: storage },
     { id: 'missingAliases', name: '缺失', category: '蔬菜', subCategory: '叶菜类', freezer: storage }
   ]

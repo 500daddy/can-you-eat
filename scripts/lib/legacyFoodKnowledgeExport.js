@@ -48,6 +48,18 @@ function createSearchTerm(food, term, type) {
   }
 }
 
+function cloneJsonValue(value) {
+  if (Array.isArray(value)) {
+    return value.map(cloneJsonValue)
+  }
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, child]) => [key, cloneJsonValue(child)])
+    )
+  }
+  return value
+}
+
 function exportLegacyFoodKnowledge(foodBase) {
   const foods = []
   const searchTerms = []
@@ -69,9 +81,12 @@ function exportLegacyFoodKnowledge(foodBase) {
       reviewStatus: 'legacy_unverified'
     })
 
+    const canonicalTerm = createSearchTerm(food, food.name, 'canonical')
     const terms = [
-      createSearchTerm(food, food.name, 'canonical'),
-      ...normalizeAliases(food.aliases).map((alias) => createSearchTerm(food, alias, 'alias'))
+      canonicalTerm,
+      ...normalizeAliases(food.aliases)
+        .map((alias) => createSearchTerm(food, alias, 'alias'))
+        .filter((term) => term.normalizedTerm !== canonicalTerm.normalizedTerm)
     ]
 
     for (const term of terms) {
@@ -95,7 +110,7 @@ function exportLegacyFoodKnowledge(foodBase) {
         referenceDateType: 'purchased_at',
         evidenceLevel: 'insufficient',
         migrationStatus: 'legacy_unverified',
-        legacyPayload: food[storageMethod]
+        legacyPayload: cloneJsonValue(food[storageMethod])
       })
     }
   }
