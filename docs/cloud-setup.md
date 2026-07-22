@@ -62,7 +62,7 @@ module.exports = {
 - `food_search_terms`：保存标准名、别名和归一化后的搜索名，并指向对应食材身份。
 - `storage_rules`：保存由食材状态、保存方式、温度、人群等条件共同决定的规则，并在规则自身记录 `evidenceLevel`（证据等级）。
 - `evidence_sources`：只保存来源元数据、适用范围、定位和状态等可追溯信息。
-- `knowledge_releases`：保存不可变的发布版本及其 `checksum`；`checksum` 是 SHA-256 digest 的小写 hex 文本，长度恰为 64 个字符，不带算法前缀，用于确认一组知识数据没有被改写。
+- `knowledge_releases`：保存不可变的发布版本及其 `snapshotChecksum`；`snapshotChecksum` 是 SHA-256 digest 的小写 hex 文本，长度恰为 64 个字符，不带算法前缀，用于确认一组知识数据没有被改写。
 - `food_search_docs`：由发布流程生成、供运行时读取的搜索快照；它不是编辑源，禁止人工编辑。
 - `search_events`：最小化记录零结果查询和用户选择反馈，用于后续补充搜索名，不保存无关的客户端数据。
 

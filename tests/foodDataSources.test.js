@@ -78,7 +78,7 @@ test('cloud setup documents each stage A food knowledge collection responsibilit
     food_search_terms: [/(搜索名|检索名)/, /别名/],
     storage_rules: [/条件/, /规则/],
     evidence_sources: [/来源/, /追溯/],
-    knowledge_releases: [/(不可变|不得改写)/, /版本/, /checksum/i],
+    knowledge_releases: [/(不可变|不得改写)/, /版本/, /`snapshotChecksum`/],
     food_search_docs: [/(发布流程|发布)[^；。]*生成/, /(运行时[^；。]*快照|快照[^；。]*运行时)/, /(禁止|不得|不能)[^；。]*人工编辑/],
     search_events: [/(最小化|最少)/, /零结果/, /(用户)?选择反馈/]
   }
@@ -121,12 +121,13 @@ test('design document defines snapshot checksum as an unprefixed 64-character lo
 
 test('implementation plan uses the same pure checksum regex and digest implementation', () => {
   const plan = readDoc('superpowers/plans/2026-07-22-food-knowledge-base-foundation.md')
-  const pureChecksumPattern = '/^[0-9a-f]{64}$/'
   const checksumFunction = extractBetween(plan, 'function checksum(value) {', 'function buildFoodKnowledgeRelease')
+  const checksumAssertions = plan.match(
+    /assert\s*\.\s*match\s*\(\s*(?:[A-Za-z_$][\w$]*\s*\.\s*)*manifest\s*\.\s*snapshotChecksum\s*,\s*\/\^\[0-9a-f\]\{64\}\$\/\s*\)/g
+  ) || []
 
-  assert.ok(plan.includes(`first.manifest.snapshotChecksum, ${pureChecksumPattern}`))
-  assert.ok(plan.includes(`manifest.snapshotChecksum, ${pureChecksumPattern}`))
-  assert.match(checksumFunction, /return\s+crypto\.createHash\(['"]sha256['"]\)[^\n]*\.digest\(['"]hex['"]\)/)
+  assert.ok(checksumAssertions.length >= 2, 'plan should validate manifest snapshotChecksum in compiler and CLI examples')
+  assert.match(checksumFunction, /return\s+crypto\s*\.\s*createHash\s*\(\s*['"]sha256['"]\s*\)[\s\S]*?\.\s*digest\s*\(\s*['"]hex['"]\s*\)\s*;?\s*\}/)
   assert.doesNotMatch(plan, /sha256:/i)
 })
 
@@ -134,6 +135,7 @@ test('cloud setup gives deployment readers the pure snapshot checksum format', (
   const guide = readDoc('cloud-setup.md')
   const releases = findLine(guide, '`knowledge_releases`')
 
+  assert.match(releases, /`snapshotChecksum`/)
   assert.match(releases, /SHA-256 digest/i)
   assert.match(releases, /小写[^；。\n]*hex/i)
   assert.match(releases, /(恰为|固定为|必须为)[^；。\n]*64[^；。\n]*字符/)
