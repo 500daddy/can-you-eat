@@ -24,6 +24,15 @@ function extractSection(doc, heading) {
   return nextHeading === -1 ? remainder : remainder.slice(0, nextHeading)
 }
 
+function extractBetween(doc, startMarker, endMarker) {
+  const start = doc.indexOf(startMarker)
+  assert.notEqual(start, -1, `document should contain ${startMarker}`)
+
+  const end = doc.indexOf(endMarker, start + startMarker.length)
+  assert.notEqual(end, -1, `document should contain ${endMarker} after ${startMarker}`)
+  return doc.slice(start, end)
+}
+
 function assertSemantics(text, patterns, subject) {
   for (const pattern of patterns) {
     assert.match(text, pattern, `${subject} should match ${pattern}`)
@@ -78,6 +87,58 @@ test('cloud setup documents each stage A food knowledge collection responsibilit
     const line = findLine(guide, `\`${collection}\``, `cloud setup should mention ${collection}`)
     assertSemantics(line, patterns, collection)
   }
+})
+
+test('cloud setup keeps evidence level on storage rules and source metadata on evidence sources', () => {
+  const guide = readDoc('cloud-setup.md')
+  const storageRules = findLine(guide, '`storage_rules`')
+  const evidenceSources = findLine(guide, '`evidence_sources`')
+
+  assert.match(storageRules, /(evidenceLevel|证据等级)/i)
+  assertSemantics(evidenceSources, [
+    /来源元数据/,
+    /适用范围/,
+    /(定位|locator)/i,
+    /状态/,
+    /追溯/
+  ], 'evidence_sources')
+  assert.doesNotMatch(evidenceSources, /(evidenceLevel|证据等级)/i)
+})
+
+test('design document defines snapshot checksum as an unprefixed 64-character lowercase hex digest', () => {
+  const design = readDoc('superpowers/specs/2026-07-22-food-knowledge-base-design.md')
+  const releaseSection = extractBetween(design, '### 6.5 `knowledge_releases`', '### 6.6 `food_search_docs`')
+  const example = releaseSection.match(/snapshotChecksum:\s*'([^']+)'/)
+
+  assert.ok(example, 'knowledge release example should contain snapshotChecksum')
+  assert.match(example[1], /^[0-9a-f]{64}$/)
+  assert.match(releaseSection, /SHA-256 digest/i)
+  assert.match(releaseSection, /小写[^。\n]*hex/i)
+  assert.match(releaseSection, /(恰为|固定为|必须为)[^。\n]*64[^。\n]*字符/)
+  assert.match(releaseSection, /不带[^。\n]*算法前缀/)
+  assert.doesNotMatch(design, /sha256:/i)
+})
+
+test('implementation plan uses the same pure checksum regex and digest implementation', () => {
+  const plan = readDoc('superpowers/plans/2026-07-22-food-knowledge-base-foundation.md')
+  const pureChecksumPattern = '/^[0-9a-f]{64}$/'
+  const checksumFunction = extractBetween(plan, 'function checksum(value) {', 'function buildFoodKnowledgeRelease')
+
+  assert.ok(plan.includes(`first.manifest.snapshotChecksum, ${pureChecksumPattern}`))
+  assert.ok(plan.includes(`manifest.snapshotChecksum, ${pureChecksumPattern}`))
+  assert.match(checksumFunction, /return\s+crypto\.createHash\(['"]sha256['"]\)[^\n]*\.digest\(['"]hex['"]\)/)
+  assert.doesNotMatch(plan, /sha256:/i)
+})
+
+test('cloud setup gives deployment readers the pure snapshot checksum format', () => {
+  const guide = readDoc('cloud-setup.md')
+  const releases = findLine(guide, '`knowledge_releases`')
+
+  assert.match(releases, /SHA-256 digest/i)
+  assert.match(releases, /小写[^；。\n]*hex/i)
+  assert.match(releases, /(恰为|固定为|必须为)[^；。\n]*64[^；。\n]*字符/)
+  assert.match(releases, /不带[^；。\n]*算法前缀/)
+  assert.doesNotMatch(guide, /sha256:/i)
 })
 
 test('cloud setup keeps knowledge editing publishing and search feedback behind trusted services', () => {

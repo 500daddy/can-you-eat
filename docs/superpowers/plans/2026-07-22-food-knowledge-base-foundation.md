@@ -508,7 +508,7 @@ test('builds one deterministic published search document', () => {
   assert.equal(first.snapshot.foods[0].foodId, 'tomato')
   assert.deepEqual(first.snapshot.foods[0].searchTerms, ['番茄', '西红柿'])
   assert.deepEqual(first.snapshot.foods[0].activeRuleIds, ['tomato-cut-fridge-v1'])
-  assert.match(first.manifest.snapshotChecksum, /^sha256:[a-f0-9]{64}$/)
+  assert.match(first.manifest.snapshotChecksum, /^[0-9a-f]{64}$/)
   assert.equal(first.manifest.snapshotChecksum, checksum(first.snapshot))
 })
 
@@ -603,7 +603,7 @@ function stableJson(value) {
 }
 
 function checksum(value) {
-  return `sha256:${crypto.createHash('sha256').update(stableJson(value)).digest('hex')}`
+  return crypto.createHash('sha256').update(stableJson(value)).digest('hex')
 }
 
 function buildFoodKnowledgeRelease(input, options = {}) {
@@ -937,7 +937,7 @@ test('build command writes a manifest and snapshot with matching checksum', () =
   const manifest = JSON.parse(fs.readFileSync(path.join(outputDir, 'manifest.json'), 'utf8'))
   const snapshot = JSON.parse(fs.readFileSync(path.join(outputDir, 'snapshot.json'), 'utf8'))
   assert.equal(manifest.releaseId, snapshot.releaseId)
-  assert.match(manifest.snapshotChecksum, /^sha256:[a-f0-9]{64}$/)
+  assert.match(manifest.snapshotChecksum, /^[0-9a-f]{64}$/)
   assert.equal(manifest.snapshotChecksum, checksum(snapshot))
 })
 
