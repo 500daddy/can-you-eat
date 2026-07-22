@@ -16,25 +16,61 @@ function compareCodePoints(left, right) {
   return leftPoints.length - rightPoints.length
 }
 
-function sortObjectKeys(value) {
-  if (Array.isArray(value)) {
-    return value.map(sortObjectKeys)
+function isPlainObject(value) {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    return false
   }
 
-  if (value === null || typeof value !== 'object') {
-    return value
-  }
-
-  return Object.keys(value)
-    .sort(compareCodePoints)
-    .reduce((sorted, key) => {
-      sorted[key] = sortObjectKeys(value[key])
-      return sorted
-    }, {})
+  const prototype = Object.getPrototypeOf(value)
+  return prototype === Object.prototype || prototype === null
 }
 
 function stableJson(value) {
-  return JSON.stringify(sortObjectKeys(value))
+  const ancestors = new Set()
+
+  function serialize(current) {
+    if (current === null) {
+      return 'null'
+    }
+
+    if (typeof current === 'string' || typeof current === 'number' || typeof current === 'boolean') {
+      return JSON.stringify(current)
+    }
+
+    if (typeof current !== 'object') {
+      throw new TypeError('stableJson only supports JSON values')
+    }
+
+    if (!Array.isArray(current) && !isPlainObject(current)) {
+      throw new TypeError('stableJson only supports JSON values')
+    }
+    if (ancestors.has(current)) {
+      throw new TypeError('stableJson only supports JSON values')
+    }
+
+    ancestors.add(current)
+    try {
+      if (Array.isArray(current)) {
+        const items = []
+        for (let index = 0; index < current.length; index += 1) {
+          if (!Object.hasOwn(current, index)) {
+            throw new TypeError('stableJson only supports JSON values')
+          }
+          items.push(serialize(current[index]))
+        }
+        return `[${items.join(',')}]`
+      }
+
+      const members = Object.keys(current)
+        .sort(compareCodePoints)
+        .map((key) => `${JSON.stringify(key)}:${serialize(current[key])}`)
+      return `{${members.join(',')}}`
+    } finally {
+      ancestors.delete(current)
+    }
+  }
+
+  return serialize(value)
 }
 
 function checksum(value) {

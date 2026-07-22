@@ -33,6 +33,32 @@ test('builds one deterministic published search document', () => {
   )
 })
 
+test('serializes object keys directly in Unicode code-point order', () => {
+  const value = JSON.parse('{"2":"two","10":"ten","__proto__":"kept"}')
+
+  assert.equal(
+    stableJson(value),
+    '{"10":"ten","2":"two","__proto__":"kept"}'
+  )
+})
+
+test('rejects values outside the JSON data model', () => {
+  for (const value of [undefined, () => {}, Symbol('unsupported'), 1n]) {
+    assert.throws(() => stableJson(value), /stableJson only supports JSON values/)
+  }
+
+  assert.throws(
+    () => stableJson({ unsupported: undefined }),
+    /stableJson only supports JSON values/
+  )
+
+  const sparseArray = new Array(1)
+  assert.throws(
+    () => stableJson(sparseArray),
+    /stableJson only supports JSON values/
+  )
+})
+
 test('excludes draft and inactive content from the runtime snapshot', () => {
   const fixture = createFoodKnowledgeFixture()
   fixture.foods.push({
@@ -51,10 +77,36 @@ test('excludes draft and inactive content from the runtime snapshot', () => {
     normalizedTerm: '草莓',
     reviewStatus: 'draft'
   })
+  fixture.foods.push({
+    ...fixture.foods[0],
+    foodId: 'inactive-food',
+    canonicalName: '苹果',
+    category: '水果',
+    subCategory: '仁果类',
+    status: 'inactive',
+    reviewStatus: 'approved'
+  })
+  fixture.searchTerms.push({
+    ...fixture.searchTerms[0],
+    termId: 'inactive-food-canonical',
+    foodId: 'inactive-food',
+    term: '苹果',
+    normalizedTerm: '苹果',
+    reviewStatus: 'approved'
+  })
+  fixture.storageRules.push({
+    ...fixture.storageRules[0],
+    ruleId: 'inactive-food-cut-fridge-v1',
+    foodId: 'inactive-food',
+    evidenceBindings: fixture.storageRules[0].evidenceBindings.map((binding) => ({ ...binding }))
+  })
 
   const release = buildFoodKnowledgeRelease(fixture, RELEASE_OPTIONS)
 
   assert.deepEqual(release.snapshot.foods.map((food) => food.foodId), ['tomato'])
+  assert.deepEqual(release.snapshot.storageRules.map((rule) => rule.ruleId), ['tomato-cut-fridge-v1'])
+  assert.equal(release.manifest.searchTermCount, 2)
+  assert.equal(release.manifest.ruleCount, 1)
 })
 
 test('fails the whole build when validation fails', () => {
