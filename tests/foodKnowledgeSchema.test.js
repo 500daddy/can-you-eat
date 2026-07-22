@@ -7,6 +7,7 @@ const {
   EVIDENCE_LEVELS,
   FOOD_STATUSES,
   FOOD_STATES,
+  PACKAGE_STATES,
   REFERENCE_DATE_TYPES,
   REVIEW_STATUSES,
   STORAGE_METHODS,
@@ -19,6 +20,8 @@ test('accepts the complete shared fixture and exports the controlled vocabularie
   assert.deepEqual(FOOD_STATES, ['raw_whole', 'washed', 'cut', 'opened', 'cooked', 'homemade_baby_food', 'thawed'])
   assert.deepEqual(CATEGORIES, ['蔬菜', '水果', '肉禽水产', '蛋奶豆制品', '主食辅食'])
   assert.deepEqual(FOOD_STATUSES, ['active', 'inactive'])
+  assert.deepEqual(PACKAGE_STATES, ['not_applicable'])
+  assert.equal(Object.isFrozen(PACKAGE_STATES), true)
   assert.deepEqual(REVIEW_STATUSES, ['draft', 'sourced', 'validated', 'approved'])
   assert.deepEqual(STORAGE_METHODS, ['room', 'fridge', 'freezer'])
   assert.deepEqual(REFERENCE_DATE_TYPES, ['purchased_at', 'washed_at', 'cut_at', 'opened_at', 'cooked_at', 'made_at', 'thawed_at'])
@@ -107,6 +110,7 @@ test('normalizes missing optional conditions without treating zero as missing', 
     ...zeroFixture.storageRules[0],
     ruleId: 'tomato-cut-fridge-zero-temperature-v1',
     temperatureMinC: 0,
+    temperatureMaxC: 0,
     adultDaysMax: 3,
     evidenceBindings: zeroFixture.storageRules[0].evidenceBindings.map((binding) => ({ ...binding }))
   })
@@ -277,4 +281,164 @@ test('does not allow callers to extend exported controlled vocabularies', () => 
   assert.ok(result.errors.includes(
     'storage_rules tomato-cut-fridge-v1: invalid storageMethod cupboard'
   ))
+})
+
+test('validates food revision, tag arrays, and optional iconKey type', () => {
+  const cases = [
+    {
+      arrange(food) { food.revision = 0 },
+      error: 'foods tomato: invalid revision 0'
+    },
+    {
+      arrange(food) { food.allergenTags = 'egg' },
+      error: 'foods tomato: allergenTags must be an array'
+    },
+    {
+      arrange(food) { food.riskTags = [''] },
+      error: 'foods tomato: invalid riskTags[0]'
+    },
+    {
+      arrange(food) { food.iconKey = null },
+      error: 'foods tomato: iconKey must be a string'
+    }
+  ]
+
+  for (const item of cases) {
+    const fixture = createFoodKnowledgeFixture()
+    item.arrange(fixture.foods[0])
+    assert.ok(validateFoodKnowledge(fixture).errors.includes(item.error), item.error)
+  }
+})
+
+test('validates search term weight and region before publication', () => {
+  const cases = [
+    {
+      arrange(term) { term.weight = null },
+      error: 'search_terms tomato-canonical: invalid weight null'
+    },
+    {
+      arrange(term) { delete term.weight },
+      error: 'search_terms tomato-canonical: invalid weight undefined'
+    },
+    {
+      arrange(term) { term.weight = Infinity },
+      error: 'search_terms tomato-canonical: invalid weight Infinity'
+    },
+    {
+      arrange(term) { term.region = null },
+      error: 'search_terms tomato-canonical: region must be a string'
+    }
+  ]
+
+  for (const item of cases) {
+    const fixture = createFoodKnowledgeFixture()
+    item.arrange(fixture.searchTerms[0])
+    assert.ok(validateFoodKnowledge(fixture).errors.includes(item.error), item.error)
+  }
+})
+
+test('validates storage rule publication fields independently', () => {
+  const cases = [
+    {
+      arrange(rule) { rule.priority = '100' },
+      error: 'storage_rules tomato-cut-fridge-v1: priority must be a finite number'
+    },
+    {
+      arrange(rule) { delete rule.advice },
+      error: 'storage_rules tomato-cut-fridge-v1: missing advice'
+    },
+    {
+      arrange(rule) { rule.discardSigns = '霉点' },
+      error: 'storage_rules tomato-cut-fridge-v1: discardSigns must be an array'
+    },
+    {
+      arrange(rule) { rule.discardSigns = [''] },
+      error: 'storage_rules tomato-cut-fridge-v1: invalid discardSigns[0]'
+    },
+    {
+      arrange(rule) { rule.ruleVersion = 0 },
+      error: 'storage_rules tomato-cut-fridge-v1: invalid ruleVersion 0'
+    },
+    {
+      arrange(rule) { rule.packageState = 'sealed' },
+      error: 'storage_rules tomato-cut-fridge-v1: invalid packageState sealed'
+    }
+  ]
+
+  for (const item of cases) {
+    const fixture = createFoodKnowledgeFixture()
+    item.arrange(fixture.storageRules[0])
+    assert.ok(validateFoodKnowledge(fixture).errors.includes(item.error), item.error)
+  }
+})
+
+test('rejects reversed or one-sided temperature ranges', () => {
+  const cases = [
+    {
+      temperatureMinC: 5,
+      temperatureMaxC: 1,
+      error: 'storage_rules tomato-cut-fridge-v1: invalid temperatureMinC/temperatureMaxC range 5-1'
+    },
+    {
+      temperatureMinC: 5,
+      error: 'storage_rules tomato-cut-fridge-v1: invalid temperatureMinC/temperatureMaxC range 5-undefined'
+    },
+    {
+      temperatureMaxC: 5,
+      error: 'storage_rules tomato-cut-fridge-v1: invalid temperatureMinC/temperatureMaxC range undefined-5'
+    }
+  ]
+
+  for (const item of cases) {
+    const fixture = createFoodKnowledgeFixture()
+    if (Object.hasOwn(item, 'temperatureMinC')) {
+      fixture.storageRules[0].temperatureMinC = item.temperatureMinC
+    }
+    if (Object.hasOwn(item, 'temperatureMaxC')) {
+      fixture.storageRules[0].temperatureMaxC = item.temperatureMaxC
+    }
+    assert.ok(validateFoodKnowledge(fixture).errors.includes(item.error), item.error)
+  }
+})
+
+test('requires approved direct rules to bind at least one complete active source', () => {
+  const fixture = createFoodKnowledgeFixture()
+  fixture.storageRules[0].evidenceBindings = []
+
+  assert.ok(validateFoodKnowledge(fixture).errors.includes(
+    'storage_rules tomato-cut-fridge-v1: evidenceBindings requires at least one complete active binding for approved direct rule'
+  ))
+})
+
+test('uses priority and reference date as conflict conditions and discard signs as results', () => {
+  const discardFixture = createFoodKnowledgeFixture()
+  discardFixture.storageRules.push({
+    ...discardFixture.storageRules[0],
+    ruleId: 'tomato-cut-fridge-discard-conflict-v1',
+    discardSigns: ['变色'],
+    evidenceBindings: discardFixture.storageRules[0].evidenceBindings.map((binding) => ({ ...binding }))
+  })
+  assert.deepEqual(validateFoodKnowledge(discardFixture).errors, [
+    'storage_rules: conflicting rules tomato-cut-fridge-discard-conflict-v1,tomato-cut-fridge-v1'
+  ])
+
+  const priorityFixture = createFoodKnowledgeFixture()
+  priorityFixture.storageRules.push({
+    ...priorityFixture.storageRules[0],
+    ruleId: 'tomato-cut-fridge-priority-v1',
+    priority: 90,
+    advice: '优先级较低的备用建议。',
+    evidenceBindings: priorityFixture.storageRules[0].evidenceBindings.map((binding) => ({ ...binding }))
+  })
+  assert.deepEqual(validateFoodKnowledge(priorityFixture).errors, [])
+
+  const referenceFixture = createFoodKnowledgeFixture()
+  referenceFixture.storageRules.push({
+    ...referenceFixture.storageRules[0],
+    ruleId: 'tomato-cut-fridge-reference-v1',
+    referenceDateType: 'purchased_at',
+    advice: '从购买时间起计算的建议。',
+    evidenceBindings: referenceFixture.storageRules[0].evidenceBindings.map((binding) => ({ ...binding }))
+  })
+  assert.deepEqual(validateFoodKnowledge(referenceFixture).errors, [])
 })

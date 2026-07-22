@@ -3,6 +3,7 @@ const CATEGORIES = Object.freeze(['蔬菜', '水果', '肉禽水产', '蛋奶豆
 const FOOD_STATUSES = Object.freeze(['active', 'inactive'])
 const REVIEW_STATUSES = Object.freeze(['draft', 'sourced', 'validated', 'approved'])
 const STORAGE_METHODS = Object.freeze(['room', 'fridge', 'freezer'])
+const PACKAGE_STATES = Object.freeze(['not_applicable'])
 const REFERENCE_DATE_TYPES = Object.freeze(['purchased_at', 'washed_at', 'cut_at', 'opened_at', 'cooked_at', 'made_at', 'thawed_at'])
 const TERM_TYPES = Object.freeze(['canonical', 'alias', 'regional', 'pinyin', 'typo'])
 const EVIDENCE_LEVELS = Object.freeze(['direct', 'derived', 'insufficient'])
@@ -13,13 +14,23 @@ const CATEGORY_SET = new Set(CATEGORIES)
 const FOOD_STATUS_SET = new Set(FOOD_STATUSES)
 const REVIEW_STATUS_SET = new Set(REVIEW_STATUSES)
 const STORAGE_METHOD_SET = new Set(STORAGE_METHODS)
+const PACKAGE_STATE_SET = new Set(PACKAGE_STATES)
 const REFERENCE_DATE_TYPE_SET = new Set(REFERENCE_DATE_TYPES)
 const TERM_TYPE_SET = new Set(TERM_TYPES)
 const EVIDENCE_LEVEL_SET = new Set(EVIDENCE_LEVELS)
 const AUDIENCE_SET = new Set(AUDIENCES)
 
 const DEADLINE_FIELDS = ['babyDaysMin', 'babyDaysMax', 'adultDaysMin', 'adultDaysMax']
-const CONDITION_FIELDS = ['foodId', 'foodState', 'storageMethod', 'packageState', 'temperatureMinC', 'temperatureMaxC']
+const CONDITION_FIELDS = [
+  'foodId',
+  'foodState',
+  'storageMethod',
+  'packageState',
+  'temperatureMinC',
+  'temperatureMaxC',
+  'referenceDateType',
+  'priority'
+]
 
 function hasValue(value) {
   return value !== null && value !== undefined
@@ -75,6 +86,19 @@ function addDuplicateErrors(entries, idField, collectionName, errors) {
 function validateEnum(value, allowedValues, fieldName, prefix, errors) {
   if (!allowedValues.has(value)) {
     errors.add(`${prefix}: invalid ${fieldName} ${String(value)}`)
+  }
+}
+
+function validateStringArray(value, fieldName, prefix, errors) {
+  if (!Array.isArray(value)) {
+    errors.add(`${prefix}: ${fieldName} must be an array`)
+    return
+  }
+
+  for (let index = 0; index < value.length; index += 1) {
+    if (!hasText(value[index])) {
+      errors.add(`${prefix}: invalid ${fieldName}[${index}]`)
+    }
   }
 }
 
@@ -137,6 +161,14 @@ function sameOptionalFields(left, right, fields) {
   ))
 }
 
+function sameOrderedArray(left, right) {
+  if (!Array.isArray(left) || !Array.isArray(right)) {
+    return Object.is(left, right)
+  }
+
+  return left.length === right.length && left.every((value, index) => Object.is(value, right[index]))
+}
+
 function validateFoodKnowledge(input) {
   if (!isPlainObject(input)) {
     return {
@@ -187,6 +219,14 @@ function validateFoodKnowledge(input) {
     validateEnum(food.defaultState, FOOD_STATE_SET, 'defaultState', prefix, errors)
     validateEnum(food.status, FOOD_STATUS_SET, 'status', prefix, errors)
     validateEnum(food.reviewStatus, REVIEW_STATUS_SET, 'reviewStatus', prefix, errors)
+    if (!Number.isInteger(food.revision) || food.revision <= 0) {
+      errors.add(`${prefix}: invalid revision ${String(food.revision)}`)
+    }
+    validateStringArray(food.allergenTags, 'allergenTags', prefix, errors)
+    validateStringArray(food.riskTags, 'riskTags', prefix, errors)
+    if (Object.hasOwn(food, 'iconKey') && typeof food.iconKey !== 'string') {
+      errors.add(`${prefix}: iconKey must be a string`)
+    }
   }
 
   for (const { value: searchTerm, index } of searchTermEntries) {
@@ -206,6 +246,12 @@ function validateFoodKnowledge(input) {
     }
     validateEnum(searchTerm.type, TERM_TYPE_SET, 'type', prefix, errors)
     validateEnum(searchTerm.reviewStatus, REVIEW_STATUS_SET, 'reviewStatus', prefix, errors)
+    if (!Number.isFinite(searchTerm.weight) || searchTerm.weight < 0) {
+      errors.add(`${prefix}: invalid weight ${String(searchTerm.weight)}`)
+    }
+    if (typeof searchTerm.region !== 'string') {
+      errors.add(`${prefix}: region must be a string`)
+    }
   }
 
   for (const { value: source, index } of evidenceSourceEntries) {
@@ -233,9 +279,36 @@ function validateFoodKnowledge(input) {
     }
     validateEnum(rule.foodState, FOOD_STATE_SET, 'foodState', prefix, errors)
     validateEnum(rule.storageMethod, STORAGE_METHOD_SET, 'storageMethod', prefix, errors)
+    validateEnum(rule.packageState, PACKAGE_STATE_SET, 'packageState', prefix, errors)
     validateEnum(rule.referenceDateType, REFERENCE_DATE_TYPE_SET, 'referenceDateType', prefix, errors)
     validateEnum(rule.evidenceLevel, EVIDENCE_LEVEL_SET, 'evidenceLevel', prefix, errors)
     validateEnum(rule.reviewStatus, REVIEW_STATUS_SET, 'reviewStatus', prefix, errors)
+    if (!Number.isFinite(rule.priority)) {
+      errors.add(`${prefix}: priority must be a finite number`)
+    }
+    if (!hasText(rule.advice)) {
+      errors.add(`${prefix}: missing advice`)
+    }
+    validateStringArray(rule.discardSigns, 'discardSigns', prefix, errors)
+    if (!Number.isInteger(rule.ruleVersion) || rule.ruleVersion <= 0) {
+      errors.add(`${prefix}: invalid ruleVersion ${String(rule.ruleVersion)}`)
+    }
+
+    const hasTemperatureMin = hasValue(rule.temperatureMinC)
+    const hasTemperatureMax = hasValue(rule.temperatureMaxC)
+    if (
+      hasTemperatureMin !== hasTemperatureMax ||
+      (
+        hasTemperatureMin &&
+        (!Number.isFinite(rule.temperatureMinC) ||
+          !Number.isFinite(rule.temperatureMaxC) ||
+          rule.temperatureMaxC < rule.temperatureMinC)
+      )
+    ) {
+      errors.add(
+        `${prefix}: invalid temperatureMinC/temperatureMaxC range ${rangeValue(rule.temperatureMinC)}-${rangeValue(rule.temperatureMaxC)}`
+      )
+    }
 
     const hasBabyDeadline = validateDeadlineRange(rule, 'baby', prefix, errors)
     const hasAdultDeadline = validateDeadlineRange(rule, 'adult', prefix, errors)
@@ -247,7 +320,7 @@ function validateFoodKnowledge(input) {
         `storageRules[${ruleIndex}].evidenceBindings`,
         errors
       )
-    } else if (hasValue(rule.evidenceBindings)) {
+    } else if (Object.hasOwn(rule, 'evidenceBindings')) {
       errors.add(`storageRules[${ruleIndex}].evidenceBindings: expected array`)
     }
 
@@ -281,6 +354,13 @@ function validateFoodKnowledge(input) {
         hasText(binding.locator)
       ))
     if (
+      rule.reviewStatus === 'approved' &&
+      rule.evidenceLevel === 'direct' &&
+      activeBindings.length === 0
+    ) {
+      errors.add(`${prefix}: evidenceBindings requires at least one complete active binding for approved direct rule`)
+    }
+    if (
       hasBabyDeadline &&
       !(rule.evidenceLevel === 'direct' && activeBindings.some((binding) => binding.audience === 'baby'))
     ) {
@@ -302,7 +382,9 @@ function validateFoodKnowledge(input) {
       const left = approvedRules[leftIndex]
       const right = approvedRules[rightIndex]
       const sameConditions = sameOptionalFields(left, right, CONDITION_FIELDS)
-      const sameGuidance = sameOptionalFields(left, right, DEADLINE_FIELDS) && Object.is(left.advice, right.advice)
+      const sameGuidance = sameOptionalFields(left, right, DEADLINE_FIELDS) &&
+        Object.is(left.advice, right.advice) &&
+        sameOrderedArray(left.discardSigns, right.discardSigns)
 
       if (sameConditions && !sameGuidance) {
         const ruleIds = [String(left.ruleId), String(right.ruleId)].sort(compareCodePoints)
@@ -324,6 +406,7 @@ module.exports = {
   EVIDENCE_LEVELS,
   FOOD_STATUSES,
   FOOD_STATES,
+  PACKAGE_STATES,
   REFERENCE_DATE_TYPES,
   REVIEW_STATUSES,
   STORAGE_METHODS,

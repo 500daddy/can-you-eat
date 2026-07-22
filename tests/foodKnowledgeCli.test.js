@@ -126,6 +126,44 @@ test('build CLI rejects a baby deadline without direct baby evidence before writ
   assert.equal(readdirSync(tempDirectory).includes('output'), false)
 })
 
+test('build CLI reports publication field errors and leaves no release artifacts', (t) => {
+  const tempDirectory = createTempDir(t)
+  const cases = [
+    {
+      name: 'missing-weight',
+      arrange(fixture) { delete fixture.searchTerms[0].weight },
+      error: /search_terms tomato-canonical: invalid weight undefined/
+    },
+    {
+      name: 'missing-direct-binding',
+      arrange(fixture) { fixture.storageRules[0].evidenceBindings = [] },
+      error: /storage_rules tomato-cut-fridge-v1: evidenceBindings requires at least one complete active binding/
+    }
+  ]
+
+  for (const item of cases) {
+    const inputDirectory = path.join(tempDirectory, `${item.name}-input`)
+    const outputDirectory = path.join(tempDirectory, `${item.name}-output`)
+    const fixture = createFoodKnowledgeFixture()
+    item.arrange(fixture)
+    writeBuildInput(inputDirectory, fixture)
+
+    const result = runNode(BUILD_SCRIPT, [
+      '--input', inputDirectory,
+      '--output', outputDirectory,
+      '--release', `food-kb-cli.${item.name}`,
+      '--generated-at', '2026-07-22T00:00:00.000Z'
+    ])
+
+    assert.notEqual(result.status, 0, item.name)
+    assert.match(result.stderr, item.error, item.name)
+    assert.equal(result.stdout, '', item.name)
+    assert.equal(existsSync(path.join(outputDirectory, 'manifest.json')), false, item.name)
+    assert.equal(existsSync(path.join(outputDirectory, 'snapshot.json')), false, item.name)
+    assert.deepEqual(transactionArtifacts(outputDirectory), [], item.name)
+  }
+})
+
 test('legacy export CLI writes exactly four non-publishable migration files', (t) => {
   const tempDirectory = createTempDir(t)
   const outputDirectory = path.join(tempDirectory, 'legacy-v1')
