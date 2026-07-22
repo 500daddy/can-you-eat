@@ -242,6 +242,47 @@ test('excludes draft and inactive content from the runtime snapshot', () => {
   })
 })
 
+test('excludes draft terms and rules belonging to an approved active food', () => {
+  const fixture = createFoodKnowledgeFixture()
+  fixture.searchTerms.push({
+    ...fixture.searchTerms[1],
+    termId: 'tomato-draft-alias',
+    term: '番茄草稿词',
+    normalizedTerm: '番茄草稿词',
+    weight: 110,
+    reviewStatus: 'draft'
+  })
+  fixture.storageRules.push({
+    ...fixture.storageRules[0],
+    ruleId: 'tomato-cut-fridge-draft-v2',
+    evidenceBindings: fixture.storageRules[0].evidenceBindings.map((binding) => ({ ...binding })),
+    reviewStatus: 'draft'
+  })
+
+  const release = buildFoodKnowledgeRelease(fixture, RELEASE_OPTIONS)
+  const tomato = release.snapshot.foods[0]
+
+  assert.deepEqual(
+    release.snapshot.searchTerms.map((term) => term.termId),
+    ['tomato-alias-xihongshi', 'tomato-canonical']
+  )
+  assert.deepEqual(tomato.searchTerms, ['番茄', '西红柿'])
+  assert.deepEqual(
+    tomato.rankedTerms.map((term) => term.term),
+    ['番茄', '西红柿']
+  )
+  assert.deepEqual(
+    release.snapshot.storageRules.map((rule) => rule.ruleId),
+    ['tomato-cut-fridge-v1']
+  )
+  assert.deepEqual(tomato.activeRuleIds, ['tomato-cut-fridge-v1'])
+  assert.deepEqual(release.manifest.counts, {
+    foods: 1,
+    searchTerms: 2,
+    storageRules: 1
+  })
+})
+
 test('fails the whole build when validation fails', () => {
   const fixture = createFoodKnowledgeFixture()
   fixture.storageRules[0].babyDaysMax = 1
