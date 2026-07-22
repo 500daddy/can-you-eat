@@ -14,6 +14,18 @@ const RELEASE_OPTIONS = {
   generatedAt: '2026-07-22T00:00:00.000Z'
 }
 
+function assertThrowsExact(callback, message) {
+  let caught
+  try {
+    callback()
+  } catch (error) {
+    caught = error
+  }
+
+  assert.ok(caught instanceof Error)
+  assert.equal(caught.message, message)
+}
+
 function createTwoFoodFixture() {
   const fixture = createFoodKnowledgeFixture()
   fixture.foods.push({
@@ -157,6 +169,75 @@ test('is independent of each source collection order', () => {
       collection
     )
   }
+})
+
+test('requires releaseId to be a non-empty trimmed string', () => {
+  const fixture = createFoodKnowledgeFixture()
+
+  for (const releaseId of [undefined, null, '', ' ', '\t', ' padded', 'padded ', {}, 42]) {
+    assertThrowsExact(
+      () => buildFoodKnowledgeRelease(fixture, { ...RELEASE_OPTIONS, releaseId }),
+      'options.releaseId must be a non-empty trimmed string'
+    )
+  }
+})
+
+test('requires generatedAt to be a canonical UTC ISO 8601 string', () => {
+  const fixture = createFoodKnowledgeFixture()
+
+  for (const generatedAt of [
+    undefined,
+    null,
+    '',
+    'not-a-time',
+    '2026-07-22',
+    '2026-07-22T00:00:00Z',
+    '2026-07-22T08:00:00.000+08:00',
+    ' 2026-07-22T00:00:00.000Z',
+    '2026-07-22T00:00:00.000Z ',
+    {}
+  ]) {
+    assertThrowsExact(
+      () => buildFoodKnowledgeRelease(fixture, { ...RELEASE_OPTIONS, generatedAt }),
+      'options.generatedAt must be a canonical UTC ISO 8601 string'
+    )
+  }
+})
+
+test('requires previousReleaseId to be null or a non-empty trimmed string', () => {
+  const fixture = createFoodKnowledgeFixture()
+
+  for (const previousReleaseId of ['', ' ', '\t', ' previous', 'previous ', {}, 42]) {
+    assertThrowsExact(
+      () => buildFoodKnowledgeRelease(fixture, { ...RELEASE_OPTIONS, previousReleaseId }),
+      'options.previousReleaseId must be a non-empty trimmed string'
+    )
+  }
+})
+
+test('normalizes omitted and null previousReleaseId to null', () => {
+  const fixture = createFoodKnowledgeFixture()
+
+  for (const previousReleaseId of [undefined, null]) {
+    const options = { ...RELEASE_OPTIONS, previousReleaseId }
+    if (previousReleaseId === undefined) {
+      delete options.previousReleaseId
+    }
+
+    const release = buildFoodKnowledgeRelease(fixture, options)
+    assert.equal(release.snapshot.previousReleaseId, null)
+    assert.equal(release.manifest.previousReleaseId, null)
+  }
+})
+
+test('validates metadata before serializing a release candidate', () => {
+  const fixture = createFoodKnowledgeFixture()
+  fixture.storageRules[0].unsupported = undefined
+
+  assertThrowsExact(
+    () => buildFoodKnowledgeRelease(fixture, { ...RELEASE_OPTIONS, releaseId: ' ' }),
+    'options.releaseId must be a non-empty trimmed string'
+  )
 })
 
 test('serializes object keys directly in Unicode code-point order', () => {

@@ -105,6 +105,55 @@ test('build CLI writes a checksummed release and defaults previousReleaseId to n
   assert.equal(snapshotText, `${JSON.stringify(snapshot, null, 2)}\n`)
 })
 
+test('build CLI rejects invalid release metadata without writing output', (t) => {
+  const tempDirectory = createTempDir(t)
+  const inputDirectory = path.join(tempDirectory, 'input')
+  writeBuildInput(inputDirectory, createFoodKnowledgeFixture())
+  const cases = [
+    {
+      name: 'blank-release',
+      release: '   ',
+      generatedAt: '2026-07-22T00:00:00.000Z',
+      stderr: 'options.releaseId must be a non-empty trimmed string\n'
+    },
+    {
+      name: 'invalid-generated-at',
+      release: 'food-kb-cli.invalid-time',
+      generatedAt: 'not-a-time',
+      stderr: 'options.generatedAt must be a canonical UTC ISO 8601 string\n'
+    },
+    {
+      name: 'blank-previous-release',
+      release: 'food-kb-cli.blank-previous',
+      generatedAt: '2026-07-22T00:00:00.000Z',
+      previousRelease: '   ',
+      stderr: 'options.previousReleaseId must be a non-empty trimmed string\n'
+    }
+  ]
+
+  for (const item of cases) {
+    const outputDirectory = path.join(tempDirectory, `${item.name}-output`)
+    const args = [
+      '--input', inputDirectory,
+      '--output', outputDirectory,
+      '--release', item.release,
+      '--generated-at', item.generatedAt
+    ]
+    if (item.previousRelease !== undefined) {
+      args.push('--previous-release', item.previousRelease)
+    }
+
+    const result = runNode(BUILD_SCRIPT, args)
+
+    assert.notEqual(result.status, 0, item.name)
+    assert.equal(result.stderr, item.stderr, item.name)
+    assert.equal(result.stdout, '', item.name)
+    assert.equal(existsSync(path.join(outputDirectory, 'manifest.json')), false, item.name)
+    assert.equal(existsSync(path.join(outputDirectory, 'snapshot.json')), false, item.name)
+    assert.deepEqual(transactionArtifacts(outputDirectory), [], item.name)
+  }
+})
+
 test('build CLI rejects a baby deadline without direct baby evidence before writing output', (t) => {
   const tempDirectory = createTempDir(t)
   const inputDirectory = path.join(tempDirectory, 'input')

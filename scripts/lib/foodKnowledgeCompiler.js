@@ -84,17 +84,36 @@ function checksum(value) {
   return createHash('sha256').update(stableJson(value)).digest('hex')
 }
 
+function isNonEmptyTrimmedString(value) {
+  return typeof value === 'string' && value !== '' && value === value.trim()
+}
+
+function isCanonicalUtcIso8601(value) {
+  if (typeof value !== 'string') {
+    return false
+  }
+
+  const date = new Date(value)
+  return !Number.isNaN(date.getTime()) && date.toISOString() === value
+}
+
 function buildFoodKnowledgeRelease(input, options) {
   const validation = validateFoodKnowledge(input)
   if (!validation.ok) {
     throw new Error(`food knowledge validation failed:\n${validation.errors.join('\n')}`)
   }
 
-  if (!options || !options.releaseId) {
-    throw new Error('options.releaseId is required')
+  const releaseId = options?.releaseId
+  const generatedAt = options?.generatedAt
+  const previousReleaseId = options?.previousReleaseId ?? null
+  if (!isNonEmptyTrimmedString(releaseId)) {
+    throw new Error('options.releaseId must be a non-empty trimmed string')
   }
-  if (!options.generatedAt) {
-    throw new Error('options.generatedAt is required')
+  if (!isCanonicalUtcIso8601(generatedAt)) {
+    throw new Error('options.generatedAt must be a canonical UTC ISO 8601 string')
+  }
+  if (previousReleaseId !== null && !isNonEmptyTrimmedString(previousReleaseId)) {
+    throw new Error('options.previousReleaseId must be a non-empty trimmed string')
   }
 
   const approvedFoods = input.foods
@@ -140,23 +159,22 @@ function buildFoodKnowledgeRelease(input, options) {
       searchTerms,
       rankedTerms,
       activeRuleIds,
-      releaseId: options.releaseId
+      releaseId
     }
   })
 
-  const previousReleaseId = options.previousReleaseId ?? null
   const snapshot = {
     schemaVersion: '1.0.0',
-    releaseId: options.releaseId,
-    generatedAt: options.generatedAt,
+    releaseId,
+    generatedAt,
     previousReleaseId,
     foods,
     searchTerms: approvedTerms,
     storageRules: approvedRules
   }
   const manifest = {
-    releaseId: options.releaseId,
-    generatedAt: options.generatedAt,
+    releaseId,
+    generatedAt,
     previousReleaseId,
     schemaVersion: '1.0.0',
     status: 'candidate',
