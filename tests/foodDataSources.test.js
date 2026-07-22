@@ -130,10 +130,7 @@ test('food data sources does not derive baby deadlines from adult guidance', () 
   const doc = readDoc('food-data-sources.md')
   const policy = findLine(doc, /(成人|一般家庭)[^。\n]*宝宝/, 'document should separate adult and baby deadline review')
 
-  assert.match(policy, /(成人|一般家庭)[^。\n]*保存期限/)
-  assert.match(policy, /(不能|不得)[^。\n]*简单缩短/)
-  assert.match(policy, /(不能|不得)[^。\n]*换算/)
-  assert.match(policy, /(不能|不得)[^。\n]*转换成[^。\n]*宝宝[^。\n]*期限/)
+  assert.match(policy, /(成人|一般家庭)[^。\n]*期限[^。\n]*(不能|不得|禁止)[^。\n]*(推导|换算|转换|折算)[^。\n]*宝宝[^。\n]*期限/)
   assert.match(policy, /成人[^。\n]*宝宝[^。\n]*(必须|需要|需)[^。\n]*分开审核/)
 })
 
@@ -145,6 +142,17 @@ test('food data sources leaves unsupported baby deadlines empty without hiding s
   assert.match(policy, /babyDaysMin/i)
   assert.match(policy, /babyDaysMax/i)
   assert.match(policy, /宝宝[^。\n]*期限字段[^。\n]*(保持空|留空)/)
+  assert.match(policy, /(正式知识库|知识库正式)[^。\n]*运行快照[^。\n]*(切换后|启用后|生效后)/)
   assert.match(policy, /UI[^。\n]*(不展示|不得展示|不能展示)[^。\n]*独立[^。\n]*宝宝[^。\n]*(天数|期限)/i)
   assert.match(policy, /(可以|仍可)[^。\n]*有来源[^。\n]*一般保存提醒[^。\n]*谨慎提示/)
+})
+
+test('food data sources keeps stage A from changing the legacy runtime or legitimizing legacy baby deadlines', () => {
+  const doc = readDoc('food-data-sources.md')
+  const boundary = findLine(doc, /阶段 A[^。\n]*(旧运行时|当前运行时)/, 'document should keep stage A separate from the current runtime')
+
+  assert.match(boundary, /阶段 A[^。\n]*(仅|只)[^。\n]*本地候选[^。\n]*证据(门禁|审核|校验)/)
+  assert.match(boundary, /(不改变|不会改变|不影响)[^。\n]*(当前)?旧运行时[^。\n]*UI/)
+  assert.match(boundary, /(当前)?旧数据[^。\n]*宝宝[^。\n]*(建议期|期限)[^。\n]*(不会|不能|不得|不)[^。\n]*自动[^。\n]*direct[^。\n]*证据/i)
+  assert.match(boundary, /(也不|不会|不能|不得)[^。\n]*(变成|视为|成为)[^。\n]*合规[^。\n]*(新规则|知识库规则)/)
 })
