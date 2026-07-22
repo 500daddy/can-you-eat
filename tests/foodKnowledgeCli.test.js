@@ -132,12 +132,16 @@ test('build CLI reports publication field errors and leaves no release artifacts
     {
       name: 'missing-weight',
       arrange(fixture) { delete fixture.searchTerms[0].weight },
-      error: /search_terms tomato-canonical: invalid weight undefined/
+      stderr: 'food knowledge validation failed:\nsearch_terms tomato-canonical: invalid weight undefined\n'
     },
     {
       name: 'missing-direct-binding',
-      arrange(fixture) { fixture.storageRules[0].evidenceBindings = [] },
-      error: /storage_rules tomato-cut-fridge-v1: evidenceBindings requires at least one complete active binding/
+      arrange(fixture) {
+        fixture.storageRules[0].adultDaysMin = null
+        fixture.storageRules[0].adultDaysMax = null
+        fixture.storageRules[0].evidenceBindings = []
+      },
+      stderr: 'food knowledge validation failed:\nstorage_rules tomato-cut-fridge-v1: evidenceBindings requires at least one complete active binding for approved direct rule\n'
     }
   ]
 
@@ -156,7 +160,7 @@ test('build CLI reports publication field errors and leaves no release artifacts
     ])
 
     assert.notEqual(result.status, 0, item.name)
-    assert.match(result.stderr, item.error, item.name)
+    assert.equal(result.stderr, item.stderr, item.name)
     assert.equal(result.stdout, '', item.name)
     assert.equal(existsSync(path.join(outputDirectory, 'manifest.json')), false, item.name)
     assert.equal(existsSync(path.join(outputDirectory, 'snapshot.json')), false, item.name)

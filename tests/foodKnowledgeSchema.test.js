@@ -337,7 +337,7 @@ test('validates search term weight and region before publication', () => {
   }
 })
 
-test('validates storage rule publication fields independently', () => {
+test('validates storage rule publication fields and the single-valued packageState enum independently', () => {
   const cases = [
     {
       arrange(rule) { rule.priority = '100' },
@@ -410,35 +410,130 @@ test('requires approved direct rules to bind at least one complete active source
   ))
 })
 
-test('uses priority and reference date as conflict conditions and discard signs as results', () => {
-  const discardFixture = createFoodKnowledgeFixture()
-  discardFixture.storageRules.push({
-    ...discardFixture.storageRules[0],
-    ruleId: 'tomato-cut-fridge-discard-conflict-v1',
-    discardSigns: ['变色'],
-    evidenceBindings: discardFixture.storageRules[0].evidenceBindings.map((binding) => ({ ...binding }))
-  })
-  assert.deepEqual(validateFoodKnowledge(discardFixture).errors, [
-    'storage_rules: conflicting rules tomato-cut-fridge-discard-conflict-v1,tomato-cut-fridge-v1'
-  ])
+test('does not conflict when any multi-valued condition dimension differs', () => {
+  const cases = [
+    {
+      name: 'foodId',
+      arrange(fixture, rule) {
+        fixture.foods.push({
+          ...fixture.foods[0],
+          foodId: 'apple',
+          canonicalName: '苹果',
+          category: '水果',
+          subCategory: '仁果类',
+          iconKey: 'apple'
+        })
+        rule.foodId = 'apple'
+      }
+    },
+    {
+      name: 'foodState',
+      arrange(fixture, rule) { rule.foodState = 'opened' }
+    },
+    {
+      name: 'storageMethod',
+      arrange(fixture, rule) { rule.storageMethod = 'freezer' }
+    },
+    {
+      name: 'temperatureMinC/temperatureMaxC',
+      arrange(fixture, rule) {
+        rule.temperatureMinC = 0
+        rule.temperatureMaxC = 4
+      }
+    },
+    {
+      name: 'referenceDateType',
+      arrange(fixture, rule) { rule.referenceDateType = 'purchased_at' }
+    },
+    {
+      name: 'priority',
+      arrange(fixture, rule) { rule.priority = 90 }
+    }
+  ]
 
-  const priorityFixture = createFoodKnowledgeFixture()
-  priorityFixture.storageRules.push({
-    ...priorityFixture.storageRules[0],
-    ruleId: 'tomato-cut-fridge-priority-v1',
-    priority: 90,
-    advice: '优先级较低的备用建议。',
-    evidenceBindings: priorityFixture.storageRules[0].evidenceBindings.map((binding) => ({ ...binding }))
-  })
-  assert.deepEqual(validateFoodKnowledge(priorityFixture).errors, [])
+  // packageState has one legal schema-v1 value; its dimension is covered by enum rejection
+  // until a future explicit schema version adds another legal value.
+  for (const item of cases) {
+    const fixture = createFoodKnowledgeFixture()
+    const rule = {
+      ...fixture.storageRules[0],
+      ruleId: `tomato-cut-fridge-condition-${item.name}-v1`,
+      advice: '仅用于验证条件差异的另一条合法建议。',
+      discardSigns: [...fixture.storageRules[0].discardSigns],
+      evidenceBindings: fixture.storageRules[0].evidenceBindings.map((binding) => ({ ...binding }))
+    }
+    item.arrange(fixture, rule)
+    fixture.storageRules.push(rule)
 
-  const referenceFixture = createFoodKnowledgeFixture()
-  referenceFixture.storageRules.push({
-    ...referenceFixture.storageRules[0],
-    ruleId: 'tomato-cut-fridge-reference-v1',
-    referenceDateType: 'purchased_at',
-    advice: '从购买时间起计算的建议。',
-    evidenceBindings: referenceFixture.storageRules[0].evidenceBindings.map((binding) => ({ ...binding }))
-  })
-  assert.deepEqual(validateFoodKnowledge(referenceFixture).errors, [])
+    assert.deepEqual(validateFoodKnowledge(fixture), {
+      ok: true,
+      errors: []
+    }, item.name)
+  }
+})
+
+test('reports the exact conflict when any user-visible result field differs', () => {
+  const cases = [
+    {
+      name: 'baby-days-min',
+      prepare(rule) {
+        rule.babyDaysMin = 1
+        rule.babyDaysMax = 3
+        rule.evidenceBindings.push({
+          sourceId: 'source-general-storage',
+          audience: 'baby',
+          locator: '测试宝宝表格第 1 行'
+        })
+      },
+      change(rule) { rule.babyDaysMin = 2 }
+    },
+    {
+      name: 'baby-days-max',
+      prepare(rule) {
+        rule.babyDaysMin = 1
+        rule.babyDaysMax = 3
+        rule.evidenceBindings.push({
+          sourceId: 'source-general-storage',
+          audience: 'baby',
+          locator: '测试宝宝表格第 1 行'
+        })
+      },
+      change(rule) { rule.babyDaysMax = 4 }
+    },
+    {
+      name: 'adult-days-min',
+      change(rule) { rule.adultDaysMin = 0 }
+    },
+    {
+      name: 'adult-days-max',
+      change(rule) { rule.adultDaysMax = 3 }
+    },
+    {
+      name: 'advice',
+      change(rule) { rule.advice = '另一条冲突的可见建议。' }
+    },
+    {
+      name: 'discard-signs',
+      change(rule) { rule.discardSigns = ['变色'] }
+    }
+  ]
+
+  for (const item of cases) {
+    const fixture = createFoodKnowledgeFixture()
+    if (item.prepare) {
+      item.prepare(fixture.storageRules[0])
+    }
+    const rule = {
+      ...fixture.storageRules[0],
+      ruleId: `tomato-cut-fridge-result-${item.name}-v1`,
+      discardSigns: [...fixture.storageRules[0].discardSigns],
+      evidenceBindings: fixture.storageRules[0].evidenceBindings.map((binding) => ({ ...binding }))
+    }
+    item.change(rule)
+    fixture.storageRules.push(rule)
+
+    assert.deepEqual(validateFoodKnowledge(fixture).errors, [
+      `storage_rules: conflicting rules tomato-cut-fridge-result-${item.name}-v1,tomato-cut-fridge-v1`
+    ], item.name)
+  }
 })
