@@ -33,7 +33,14 @@ function stableJson(value) {
       return 'null'
     }
 
-    if (typeof current === 'string' || typeof current === 'number' || typeof current === 'boolean') {
+    if (typeof current === 'number') {
+      if (!Number.isFinite(current)) {
+        throw new TypeError('stableJson only supports JSON values')
+      }
+      return JSON.stringify(current)
+    }
+
+    if (typeof current === 'string' || typeof current === 'boolean') {
       return JSON.stringify(current)
     }
 
@@ -74,7 +81,7 @@ function stableJson(value) {
 }
 
 function checksum(value) {
-  return `sha256:${createHash('sha256').update(stableJson(value)).digest('hex')}`
+  return createHash('sha256').update(stableJson(value)).digest('hex')
 }
 
 function buildFoodKnowledgeRelease(input, options) {
@@ -101,15 +108,17 @@ function buildFoodKnowledgeRelease(input, options) {
   const approvedFoodIds = new Set(approvedFoods.map((food) => food.foodId))
   const approvedTerms = input.searchTerms
     .filter((term) => term.reviewStatus === 'approved' && approvedFoodIds.has(term.foodId))
-    .sort((left, right) => (
-      right.weight - left.weight || compareCodePoints(left.termId, right.termId)
-    ))
+    .sort((left, right) => compareCodePoints(left.termId, right.termId))
   const approvedRules = input.storageRules
     .filter((rule) => rule.reviewStatus === 'approved' && approvedFoodIds.has(rule.foodId))
     .sort((left, right) => compareCodePoints(left.ruleId, right.ruleId))
 
   const foods = approvedFoods.map((food) => {
-    const foodTerms = approvedTerms.filter((term) => term.foodId === food.foodId)
+    const foodTerms = approvedTerms
+      .filter((term) => term.foodId === food.foodId)
+      .sort((left, right) => (
+        right.weight - left.weight || compareCodePoints(left.termId, right.termId)
+      ))
     const searchTerms = [...new Set(foodTerms.map((term) => term.term))]
     const rankedTerms = foodTerms.map((term) => ({
       term: term.term,
@@ -135,21 +144,27 @@ function buildFoodKnowledgeRelease(input, options) {
     }
   })
 
+  const previousReleaseId = options.previousReleaseId ?? null
   const snapshot = {
+    schemaVersion: '1.0.0',
     releaseId: options.releaseId,
     generatedAt: options.generatedAt,
+    previousReleaseId,
     foods,
+    searchTerms: approvedTerms,
     storageRules: approvedRules
   }
   const manifest = {
     releaseId: options.releaseId,
-    previousReleaseId: options.previousReleaseId ?? null,
-    status: 'release_candidate',
     generatedAt: options.generatedAt,
-    foodCount: foods.length,
-    searchTermCount: approvedTerms.length,
-    ruleCount: approvedRules.length,
-    sourceCount: input.evidenceSources.filter((source) => source.status === 'active').length,
+    previousReleaseId,
+    schemaVersion: '1.0.0',
+    status: 'candidate',
+    counts: {
+      foods: foods.length,
+      searchTerms: approvedTerms.length,
+      storageRules: approvedRules.length
+    },
     snapshotChecksum: checksum(snapshot)
   }
 
