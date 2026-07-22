@@ -89,6 +89,13 @@ function sameFields(left, right, fields) {
   return fields.every((field) => Object.is(left[field], right[field]))
 }
 
+function sameOptionalFields(left, right, fields) {
+  return fields.every((field) => (
+    (!hasValue(left[field]) && !hasValue(right[field])) ||
+    Object.is(left[field], right[field])
+  ))
+}
+
 function validateFoodKnowledge(input) {
   const foods = Array.isArray(input && input.foods) ? input.foods : []
   const searchTerms = Array.isArray(input && input.searchTerms) ? input.searchTerms : []
@@ -195,7 +202,7 @@ function validateFoodKnowledge(input) {
     for (let rightIndex = leftIndex + 1; rightIndex < approvedRules.length; rightIndex += 1) {
       const left = approvedRules[leftIndex]
       const right = approvedRules[rightIndex]
-      const sameConditions = sameFields(left, right, CONDITION_FIELDS)
+      const sameConditions = sameOptionalFields(left, right, CONDITION_FIELDS)
       const sameGuidance = sameFields(left, right, [...DEADLINE_FIELDS, 'advice'])
 
       if (sameConditions && !sameGuidance) {

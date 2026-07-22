@@ -87,3 +87,29 @@ test('rejects approved rules with the same conditions but conflicting guidance',
     'storage_rules: conflicting rules tomato-cut-fridge-conflict-v1,tomato-cut-fridge-v1'
   ])
 })
+
+test('normalizes missing optional conditions without treating zero as missing', () => {
+  const fixture = createFoodKnowledgeFixture()
+  fixture.storageRules.push({
+    ...fixture.storageRules[0],
+    ruleId: 'tomato-cut-fridge-null-temperature-v1',
+    temperatureMinC: null,
+    adultDaysMax: 3,
+    evidenceBindings: fixture.storageRules[0].evidenceBindings.map((binding) => ({ ...binding }))
+  })
+
+  assert.deepEqual(validateFoodKnowledge(fixture).errors, [
+    'storage_rules: conflicting rules tomato-cut-fridge-null-temperature-v1,tomato-cut-fridge-v1'
+  ])
+
+  const zeroFixture = createFoodKnowledgeFixture()
+  zeroFixture.storageRules.push({
+    ...zeroFixture.storageRules[0],
+    ruleId: 'tomato-cut-fridge-zero-temperature-v1',
+    temperatureMinC: 0,
+    adultDaysMax: 3,
+    evidenceBindings: zeroFixture.storageRules[0].evidenceBindings.map((binding) => ({ ...binding }))
+  })
+
+  assert.deepEqual(validateFoodKnowledge(zeroFixture).errors, [])
+})
