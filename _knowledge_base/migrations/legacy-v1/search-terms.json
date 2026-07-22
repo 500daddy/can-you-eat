@@ -1,0 +1,2472 @@
+[
+  {
+    "termId": "amaranth-alias-e7baa2e88b8be88f9c",
+    "foodId": "amaranth",
+    "term": "红苋菜",
+    "normalizedTerm": "红苋菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "amaranth-canonical-e88b8be88f9c",
+    "foodId": "amaranth",
+    "term": "苋菜",
+    "normalizedTerm": "苋菜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "apple-alias-e5af8ce5a3ab",
+    "foodId": "apple",
+    "term": "富士",
+    "normalizedTerm": "富士",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "apple-alias-e7baa2e88bb9e69e9c",
+    "foodId": "apple",
+    "term": "红苹果",
+    "normalizedTerm": "红苹果",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "apple-canonical-e88bb9e69e9c",
+    "foodId": "apple",
+    "term": "苹果",
+    "normalizedTerm": "苹果",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "asparagus-canonical-e88aa6e7ac8b",
+    "foodId": "asparagus",
+    "term": "芦笋",
+    "normalizedTerm": "芦笋",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "avocado-alias-e9b384e6a2a8",
+    "foodId": "avocado",
+    "term": "鳄梨",
+    "normalizedTerm": "鳄梨",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "avocado-canonical-e7899be6b2b9e69e9c",
+    "foodId": "avocado",
+    "term": "牛油果",
+    "normalizedTerm": "牛油果",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "babyPuree-alias-e69e9ce6b3a5",
+    "foodId": "babyPuree",
+    "term": "果泥",
+    "normalizedTerm": "果泥",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "babyPuree-alias-e88289e6b3a5",
+    "foodId": "babyPuree",
+    "term": "肉泥",
+    "normalizedTerm": "肉泥",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "babyPuree-alias-e88f9ce6b3a5",
+    "foodId": "babyPuree",
+    "term": "菜泥",
+    "normalizedTerm": "菜泥",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "babyPuree-canonical-e8be85e9a39fe6b3a5",
+    "foodId": "babyPuree",
+    "term": "辅食泥",
+    "normalizedTerm": "辅食泥",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "bambooShoot-alias-e7ac8b",
+    "foodId": "bambooShoot",
+    "term": "笋",
+    "normalizedTerm": "笋",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "bambooShoot-canonical-e7abb9e7ac8b",
+    "foodId": "bambooShoot",
+    "term": "竹笋",
+    "normalizedTerm": "竹笋",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "banana-alias-e89589",
+    "foodId": "banana",
+    "term": "蕉",
+    "normalizedTerm": "蕉",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "banana-alias-e9a699e89589e6b3a5",
+    "foodId": "banana",
+    "term": "香蕉泥",
+    "normalizedTerm": "香蕉泥",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "banana-canonical-e9a699e89589",
+    "foodId": "banana",
+    "term": "香蕉",
+    "normalizedTerm": "香蕉",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "bass-alias-e6b5b7e9b288e9b1bc",
+    "foodId": "bass",
+    "term": "海鲈鱼",
+    "normalizedTerm": "海鲈鱼",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "bass-canonical-e9b288e9b1bc",
+    "foodId": "bass",
+    "term": "鲈鱼",
+    "normalizedTerm": "鲈鱼",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "beef-alias-e7899be88289e6b3a5",
+    "foodId": "beef",
+    "term": "牛肉泥",
+    "normalizedTerm": "牛肉泥",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "beef-alias-e7899be9878ce8848a",
+    "foodId": "beef",
+    "term": "牛里脊",
+    "normalizedTerm": "牛里脊",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "beef-canonical-e7899be88289",
+    "foodId": "beef",
+    "term": "牛肉",
+    "normalizedTerm": "牛肉",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "bitterMelon-alias-e58789e7939c",
+    "foodId": "bitterMelon",
+    "term": "凉瓜",
+    "normalizedTerm": "凉瓜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "bitterMelon-canonical-e88ba6e7939c",
+    "foodId": "bitterMelon",
+    "term": "苦瓜",
+    "normalizedTerm": "苦瓜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "blackRice-canonical-e9bb91e7b1b3",
+    "foodId": "blackRice",
+    "term": "黑米",
+    "normalizedTerm": "黑米",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "blueberry-alias-e88e93e69e9c",
+    "foodId": "blueberry",
+    "term": "莓果",
+    "normalizedTerm": "莓果",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "blueberry-canonical-e8939de88e93",
+    "foodId": "blueberry",
+    "term": "蓝莓",
+    "normalizedTerm": "蓝莓",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "bokChoy-alias-e5b08fe6b2b9e88f9c",
+    "foodId": "bokChoy",
+    "term": "小油菜",
+    "normalizedTerm": "小油菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "bokChoy-alias-e5b08fe799bde88f9c",
+    "foodId": "bokChoy",
+    "term": "小白菜",
+    "normalizedTerm": "小白菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "bokChoy-alias-e5b08fe99d92e88f9c",
+    "foodId": "bokChoy",
+    "term": "小青菜",
+    "normalizedTerm": "小青菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "bokChoy-alias-e6b2b9e88f9c",
+    "foodId": "bokChoy",
+    "term": "油菜",
+    "normalizedTerm": "油菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "bokChoy-alias-e99d92e6b19fe88f9c",
+    "foodId": "bokChoy",
+    "term": "青江菜",
+    "normalizedTerm": "青江菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "bokChoy-alias-e99d92e88f9c",
+    "foodId": "bokChoy",
+    "term": "青菜",
+    "normalizedTerm": "青菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "bokChoy-canonical-e4b88ae6b5b7e99d92",
+    "foodId": "bokChoy",
+    "term": "上海青",
+    "normalizedTerm": "上海青",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "bread-alias-e59090e58fb8",
+    "foodId": "bread",
+    "term": "吐司",
+    "normalizedTerm": "吐司",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "bread-canonical-e99da2e58c85",
+    "foodId": "bread",
+    "term": "面包",
+    "normalizedTerm": "面包",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "broccoli-alias-e7bbbfe88ab1e88f9c",
+    "foodId": "broccoli",
+    "term": "绿花菜",
+    "normalizedTerm": "绿花菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "broccoli-alias-e7bbbfe88f9ce88ab1",
+    "foodId": "broccoli",
+    "term": "绿菜花",
+    "normalizedTerm": "绿菜花",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "broccoli-alias-e8a5bfe8939de88ab1",
+    "foodId": "broccoli",
+    "term": "西蓝花",
+    "normalizedTerm": "西蓝花",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "broccoli-alias-e99d92e88ab1e88f9c",
+    "foodId": "broccoli",
+    "term": "青花菜",
+    "normalizedTerm": "青花菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "broccoli-canonical-e8a5bfe585b0e88ab1",
+    "foodId": "broccoli",
+    "term": "西兰花",
+    "normalizedTerm": "西兰花",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "buckwheat-canonical-e88d9ee9baa6",
+    "foodId": "buckwheat",
+    "term": "荞麦",
+    "normalizedTerm": "荞麦",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cabbage-alias-e5b08fe6b2b9e88f9c",
+    "foodId": "cabbage",
+    "term": "小油菜",
+    "normalizedTerm": "小油菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cabbage-alias-e5b08fe99d92e88f9c",
+    "foodId": "cabbage",
+    "term": "小青菜",
+    "normalizedTerm": "小青菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cabbage-alias-e6b2b9e88f9c",
+    "foodId": "cabbage",
+    "term": "油菜",
+    "normalizedTerm": "油菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cabbage-alias-e99d92e88f9c",
+    "foodId": "cabbage",
+    "term": "青菜",
+    "normalizedTerm": "青菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cabbage-canonical-e5b08fe799bde88f9c",
+    "foodId": "cabbage",
+    "term": "小白菜",
+    "normalizedTerm": "小白菜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cabbageHead-alias-e58c85e88f9c",
+    "foodId": "cabbageHead",
+    "term": "包菜",
+    "normalizedTerm": "包菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cabbageHead-alias-e59c86e799bde88f9c",
+    "foodId": "cabbageHead",
+    "term": "圆白菜",
+    "normalizedTerm": "圆白菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cabbageHead-canonical-e58db7e5bf83e88f9c",
+    "foodId": "cabbageHead",
+    "term": "卷心菜",
+    "normalizedTerm": "卷心菜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cantaloupe-alias-e7949ce7939c",
+    "foodId": "cantaloupe",
+    "term": "甜瓜",
+    "normalizedTerm": "甜瓜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cantaloupe-canonical-e59388e5af86e7939c",
+    "foodId": "cantaloupe",
+    "term": "哈密瓜",
+    "normalizedTerm": "哈密瓜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "carrot-alias-e7baa2e8909de58d9c",
+    "foodId": "carrot",
+    "term": "红萝卜",
+    "normalizedTerm": "红萝卜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "carrot-alias-e883a1e8909de58d9ce6b3a5",
+    "foodId": "carrot",
+    "term": "胡萝卜泥",
+    "normalizedTerm": "胡萝卜泥",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "carrot-canonical-e883a1e8909de58d9c",
+    "foodId": "carrot",
+    "term": "胡萝卜",
+    "normalizedTerm": "胡萝卜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cauliflower-alias-e88f9ce88ab1",
+    "foodId": "cauliflower",
+    "term": "菜花",
+    "normalizedTerm": "菜花",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cauliflower-canonical-e88ab1e88f9c",
+    "foodId": "cauliflower",
+    "term": "花菜",
+    "normalizedTerm": "花菜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "celery-alias-e8a5bfe88ab9",
+    "foodId": "celery",
+    "term": "西芹",
+    "normalizedTerm": "西芹",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "celery-canonical-e88ab9e88f9c",
+    "foodId": "celery",
+    "term": "芹菜",
+    "normalizedTerm": "芹菜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cheese-alias-e88a9de5a3ab",
+    "foodId": "cheese",
+    "term": "芝士",
+    "normalizedTerm": "芝士",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cheese-canonical-e5a5b6e985aa",
+    "foodId": "cheese",
+    "term": "奶酪",
+    "normalizedTerm": "奶酪",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cherry-alias-e8bda6e58e98e5ad90",
+    "foodId": "cherry",
+    "term": "车厘子",
+    "normalizedTerm": "车厘子",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cherry-canonical-e6a8b1e6a183",
+    "foodId": "cherry",
+    "term": "樱桃",
+    "normalizedTerm": "樱桃",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "chicken-alias-e9b8a1e88289",
+    "foodId": "chicken",
+    "term": "鸡肉",
+    "normalizedTerm": "鸡肉",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "chicken-alias-e9b8a1e883b8",
+    "foodId": "chicken",
+    "term": "鸡胸",
+    "normalizedTerm": "鸡胸",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "chicken-alias-e9b8a1e883b8e88289e6b3a5",
+    "foodId": "chicken",
+    "term": "鸡胸肉泥",
+    "normalizedTerm": "鸡胸肉泥",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "chicken-alias-e9b8a1e9878ce8848a",
+    "foodId": "chicken",
+    "term": "鸡里脊",
+    "normalizedTerm": "鸡里脊",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "chicken-canonical-e9b8a1e883b8e88289",
+    "foodId": "chicken",
+    "term": "鸡胸肉",
+    "normalizedTerm": "鸡胸肉",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "clam-alias-e88ab1e794b2",
+    "foodId": "clam",
+    "term": "花甲",
+    "normalizedTerm": "花甲",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "clam-canonical-e89ba4e89c8a",
+    "foodId": "clam",
+    "term": "蛤蜊",
+    "normalizedTerm": "蛤蜊",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "corn-alias-e78e89e7b1b3e7b292",
+    "foodId": "corn",
+    "term": "玉米粒",
+    "normalizedTerm": "玉米粒",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "corn-alias-e7949ce78e89e7b1b3",
+    "foodId": "corn",
+    "term": "甜玉米",
+    "normalizedTerm": "甜玉米",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "corn-canonical-e78e89e7b1b3",
+    "foodId": "corn",
+    "term": "玉米",
+    "normalizedTerm": "玉米",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cucumber-alias-e99d92e7939c",
+    "foodId": "cucumber",
+    "term": "青瓜",
+    "normalizedTerm": "青瓜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "cucumber-canonical-e9bb84e7939c",
+    "foodId": "cucumber",
+    "term": "黄瓜",
+    "normalizedTerm": "黄瓜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "dragonFruit-alias-e7baa2e5bf83e781abe9be99e69e9c",
+    "foodId": "dragonFruit",
+    "term": "红心火龙果",
+    "normalizedTerm": "红心火龙果",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "dragonFruit-canonical-e781abe9be99e69e9c",
+    "foodId": "dragonFruit",
+    "term": "火龙果",
+    "normalizedTerm": "火龙果",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "driedTofu-alias-e8b186e88590e5b9b2",
+    "foodId": "driedTofu",
+    "term": "豆腐干",
+    "normalizedTerm": "豆腐干",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "driedTofu-canonical-e8b186e5b9b2",
+    "foodId": "driedTofu",
+    "term": "豆干",
+    "normalizedTerm": "豆干",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "duck-canonical-e9b8ade88289",
+    "foodId": "duck",
+    "term": "鸭肉",
+    "normalizedTerm": "鸭肉",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "dumpling-alias-e9a684e9a5a8",
+    "foodId": "dumpling",
+    "term": "馄饨",
+    "normalizedTerm": "馄饨",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "dumpling-canonical-e9a5bae5ad90",
+    "foodId": "dumpling",
+    "term": "饺子",
+    "normalizedTerm": "饺子",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "edamame-canonical-e6af9be8b186",
+    "foodId": "edamame",
+    "term": "毛豆",
+    "normalizedTerm": "毛豆",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "egg-alias-e89b8b",
+    "foodId": "egg",
+    "term": "蛋",
+    "normalizedTerm": "蛋",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "egg-alias-e89b8be799bd",
+    "foodId": "egg",
+    "term": "蛋白",
+    "normalizedTerm": "蛋白",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "egg-alias-e89b8be9bb84",
+    "foodId": "egg",
+    "term": "蛋黄",
+    "normalizedTerm": "蛋黄",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "egg-alias-e9b8a1e89b8be9bb84",
+    "foodId": "egg",
+    "term": "鸡蛋黄",
+    "normalizedTerm": "鸡蛋黄",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "egg-canonical-e9b8a1e89b8b",
+    "foodId": "egg",
+    "term": "鸡蛋",
+    "normalizedTerm": "鸡蛋",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "eggCustard-alias-e89b8be7beb9",
+    "foodId": "eggCustard",
+    "term": "蛋羹",
+    "normalizedTerm": "蛋羹",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "eggCustard-canonical-e892b8e89b8be7beb9",
+    "foodId": "eggCustard",
+    "term": "蒸蛋羹",
+    "normalizedTerm": "蒸蛋羹",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "eggplant-alias-e7b4abe88c84",
+    "foodId": "eggplant",
+    "term": "紫茄",
+    "normalizedTerm": "紫茄",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "eggplant-canonical-e88c84e5ad90",
+    "foodId": "eggplant",
+    "term": "茄子",
+    "normalizedTerm": "茄子",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "enoki-canonical-e98791e99288e88f87",
+    "foodId": "enoki",
+    "term": "金针菇",
+    "normalizedTerm": "金针菇",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "fish-alias-e799bde88289e9b1bc",
+    "foodId": "fish",
+    "term": "白肉鱼",
+    "normalizedTerm": "白肉鱼",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "fish-alias-e9b1bc",
+    "foodId": "fish",
+    "term": "鱼",
+    "normalizedTerm": "鱼",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "fish-alias-e9b1bce69fb3",
+    "foodId": "fish",
+    "term": "鱼柳",
+    "normalizedTerm": "鱼柳",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "fish-alias-e9b1bce78987",
+    "foodId": "fish",
+    "term": "鱼片",
+    "normalizedTerm": "鱼片",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "fish-alias-e9b1bce88289",
+    "foodId": "fish",
+    "term": "鱼肉",
+    "normalizedTerm": "鱼肉",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "fish-canonical-e9b395e9b1bc",
+    "foodId": "fish",
+    "term": "鳕鱼",
+    "normalizedTerm": "鳕鱼",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "garlic-alias-e8929c",
+    "foodId": "garlic",
+    "term": "蒜",
+    "normalizedTerm": "蒜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "garlic-canonical-e5a4a7e8929c",
+    "foodId": "garlic",
+    "term": "大蒜",
+    "normalizedTerm": "大蒜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "grape-alias-e68f90e5ad90",
+    "foodId": "grape",
+    "term": "提子",
+    "normalizedTerm": "提子",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "grape-canonical-e891a1e89084",
+    "foodId": "grape",
+    "term": "葡萄",
+    "normalizedTerm": "葡萄",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "grapefruit-alias-e8a5bfe69f9a",
+    "foodId": "grapefruit",
+    "term": "西柚",
+    "normalizedTerm": "西柚",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "grapefruit-canonical-e69f9ae5ad90",
+    "foodId": "grapefruit",
+    "term": "柚子",
+    "normalizedTerm": "柚子",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "greenBean-alias-e8b186e8a792",
+    "foodId": "greenBean",
+    "term": "豆角",
+    "normalizedTerm": "豆角",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "greenBean-canonical-e59b9be5ada3e8b186",
+    "foodId": "greenBean",
+    "term": "四季豆",
+    "normalizedTerm": "四季豆",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "greenPepper-alias-e5bda9e6a492",
+    "foodId": "greenPepper",
+    "term": "彩椒",
+    "normalizedTerm": "彩椒",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "greenPepper-alias-e7949ce6a492",
+    "foodId": "greenPepper",
+    "term": "甜椒",
+    "normalizedTerm": "甜椒",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "greenPepper-canonical-e99d92e6a492",
+    "foodId": "greenPepper",
+    "term": "青椒",
+    "normalizedTerm": "青椒",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "hairtail-canonical-e5b8a6e9b1bc",
+    "foodId": "hairtail",
+    "term": "带鱼",
+    "normalizedTerm": "带鱼",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "kelp-alias-e69886e5b883",
+    "foodId": "kelp",
+    "term": "昆布",
+    "normalizedTerm": "昆布",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "kelp-canonical-e6b5b7e5b8a6",
+    "foodId": "kelp",
+    "term": "海带",
+    "normalizedTerm": "海带",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "kiwi-alias-e5a587e5bc82e69e9c",
+    "foodId": "kiwi",
+    "term": "奇异果",
+    "normalizedTerm": "奇异果",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "kiwi-canonical-e78c95e78cb4e6a183",
+    "foodId": "kiwi",
+    "term": "猕猴桃",
+    "normalizedTerm": "猕猴桃",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "lamb-alias-e7be8ae885bfe88289",
+    "foodId": "lamb",
+    "term": "羊腿肉",
+    "normalizedTerm": "羊腿肉",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "lamb-canonical-e7be8ae88289",
+    "foodId": "lamb",
+    "term": "羊肉",
+    "normalizedTerm": "羊肉",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "laver-alias-e6b5b7e88b94",
+    "foodId": "laver",
+    "term": "海苔",
+    "normalizedTerm": "海苔",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "laver-canonical-e7b4abe88f9c",
+    "foodId": "laver",
+    "term": "紫菜",
+    "normalizedTerm": "紫菜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "lemon-alias-e9bb84e69fa0e6aaac",
+    "foodId": "lemon",
+    "term": "黄柠檬",
+    "normalizedTerm": "黄柠檬",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "lemon-canonical-e69fa0e6aaac",
+    "foodId": "lemon",
+    "term": "柠檬",
+    "normalizedTerm": "柠檬",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "lettuce-alias-e58fb6e794a8e88eb4e88ba3",
+    "foodId": "lettuce",
+    "term": "叶用莴苣",
+    "normalizedTerm": "叶用莴苣",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "lettuce-canonical-e7949fe88f9c",
+    "foodId": "lettuce",
+    "term": "生菜",
+    "normalizedTerm": "生菜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "loofah-canonical-e4b89de7939c",
+    "foodId": "loofah",
+    "term": "丝瓜",
+    "normalizedTerm": "丝瓜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "lotusRoot-alias-e89795",
+    "foodId": "lotusRoot",
+    "term": "藕",
+    "normalizedTerm": "藕",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "lotusRoot-canonical-e88eb2e89795",
+    "foodId": "lotusRoot",
+    "term": "莲藕",
+    "normalizedTerm": "莲藕",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "mango-canonical-e88a92e69e9c",
+    "foodId": "mango",
+    "term": "芒果",
+    "normalizedTerm": "芒果",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "meatPuree-alias-e887aae588b6e88289e6b3a5",
+    "foodId": "meatPuree",
+    "term": "自制肉泥",
+    "normalizedTerm": "自制肉泥",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "meatPuree-canonical-e88289e6b3a5",
+    "foodId": "meatPuree",
+    "term": "肉泥",
+    "normalizedTerm": "肉泥",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "milk-alias-e7baafe7899be5a5b6",
+    "foodId": "milk",
+    "term": "纯牛奶",
+    "normalizedTerm": "纯牛奶",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "milk-alias-e9b29ce5a5b6",
+    "foodId": "milk",
+    "term": "鲜奶",
+    "normalizedTerm": "鲜奶",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "milk-canonical-e7899be5a5b6",
+    "foodId": "milk",
+    "term": "牛奶",
+    "normalizedTerm": "牛奶",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "millet-canonical-e5b08fe7b1b3",
+    "foodId": "millet",
+    "term": "小米",
+    "normalizedTerm": "小米",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "mushroom-alias-e58fa3e89891",
+    "foodId": "mushroom",
+    "term": "口蘑",
+    "normalizedTerm": "口蘑",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "mushroom-alias-e88f8ce88f87",
+    "foodId": "mushroom",
+    "term": "菌菇",
+    "normalizedTerm": "菌菇",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "mushroom-alias-e9a699e88f87",
+    "foodId": "mushroom",
+    "term": "香菇",
+    "normalizedTerm": "香菇",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "mushroom-canonical-e89891e88f87",
+    "foodId": "mushroom",
+    "term": "蘑菇",
+    "normalizedTerm": "蘑菇",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "napaCabbage-alias-e799bde88f9c",
+    "foodId": "napaCabbage",
+    "term": "白菜",
+    "normalizedTerm": "白菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "napaCabbage-canonical-e5a4a7e799bde88f9c",
+    "foodId": "napaCabbage",
+    "term": "大白菜",
+    "normalizedTerm": "大白菜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "noodle-alias-e5ae9de5ae9de99da2",
+    "foodId": "noodle",
+    "term": "宝宝面",
+    "normalizedTerm": "宝宝面",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "noodle-alias-e68c82e99da2",
+    "foodId": "noodle",
+    "term": "挂面",
+    "normalizedTerm": "挂面",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "noodle-alias-e7869fe99da2e69da1",
+    "foodId": "noodle",
+    "term": "熟面条",
+    "normalizedTerm": "熟面条",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "noodle-alias-e7bb86e99da2",
+    "foodId": "noodle",
+    "term": "细面",
+    "normalizedTerm": "细面",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "noodle-alias-e99da2",
+    "foodId": "noodle",
+    "term": "面",
+    "normalizedTerm": "面",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "noodle-canonical-e99da2e69da1",
+    "foodId": "noodle",
+    "term": "面条",
+    "normalizedTerm": "面条",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "oat-alias-e78795e9baa6e78987",
+    "foodId": "oat",
+    "term": "燕麦片",
+    "normalizedTerm": "燕麦片",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "oat-canonical-e78795e9baa6",
+    "foodId": "oat",
+    "term": "燕麦",
+    "normalizedTerm": "燕麦",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "onion-alias-e891b1e5a4b4",
+    "foodId": "onion",
+    "term": "葱头",
+    "normalizedTerm": "葱头",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "onion-canonical-e6b48be891b1",
+    "foodId": "onion",
+    "term": "洋葱",
+    "normalizedTerm": "洋葱",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "orange-alias-e69f91e6a998",
+    "foodId": "orange",
+    "term": "柑橘",
+    "normalizedTerm": "柑橘",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "orange-alias-e6a194e5ad90",
+    "foodId": "orange",
+    "term": "桔子",
+    "normalizedTerm": "桔子",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "orange-alias-e6a998e5ad90",
+    "foodId": "orange",
+    "term": "橘子",
+    "normalizedTerm": "橘子",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "orange-canonical-e6a999e5ad90",
+    "foodId": "orange",
+    "term": "橙子",
+    "normalizedTerm": "橙子",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "oysterMushroom-canonical-e5b9b3e88f87",
+    "foodId": "oysterMushroom",
+    "term": "平菇",
+    "normalizedTerm": "平菇",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "papaya-canonical-e69ca8e7939c",
+    "foodId": "papaya",
+    "term": "木瓜",
+    "normalizedTerm": "木瓜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pea-alias-e99d92e8b186",
+    "foodId": "pea",
+    "term": "青豆",
+    "normalizedTerm": "青豆",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pea-canonical-e8b18ce8b186",
+    "foodId": "pea",
+    "term": "豌豆",
+    "normalizedTerm": "豌豆",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "peaShoots-alias-e8b186e88b97",
+    "foodId": "peaShoots",
+    "term": "豆苗",
+    "normalizedTerm": "豆苗",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "peaShoots-canonical-e8b18ce8b186e88b97",
+    "foodId": "peaShoots",
+    "term": "豌豆苗",
+    "normalizedTerm": "豌豆苗",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "peach-alias-e6b0b4e89c9ce6a183",
+    "foodId": "peach",
+    "term": "水蜜桃",
+    "normalizedTerm": "水蜜桃",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "peach-canonical-e6a183e5ad90",
+    "foodId": "peach",
+    "term": "桃子",
+    "normalizedTerm": "桃子",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pear-alias-e6a2a8e5ad90",
+    "foodId": "pear",
+    "term": "梨子",
+    "normalizedTerm": "梨子",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pear-alias-e99baae6a2a8",
+    "foodId": "pear",
+    "term": "雪梨",
+    "normalizedTerm": "雪梨",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pear-canonical-e6a2a8",
+    "foodId": "pear",
+    "term": "梨",
+    "normalizedTerm": "梨",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pineapple-alias-e587a4e6a2a8",
+    "foodId": "pineapple",
+    "term": "凤梨",
+    "normalizedTerm": "凤梨",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pineapple-canonical-e88fa0e8909d",
+    "foodId": "pineapple",
+    "term": "菠萝",
+    "normalizedTerm": "菠萝",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "plum-canonical-e69d8ee5ad90",
+    "foodId": "plum",
+    "term": "李子",
+    "normalizedTerm": "李子",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pomegranate-canonical-e79fb3e6a6b4",
+    "foodId": "pomegranate",
+    "term": "石榴",
+    "normalizedTerm": "石榴",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pork-alias-e78caae798a6e88289",
+    "foodId": "pork",
+    "term": "猪瘦肉",
+    "normalizedTerm": "猪瘦肉",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pork-alias-e78caae88289",
+    "foodId": "pork",
+    "term": "猪肉",
+    "normalizedTerm": "猪肉",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pork-alias-e798a6e78caae88289",
+    "foodId": "pork",
+    "term": "瘦猪肉",
+    "normalizedTerm": "瘦猪肉",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pork-alias-e9878ce8848ae88289",
+    "foodId": "pork",
+    "term": "里脊肉",
+    "normalizedTerm": "里脊肉",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pork-canonical-e78caae9878ce8848a",
+    "foodId": "pork",
+    "term": "猪里脊",
+    "normalizedTerm": "猪里脊",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "porridge-alias-e799bde7b2a5",
+    "foodId": "porridge",
+    "term": "白粥",
+    "normalizedTerm": "白粥",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "porridge-alias-e7a880e9a5ad",
+    "foodId": "porridge",
+    "term": "稀饭",
+    "normalizedTerm": "稀饭",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "porridge-alias-e7b1b3e7b2a5",
+    "foodId": "porridge",
+    "term": "米粥",
+    "normalizedTerm": "米粥",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "porridge-canonical-e7b2a5",
+    "foodId": "porridge",
+    "term": "粥",
+    "normalizedTerm": "粥",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "potato-alias-e9a9ace99383e896af",
+    "foodId": "potato",
+    "term": "马铃薯",
+    "normalizedTerm": "马铃薯",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "potato-canonical-e59c9fe8b186",
+    "foodId": "potato",
+    "term": "土豆",
+    "normalizedTerm": "土豆",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pumpkin-alias-e69dbfe6a097e58d97e7939c",
+    "foodId": "pumpkin",
+    "term": "板栗南瓜",
+    "normalizedTerm": "板栗南瓜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pumpkin-alias-e88081e58d97e7939c",
+    "foodId": "pumpkin",
+    "term": "老南瓜",
+    "normalizedTerm": "老南瓜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pumpkin-alias-e8b49de8b49de58d97e7939c",
+    "foodId": "pumpkin",
+    "term": "贝贝南瓜",
+    "normalizedTerm": "贝贝南瓜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "pumpkin-canonical-e58d97e7939c",
+    "foodId": "pumpkin",
+    "term": "南瓜",
+    "normalizedTerm": "南瓜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "quailEgg-alias-e5b08fe9b89fe89b8b",
+    "foodId": "quailEgg",
+    "term": "小鸟蛋",
+    "normalizedTerm": "小鸟蛋",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "quailEgg-canonical-e9b98ce9b991e89b8b",
+    "foodId": "quailEgg",
+    "term": "鹌鹑蛋",
+    "normalizedTerm": "鹌鹑蛋",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "quinoa-canonical-e8979ce9baa6",
+    "foodId": "quinoa",
+    "term": "藜麦",
+    "normalizedTerm": "藜麦",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "radish-alias-e8909de58d9c",
+    "foodId": "radish",
+    "term": "萝卜",
+    "normalizedTerm": "萝卜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "radish-canonical-e799bde8909de58d9c",
+    "foodId": "radish",
+    "term": "白萝卜",
+    "normalizedTerm": "白萝卜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "raspberry-alias-e8a686e79b86e5ad90",
+    "foodId": "raspberry",
+    "term": "覆盆子",
+    "normalizedTerm": "覆盆子",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "raspberry-canonical-e6a091e88e93",
+    "foodId": "raspberry",
+    "term": "树莓",
+    "normalizedTerm": "树莓",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "rice-alias-e7869fe7b1b3e9a5ad",
+    "foodId": "rice",
+    "term": "熟米饭",
+    "normalizedTerm": "熟米饭",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "rice-alias-e7869fe9a5ad",
+    "foodId": "rice",
+    "term": "熟饭",
+    "normalizedTerm": "熟饭",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "rice-alias-e799bde7b1b3e9a5ad",
+    "foodId": "rice",
+    "term": "白米饭",
+    "normalizedTerm": "白米饭",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "rice-alias-e9a5ad",
+    "foodId": "rice",
+    "term": "饭",
+    "normalizedTerm": "饭",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "rice-canonical-e7b1b3e9a5ad",
+    "foodId": "rice",
+    "term": "米饭",
+    "normalizedTerm": "米饭",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "riceNoodle-alias-e5a9b4e584bfe7b1b3e7b289",
+    "foodId": "riceNoodle",
+    "term": "婴儿米粉",
+    "normalizedTerm": "婴儿米粉",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "riceNoodle-alias-e5a9b4e5b9bce584bfe7b1b3e7b289",
+    "foodId": "riceNoodle",
+    "term": "婴幼儿米粉",
+    "normalizedTerm": "婴幼儿米粉",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "riceNoodle-alias-e5ae9de5ae9de7b1b3e7b289",
+    "foodId": "riceNoodle",
+    "term": "宝宝米粉",
+    "normalizedTerm": "宝宝米粉",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "riceNoodle-alias-e8be85e9a39fe7b1b3e7b289",
+    "foodId": "riceNoodle",
+    "term": "辅食米粉",
+    "normalizedTerm": "辅食米粉",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "riceNoodle-alias-e9ab98e99381e7b1b3e7b289",
+    "foodId": "riceNoodle",
+    "term": "高铁米粉",
+    "normalizedTerm": "高铁米粉",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "riceNoodle-canonical-e7b1b3e7b289",
+    "foodId": "riceNoodle",
+    "term": "米粉",
+    "normalizedTerm": "米粉",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "salmon-alias-e9b1bce88289",
+    "foodId": "salmon",
+    "term": "鱼肉",
+    "normalizedTerm": "鱼肉",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "salmon-alias-e9b291e9b1bc",
+    "foodId": "salmon",
+    "term": "鲑鱼",
+    "normalizedTerm": "鲑鱼",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "salmon-canonical-e4b889e69687e9b1bc",
+    "foodId": "salmon",
+    "term": "三文鱼",
+    "normalizedTerm": "三文鱼",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "scallop-alias-e8b49de69fb1",
+    "foodId": "scallop",
+    "term": "贝柱",
+    "normalizedTerm": "贝柱",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "scallop-canonical-e68987e8b49d",
+    "foodId": "scallop",
+    "term": "扇贝",
+    "normalizedTerm": "扇贝",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "shiitake-alias-e586ace88f87",
+    "foodId": "shiitake",
+    "term": "冬菇",
+    "normalizedTerm": "冬菇",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "shiitake-alias-e9b29ce9a699e88f87",
+    "foodId": "shiitake",
+    "term": "鲜香菇",
+    "normalizedTerm": "鲜香菇",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "shiitake-canonical-e9a699e88f87",
+    "foodId": "shiitake",
+    "term": "香菇",
+    "normalizedTerm": "香菇",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "shrimp-alias-e59fbae59bb4e899be",
+    "foodId": "shrimp",
+    "term": "基围虾",
+    "normalizedTerm": "基围虾",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "shrimp-alias-e899bee4bb81",
+    "foodId": "shrimp",
+    "term": "虾仁",
+    "normalizedTerm": "虾仁",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "shrimp-alias-e9b29ce899be",
+    "foodId": "shrimp",
+    "term": "鲜虾",
+    "normalizedTerm": "鲜虾",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "shrimp-canonical-e899be",
+    "foodId": "shrimp",
+    "term": "虾",
+    "normalizedTerm": "虾",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "soyMilk-canonical-e8b186e6b586",
+    "foodId": "soyMilk",
+    "term": "豆浆",
+    "normalizedTerm": "豆浆",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "spinach-alias-e6b3a2e88f9c",
+    "foodId": "spinach",
+    "term": "波菜",
+    "normalizedTerm": "波菜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "spinach-canonical-e88fa0e88f9c",
+    "foodId": "spinach",
+    "term": "菠菜",
+    "normalizedTerm": "菠菜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "steamedBun-canonical-e9a692e5a4b4",
+    "foodId": "steamedBun",
+    "term": "馒头",
+    "normalizedTerm": "馒头",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "strawberry-alias-e88e93",
+    "foodId": "strawberry",
+    "term": "莓",
+    "normalizedTerm": "莓",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "strawberry-canonical-e88d89e88e93",
+    "foodId": "strawberry",
+    "term": "草莓",
+    "normalizedTerm": "草莓",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "sweetPotato-alias-e59cb0e7939c",
+    "foodId": "sweetPotato",
+    "term": "地瓜",
+    "normalizedTerm": "地瓜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "sweetPotato-alias-e79498e896af",
+    "foodId": "sweetPotato",
+    "term": "甘薯",
+    "normalizedTerm": "甘薯",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "sweetPotato-alias-e795aae896af",
+    "foodId": "sweetPotato",
+    "term": "番薯",
+    "normalizedTerm": "番薯",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "sweetPotato-canonical-e7baa2e896af",
+    "foodId": "sweetPotato",
+    "term": "红薯",
+    "normalizedTerm": "红薯",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "taro-alias-e88a8be889bf",
+    "foodId": "taro",
+    "term": "芋艿",
+    "normalizedTerm": "芋艿",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "taro-canonical-e88a8be5a4b4",
+    "foodId": "taro",
+    "term": "芋头",
+    "normalizedTerm": "芋头",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "tofu-alias-e58c97e8b186e88590",
+    "foodId": "tofu",
+    "term": "北豆腐",
+    "normalizedTerm": "北豆腐",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "tofu-alias-e58d97e8b186e88590",
+    "foodId": "tofu",
+    "term": "南豆腐",
+    "normalizedTerm": "南豆腐",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "tofu-alias-e5aba9e8b186e88590",
+    "foodId": "tofu",
+    "term": "嫩豆腐",
+    "normalizedTerm": "嫩豆腐",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "tofu-alias-e88081e8b186e88590",
+    "foodId": "tofu",
+    "term": "老豆腐",
+    "normalizedTerm": "老豆腐",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "tofu-canonical-e8b186e88590",
+    "foodId": "tofu",
+    "term": "豆腐",
+    "normalizedTerm": "豆腐",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "tomato-alias-e59ca3e5a5b3e69e9c",
+    "foodId": "tomato",
+    "term": "圣女果",
+    "normalizedTerm": "圣女果",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "tomato-alias-e5b08fe795aae88c84",
+    "foodId": "tomato",
+    "term": "小番茄",
+    "normalizedTerm": "小番茄",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "tomato-alias-e8a5bfe7baa2e69fbf",
+    "foodId": "tomato",
+    "term": "西红柿",
+    "normalizedTerm": "西红柿",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "tomato-canonical-e795aae88c84",
+    "foodId": "tomato",
+    "term": "番茄",
+    "normalizedTerm": "番茄",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "turkey-canonical-e781abe9b8a1e88289",
+    "foodId": "turkey",
+    "term": "火鸡肉",
+    "normalizedTerm": "火鸡肉",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "watermelon-canonical-e8a5bfe7939c",
+    "foodId": "watermelon",
+    "term": "西瓜",
+    "normalizedTerm": "西瓜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "waxGourd-canonical-e586ace7939c",
+    "foodId": "waxGourd",
+    "term": "冬瓜",
+    "normalizedTerm": "冬瓜",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "wheatFlour-alias-e5b08fe9baa6e7b289",
+    "foodId": "wheatFlour",
+    "term": "小麦粉",
+    "normalizedTerm": "小麦粉",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "wheatFlour-canonical-e99da2e7b289",
+    "foodId": "wheatFlour",
+    "term": "面粉",
+    "normalizedTerm": "面粉",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "yam-alias-e6b7aee5b1b1",
+    "foodId": "yam",
+    "term": "淮山",
+    "normalizedTerm": "淮山",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "yam-alias-e99381e6a38de5b1b1e88daf",
+    "foodId": "yam",
+    "term": "铁棍山药",
+    "normalizedTerm": "铁棍山药",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "yam-canonical-e5b1b1e88daf",
+    "foodId": "yam",
+    "term": "山药",
+    "normalizedTerm": "山药",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "yogurt-alias-e58e9fe591b3e985b8e5a5b6",
+    "foodId": "yogurt",
+    "term": "原味酸奶",
+    "normalizedTerm": "原味酸奶",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "yogurt-alias-e697a0e7b396e985b8e5a5b6",
+    "foodId": "yogurt",
+    "term": "无糖酸奶",
+    "normalizedTerm": "无糖酸奶",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "yogurt-canonical-e985b8e5a5b6",
+    "foodId": "yogurt",
+    "term": "酸奶",
+    "normalizedTerm": "酸奶",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "zucchini-alias-e8a792e7939c",
+    "foodId": "zucchini",
+    "term": "角瓜",
+    "normalizedTerm": "角瓜",
+    "type": "alias",
+    "region": "",
+    "weight": 90,
+    "reviewStatus": "legacy_unverified"
+  },
+  {
+    "termId": "zucchini-canonical-e8a5bfe891abe88aa6",
+    "foodId": "zucchini",
+    "term": "西葫芦",
+    "normalizedTerm": "西葫芦",
+    "type": "canonical",
+    "region": "",
+    "weight": 100,
+    "reviewStatus": "legacy_unverified"
+  }
+]

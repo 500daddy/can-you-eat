@@ -1,0 +1,66 @@
+{
+  "foodCount": 100,
+  "searchTermCount": 247,
+  "storageCandidateCount": 300,
+  "termCollisionCount": 8,
+  "termCollisions": [
+    {
+      "normalizedTerm": "小油菜",
+      "foodIds": [
+        "bokChoy",
+        "cabbage"
+      ]
+    },
+    {
+      "normalizedTerm": "小白菜",
+      "foodIds": [
+        "bokChoy",
+        "cabbage"
+      ]
+    },
+    {
+      "normalizedTerm": "小青菜",
+      "foodIds": [
+        "bokChoy",
+        "cabbage"
+      ]
+    },
+    {
+      "normalizedTerm": "油菜",
+      "foodIds": [
+        "bokChoy",
+        "cabbage"
+      ]
+    },
+    {
+      "normalizedTerm": "肉泥",
+      "foodIds": [
+        "babyPuree",
+        "meatPuree"
+      ]
+    },
+    {
+      "normalizedTerm": "青菜",
+      "foodIds": [
+        "bokChoy",
+        "cabbage"
+      ]
+    },
+    {
+      "normalizedTerm": "香菇",
+      "foodIds": [
+        "mushroom",
+        "shiitake"
+      ]
+    },
+    {
+      "normalizedTerm": "鱼肉",
+      "foodIds": [
+        "fish",
+        "salmon"
+      ]
+    }
+  ],
+  "publishableFoodCount": 0,
+  "publishableRuleCount": 0
+}

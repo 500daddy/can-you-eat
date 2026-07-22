@@ -1,0 +1,4802 @@
+[
+  {
+    "candidateId": "amaranth-freezer-legacy-v1",
+    "foodId": "amaranth",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "amaranth-fridge-legacy-v1",
+    "foodId": "amaranth",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "amaranth-room-legacy-v1",
+    "foodId": "amaranth",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "apple-freezer-legacy-v1",
+    "foodId": "apple",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "apple-fridge-legacy-v1",
+    "foodId": "apple",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "apple-room-legacy-v1",
+    "foodId": "apple",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "asparagus-freezer-legacy-v1",
+    "foodId": "asparagus",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "asparagus-fridge-legacy-v1",
+    "foodId": "asparagus",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "asparagus-room-legacy-v1",
+    "foodId": "asparagus",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "avocado-freezer-legacy-v1",
+    "foodId": "avocado",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "avocado-fridge-legacy-v1",
+    "foodId": "avocado",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "成熟后密封冷藏。"
+    }
+  },
+  {
+    "candidateId": "avocado-room-legacy-v1",
+    "foodId": "avocado",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "babyPuree-freezer-legacy-v1",
+    "foodId": "babyPuree",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "babyPuree-fridge-legacy-v1",
+    "foodId": "babyPuree",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 1,
+      "text": "开封后冷藏并尽快食用。"
+    }
+  },
+  {
+    "candidateId": "babyPuree-room-legacy-v1",
+    "foodId": "babyPuree",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "bambooShoot-freezer-legacy-v1",
+    "foodId": "bambooShoot",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "bambooShoot-fridge-legacy-v1",
+    "foodId": "bambooShoot",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "bambooShoot-room-legacy-v1",
+    "foodId": "bambooShoot",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "banana-freezer-legacy-v1",
+    "foodId": "banana",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "banana-fridge-legacy-v1",
+    "foodId": "banana",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "banana-room-legacy-v1",
+    "foodId": "banana",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 4,
+      "text": "常温阴凉保存。"
+    }
+  },
+  {
+    "candidateId": "bass-freezer-legacy-v1",
+    "foodId": "bass",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 90,
+      "text": "冷冻保存需密封，避免反复解冻。"
+    }
+  },
+  {
+    "candidateId": "bass-fridge-legacy-v1",
+    "foodId": "bass",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "冷藏保存也应尽快充分加热后食用。"
+    }
+  },
+  {
+    "candidateId": "bass-room-legacy-v1",
+    "foodId": "bass",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 0,
+      "text": "肉蛋奶类不建议常温放置。"
+    }
+  },
+  {
+    "candidateId": "beef-freezer-legacy-v1",
+    "foodId": "beef",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 90,
+      "text": "冷冻保存需密封，避免反复解冻。"
+    }
+  },
+  {
+    "candidateId": "beef-fridge-legacy-v1",
+    "foodId": "beef",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "冷藏保存也应尽快充分加热后食用。"
+    }
+  },
+  {
+    "candidateId": "beef-room-legacy-v1",
+    "foodId": "beef",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 0,
+      "text": "肉蛋奶类不建议常温放置。"
+    }
+  },
+  {
+    "candidateId": "bitterMelon-freezer-legacy-v1",
+    "foodId": "bitterMelon",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "bitterMelon-fridge-legacy-v1",
+    "foodId": "bitterMelon",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "bitterMelon-room-legacy-v1",
+    "foodId": "bitterMelon",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "blackRice-freezer-legacy-v1",
+    "foodId": "blackRice",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "blackRice-fridge-legacy-v1",
+    "foodId": "blackRice",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "blackRice-room-legacy-v1",
+    "foodId": "blackRice",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "blueberry-freezer-legacy-v1",
+    "foodId": "blueberry",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "blueberry-fridge-legacy-v1",
+    "foodId": "blueberry",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "blueberry-room-legacy-v1",
+    "foodId": "blueberry",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "bokChoy-freezer-legacy-v1",
+    "foodId": "bokChoy",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "bokChoy-fridge-legacy-v1",
+    "foodId": "bokChoy",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "bokChoy-room-legacy-v1",
+    "foodId": "bokChoy",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "bread-freezer-legacy-v1",
+    "foodId": "bread",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "bread-fridge-legacy-v1",
+    "foodId": "bread",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "bread-room-legacy-v1",
+    "foodId": "bread",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "阴凉密封保存。"
+    }
+  },
+  {
+    "candidateId": "broccoli-freezer-legacy-v1",
+    "foodId": "broccoli",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "焯水分装后冷冻更稳妥。"
+    }
+  },
+  {
+    "candidateId": "broccoli-fridge-legacy-v1",
+    "foodId": "broccoli",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 3,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏建议1-3天内优先给宝宝食用。"
+    }
+  },
+  {
+    "candidateId": "broccoli-room-legacy-v1",
+    "foodId": "broccoli",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放。"
+    }
+  },
+  {
+    "candidateId": "buckwheat-freezer-legacy-v1",
+    "foodId": "buckwheat",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "buckwheat-fridge-legacy-v1",
+    "foodId": "buckwheat",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "buckwheat-room-legacy-v1",
+    "foodId": "buckwheat",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "cabbage-freezer-legacy-v1",
+    "foodId": "cabbage",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "cabbage-fridge-legacy-v1",
+    "foodId": "cabbage",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "cabbage-room-legacy-v1",
+    "foodId": "cabbage",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "cabbageHead-freezer-legacy-v1",
+    "foodId": "cabbageHead",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "cabbageHead-fridge-legacy-v1",
+    "foodId": "cabbageHead",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "cabbageHead-room-legacy-v1",
+    "foodId": "cabbageHead",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "cantaloupe-freezer-legacy-v1",
+    "foodId": "cantaloupe",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "cantaloupe-fridge-legacy-v1",
+    "foodId": "cantaloupe",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "cantaloupe-room-legacy-v1",
+    "foodId": "cantaloupe",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "carrot-freezer-legacy-v1",
+    "foodId": "carrot",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "carrot-fridge-legacy-v1",
+    "foodId": "carrot",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 4,
+      "adultDaysMin": 7,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥。"
+    }
+  },
+  {
+    "candidateId": "carrot-room-legacy-v1",
+    "foodId": "carrot",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "cauliflower-freezer-legacy-v1",
+    "foodId": "cauliflower",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "cauliflower-fridge-legacy-v1",
+    "foodId": "cauliflower",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "cauliflower-room-legacy-v1",
+    "foodId": "cauliflower",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "celery-freezer-legacy-v1",
+    "foodId": "celery",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "celery-fridge-legacy-v1",
+    "foodId": "celery",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "celery-room-legacy-v1",
+    "foodId": "celery",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "cheese-freezer-legacy-v1",
+    "foodId": "cheese",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "cheese-fridge-legacy-v1",
+    "foodId": "cheese",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "cheese-room-legacy-v1",
+    "foodId": "cheese",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "cherry-freezer-legacy-v1",
+    "foodId": "cherry",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "cherry-fridge-legacy-v1",
+    "foodId": "cherry",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "cherry-room-legacy-v1",
+    "foodId": "cherry",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "chicken-freezer-legacy-v1",
+    "foodId": "chicken",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 90,
+      "text": "冷冻保存需密封，避免反复解冻。"
+    }
+  },
+  {
+    "candidateId": "chicken-fridge-legacy-v1",
+    "foodId": "chicken",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "冷藏保存也应尽快充分加热后食用。"
+    }
+  },
+  {
+    "candidateId": "chicken-room-legacy-v1",
+    "foodId": "chicken",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 0,
+      "text": "肉蛋奶类不建议常温放置。"
+    }
+  },
+  {
+    "candidateId": "clam-freezer-legacy-v1",
+    "foodId": "clam",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 90,
+      "text": "冷冻保存需密封，避免反复解冻。"
+    }
+  },
+  {
+    "candidateId": "clam-fridge-legacy-v1",
+    "foodId": "clam",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "冷藏保存也应尽快充分加热后食用。"
+    }
+  },
+  {
+    "candidateId": "clam-room-legacy-v1",
+    "foodId": "clam",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 0,
+      "text": "肉蛋奶类不建议常温放置。"
+    }
+  },
+  {
+    "candidateId": "corn-freezer-legacy-v1",
+    "foodId": "corn",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "corn-fridge-legacy-v1",
+    "foodId": "corn",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "corn-room-legacy-v1",
+    "foodId": "corn",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "cucumber-freezer-legacy-v1",
+    "foodId": "cucumber",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "cucumber-fridge-legacy-v1",
+    "foodId": "cucumber",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "cucumber-room-legacy-v1",
+    "foodId": "cucumber",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "dragonFruit-freezer-legacy-v1",
+    "foodId": "dragonFruit",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "dragonFruit-fridge-legacy-v1",
+    "foodId": "dragonFruit",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "dragonFruit-room-legacy-v1",
+    "foodId": "dragonFruit",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "driedTofu-freezer-legacy-v1",
+    "foodId": "driedTofu",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "driedTofu-fridge-legacy-v1",
+    "foodId": "driedTofu",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "driedTofu-room-legacy-v1",
+    "foodId": "driedTofu",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "duck-freezer-legacy-v1",
+    "foodId": "duck",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 90,
+      "text": "冷冻保存需密封，避免反复解冻。"
+    }
+  },
+  {
+    "candidateId": "duck-fridge-legacy-v1",
+    "foodId": "duck",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "冷藏保存也应尽快充分加热后食用。"
+    }
+  },
+  {
+    "candidateId": "duck-room-legacy-v1",
+    "foodId": "duck",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 0,
+      "text": "肉蛋奶类不建议常温放置。"
+    }
+  },
+  {
+    "candidateId": "dumpling-freezer-legacy-v1",
+    "foodId": "dumpling",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "dumpling-fridge-legacy-v1",
+    "foodId": "dumpling",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "dumpling-room-legacy-v1",
+    "foodId": "dumpling",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "edamame-freezer-legacy-v1",
+    "foodId": "edamame",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "edamame-fridge-legacy-v1",
+    "foodId": "edamame",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "edamame-room-legacy-v1",
+    "foodId": "edamame",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "egg-freezer-legacy-v1",
+    "foodId": "egg",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 0,
+      "text": "带壳鸡蛋不建议直接冷冻。"
+    }
+  },
+  {
+    "candidateId": "egg-fridge-legacy-v1",
+    "foodId": "egg",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 7,
+      "babyDaysMax": 14,
+      "adultDaysMin": 21,
+      "adultDaysMax": 30,
+      "text": "冷藏保存，食用前充分加热。"
+    }
+  },
+  {
+    "candidateId": "egg-room-legacy-v1",
+    "foodId": "egg",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "不建议常温久放。"
+    }
+  },
+  {
+    "candidateId": "eggCustard-freezer-legacy-v1",
+    "foodId": "eggCustard",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "eggCustard-fridge-legacy-v1",
+    "foodId": "eggCustard",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "eggCustard-room-legacy-v1",
+    "foodId": "eggCustard",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "eggplant-freezer-legacy-v1",
+    "foodId": "eggplant",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "eggplant-fridge-legacy-v1",
+    "foodId": "eggplant",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "eggplant-room-legacy-v1",
+    "foodId": "eggplant",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "enoki-freezer-legacy-v1",
+    "foodId": "enoki",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "enoki-fridge-legacy-v1",
+    "foodId": "enoki",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "enoki-room-legacy-v1",
+    "foodId": "enoki",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "fish-freezer-legacy-v1",
+    "foodId": "fish",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 90,
+      "text": "冷冻保存需密封，避免反复解冻。"
+    }
+  },
+  {
+    "candidateId": "fish-fridge-legacy-v1",
+    "foodId": "fish",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "冷藏保存也应尽快充分加热后食用。"
+    }
+  },
+  {
+    "candidateId": "fish-room-legacy-v1",
+    "foodId": "fish",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 0,
+      "text": "肉蛋奶类不建议常温放置。"
+    }
+  },
+  {
+    "candidateId": "garlic-freezer-legacy-v1",
+    "foodId": "garlic",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "garlic-fridge-legacy-v1",
+    "foodId": "garlic",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "garlic-room-legacy-v1",
+    "foodId": "garlic",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "grape-freezer-legacy-v1",
+    "foodId": "grape",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "grape-fridge-legacy-v1",
+    "foodId": "grape",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "grape-room-legacy-v1",
+    "foodId": "grape",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "grapefruit-freezer-legacy-v1",
+    "foodId": "grapefruit",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "grapefruit-fridge-legacy-v1",
+    "foodId": "grapefruit",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "grapefruit-room-legacy-v1",
+    "foodId": "grapefruit",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "greenBean-freezer-legacy-v1",
+    "foodId": "greenBean",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "greenBean-fridge-legacy-v1",
+    "foodId": "greenBean",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "greenBean-room-legacy-v1",
+    "foodId": "greenBean",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "greenPepper-freezer-legacy-v1",
+    "foodId": "greenPepper",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "greenPepper-fridge-legacy-v1",
+    "foodId": "greenPepper",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "greenPepper-room-legacy-v1",
+    "foodId": "greenPepper",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "hairtail-freezer-legacy-v1",
+    "foodId": "hairtail",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 90,
+      "text": "冷冻保存需密封，避免反复解冻。"
+    }
+  },
+  {
+    "candidateId": "hairtail-fridge-legacy-v1",
+    "foodId": "hairtail",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "冷藏保存也应尽快充分加热后食用。"
+    }
+  },
+  {
+    "candidateId": "hairtail-room-legacy-v1",
+    "foodId": "hairtail",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 0,
+      "text": "肉蛋奶类不建议常温放置。"
+    }
+  },
+  {
+    "candidateId": "kelp-freezer-legacy-v1",
+    "foodId": "kelp",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "kelp-fridge-legacy-v1",
+    "foodId": "kelp",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "kelp-room-legacy-v1",
+    "foodId": "kelp",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "kiwi-freezer-legacy-v1",
+    "foodId": "kiwi",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "kiwi-fridge-legacy-v1",
+    "foodId": "kiwi",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "kiwi-room-legacy-v1",
+    "foodId": "kiwi",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "lamb-freezer-legacy-v1",
+    "foodId": "lamb",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 90,
+      "text": "冷冻保存需密封，避免反复解冻。"
+    }
+  },
+  {
+    "candidateId": "lamb-fridge-legacy-v1",
+    "foodId": "lamb",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "冷藏保存也应尽快充分加热后食用。"
+    }
+  },
+  {
+    "candidateId": "lamb-room-legacy-v1",
+    "foodId": "lamb",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 0,
+      "text": "肉蛋奶类不建议常温放置。"
+    }
+  },
+  {
+    "candidateId": "laver-freezer-legacy-v1",
+    "foodId": "laver",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "laver-fridge-legacy-v1",
+    "foodId": "laver",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "laver-room-legacy-v1",
+    "foodId": "laver",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "lemon-freezer-legacy-v1",
+    "foodId": "lemon",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "lemon-fridge-legacy-v1",
+    "foodId": "lemon",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "lemon-room-legacy-v1",
+    "foodId": "lemon",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "lettuce-freezer-legacy-v1",
+    "foodId": "lettuce",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "lettuce-fridge-legacy-v1",
+    "foodId": "lettuce",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "lettuce-room-legacy-v1",
+    "foodId": "lettuce",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "loofah-freezer-legacy-v1",
+    "foodId": "loofah",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "loofah-fridge-legacy-v1",
+    "foodId": "loofah",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "loofah-room-legacy-v1",
+    "foodId": "loofah",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "lotusRoot-freezer-legacy-v1",
+    "foodId": "lotusRoot",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "lotusRoot-fridge-legacy-v1",
+    "foodId": "lotusRoot",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "lotusRoot-room-legacy-v1",
+    "foodId": "lotusRoot",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "mango-freezer-legacy-v1",
+    "foodId": "mango",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "mango-fridge-legacy-v1",
+    "foodId": "mango",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "mango-room-legacy-v1",
+    "foodId": "mango",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "meatPuree-freezer-legacy-v1",
+    "foodId": "meatPuree",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "meatPuree-fridge-legacy-v1",
+    "foodId": "meatPuree",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "meatPuree-room-legacy-v1",
+    "foodId": "meatPuree",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "milk-freezer-legacy-v1",
+    "foodId": "milk",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "milk-fridge-legacy-v1",
+    "foodId": "milk",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "开封后冷藏并尽快饮用。"
+    }
+  },
+  {
+    "candidateId": "milk-room-legacy-v1",
+    "foodId": "milk",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "millet-freezer-legacy-v1",
+    "foodId": "millet",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "millet-fridge-legacy-v1",
+    "foodId": "millet",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "millet-room-legacy-v1",
+    "foodId": "millet",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "mushroom-freezer-legacy-v1",
+    "foodId": "mushroom",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "mushroom-fridge-legacy-v1",
+    "foodId": "mushroom",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "mushroom-room-legacy-v1",
+    "foodId": "mushroom",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "napaCabbage-freezer-legacy-v1",
+    "foodId": "napaCabbage",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "napaCabbage-fridge-legacy-v1",
+    "foodId": "napaCabbage",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "napaCabbage-room-legacy-v1",
+    "foodId": "napaCabbage",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "noodle-freezer-legacy-v1",
+    "foodId": "noodle",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "noodle-fridge-legacy-v1",
+    "foodId": "noodle",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "冷藏后充分加热。"
+    }
+  },
+  {
+    "candidateId": "noodle-room-legacy-v1",
+    "foodId": "noodle",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "oat-freezer-legacy-v1",
+    "foodId": "oat",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "oat-fridge-legacy-v1",
+    "foodId": "oat",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "oat-room-legacy-v1",
+    "foodId": "oat",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "onion-freezer-legacy-v1",
+    "foodId": "onion",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "onion-fridge-legacy-v1",
+    "foodId": "onion",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "onion-room-legacy-v1",
+    "foodId": "onion",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "orange-freezer-legacy-v1",
+    "foodId": "orange",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "orange-fridge-legacy-v1",
+    "foodId": "orange",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "orange-room-legacy-v1",
+    "foodId": "orange",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "oysterMushroom-freezer-legacy-v1",
+    "foodId": "oysterMushroom",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "oysterMushroom-fridge-legacy-v1",
+    "foodId": "oysterMushroom",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "oysterMushroom-room-legacy-v1",
+    "foodId": "oysterMushroom",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "papaya-freezer-legacy-v1",
+    "foodId": "papaya",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "papaya-fridge-legacy-v1",
+    "foodId": "papaya",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "papaya-room-legacy-v1",
+    "foodId": "papaya",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "pea-freezer-legacy-v1",
+    "foodId": "pea",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "pea-fridge-legacy-v1",
+    "foodId": "pea",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "pea-room-legacy-v1",
+    "foodId": "pea",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "peaShoots-freezer-legacy-v1",
+    "foodId": "peaShoots",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "peaShoots-fridge-legacy-v1",
+    "foodId": "peaShoots",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "peaShoots-room-legacy-v1",
+    "foodId": "peaShoots",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "peach-freezer-legacy-v1",
+    "foodId": "peach",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "peach-fridge-legacy-v1",
+    "foodId": "peach",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "peach-room-legacy-v1",
+    "foodId": "peach",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "pear-freezer-legacy-v1",
+    "foodId": "pear",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "pear-fridge-legacy-v1",
+    "foodId": "pear",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "pear-room-legacy-v1",
+    "foodId": "pear",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "pineapple-freezer-legacy-v1",
+    "foodId": "pineapple",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "pineapple-fridge-legacy-v1",
+    "foodId": "pineapple",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "pineapple-room-legacy-v1",
+    "foodId": "pineapple",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "plum-freezer-legacy-v1",
+    "foodId": "plum",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "plum-fridge-legacy-v1",
+    "foodId": "plum",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "plum-room-legacy-v1",
+    "foodId": "plum",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "pomegranate-freezer-legacy-v1",
+    "foodId": "pomegranate",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "pomegranate-fridge-legacy-v1",
+    "foodId": "pomegranate",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "pomegranate-room-legacy-v1",
+    "foodId": "pomegranate",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "pork-freezer-legacy-v1",
+    "foodId": "pork",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 90,
+      "text": "冷冻保存需密封，避免反复解冻。"
+    }
+  },
+  {
+    "candidateId": "pork-fridge-legacy-v1",
+    "foodId": "pork",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "冷藏保存也应尽快充分加热后食用。"
+    }
+  },
+  {
+    "candidateId": "pork-room-legacy-v1",
+    "foodId": "pork",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 0,
+      "text": "肉蛋奶类不建议常温放置。"
+    }
+  },
+  {
+    "candidateId": "porridge-freezer-legacy-v1",
+    "foodId": "porridge",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "porridge-fridge-legacy-v1",
+    "foodId": "porridge",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "冷藏后充分加热。"
+    }
+  },
+  {
+    "candidateId": "porridge-room-legacy-v1",
+    "foodId": "porridge",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "potato-freezer-legacy-v1",
+    "foodId": "potato",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "potato-fridge-legacy-v1",
+    "foodId": "potato",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "potato-room-legacy-v1",
+    "foodId": "potato",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "pumpkin-freezer-legacy-v1",
+    "foodId": "pumpkin",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "pumpkin-fridge-legacy-v1",
+    "foodId": "pumpkin",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "pumpkin-room-legacy-v1",
+    "foodId": "pumpkin",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "quailEgg-freezer-legacy-v1",
+    "foodId": "quailEgg",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "quailEgg-fridge-legacy-v1",
+    "foodId": "quailEgg",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "quailEgg-room-legacy-v1",
+    "foodId": "quailEgg",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "quinoa-freezer-legacy-v1",
+    "foodId": "quinoa",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "quinoa-fridge-legacy-v1",
+    "foodId": "quinoa",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "quinoa-room-legacy-v1",
+    "foodId": "quinoa",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "radish-freezer-legacy-v1",
+    "foodId": "radish",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "radish-fridge-legacy-v1",
+    "foodId": "radish",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "radish-room-legacy-v1",
+    "foodId": "radish",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "raspberry-freezer-legacy-v1",
+    "foodId": "raspberry",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "raspberry-fridge-legacy-v1",
+    "foodId": "raspberry",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "raspberry-room-legacy-v1",
+    "foodId": "raspberry",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "rice-freezer-legacy-v1",
+    "foodId": "rice",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "rice-fridge-legacy-v1",
+    "foodId": "rice",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "冷藏后充分加热。"
+    }
+  },
+  {
+    "candidateId": "rice-room-legacy-v1",
+    "foodId": "rice",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "riceNoodle-freezer-legacy-v1",
+    "foodId": "riceNoodle",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "riceNoodle-fridge-legacy-v1",
+    "foodId": "riceNoodle",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "riceNoodle-room-legacy-v1",
+    "foodId": "riceNoodle",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "salmon-freezer-legacy-v1",
+    "foodId": "salmon",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 90,
+      "text": "冷冻保存需密封，避免反复解冻。"
+    }
+  },
+  {
+    "candidateId": "salmon-fridge-legacy-v1",
+    "foodId": "salmon",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "冷藏保存也应尽快充分加热后食用。"
+    }
+  },
+  {
+    "candidateId": "salmon-room-legacy-v1",
+    "foodId": "salmon",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 0,
+      "text": "肉蛋奶类不建议常温放置。"
+    }
+  },
+  {
+    "candidateId": "scallop-freezer-legacy-v1",
+    "foodId": "scallop",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 90,
+      "text": "冷冻保存需密封，避免反复解冻。"
+    }
+  },
+  {
+    "candidateId": "scallop-fridge-legacy-v1",
+    "foodId": "scallop",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "冷藏保存也应尽快充分加热后食用。"
+    }
+  },
+  {
+    "candidateId": "scallop-room-legacy-v1",
+    "foodId": "scallop",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 0,
+      "text": "肉蛋奶类不建议常温放置。"
+    }
+  },
+  {
+    "candidateId": "shiitake-freezer-legacy-v1",
+    "foodId": "shiitake",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "shiitake-fridge-legacy-v1",
+    "foodId": "shiitake",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "shiitake-room-legacy-v1",
+    "foodId": "shiitake",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "shrimp-freezer-legacy-v1",
+    "foodId": "shrimp",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 90,
+      "text": "冷冻保存需密封，避免反复解冻。"
+    }
+  },
+  {
+    "candidateId": "shrimp-fridge-legacy-v1",
+    "foodId": "shrimp",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "冷藏保存也应尽快充分加热后食用。"
+    }
+  },
+  {
+    "candidateId": "shrimp-room-legacy-v1",
+    "foodId": "shrimp",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 0,
+      "text": "肉蛋奶类不建议常温放置。"
+    }
+  },
+  {
+    "candidateId": "soyMilk-freezer-legacy-v1",
+    "foodId": "soyMilk",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "soyMilk-fridge-legacy-v1",
+    "foodId": "soyMilk",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "soyMilk-room-legacy-v1",
+    "foodId": "soyMilk",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "spinach-freezer-legacy-v1",
+    "foodId": "spinach",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "spinach-fridge-legacy-v1",
+    "foodId": "spinach",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "spinach-room-legacy-v1",
+    "foodId": "spinach",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "steamedBun-freezer-legacy-v1",
+    "foodId": "steamedBun",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "steamedBun-fridge-legacy-v1",
+    "foodId": "steamedBun",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "steamedBun-room-legacy-v1",
+    "foodId": "steamedBun",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "strawberry-freezer-legacy-v1",
+    "foodId": "strawberry",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "strawberry-fridge-legacy-v1",
+    "foodId": "strawberry",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "strawberry-room-legacy-v1",
+    "foodId": "strawberry",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "sweetPotato-freezer-legacy-v1",
+    "foodId": "sweetPotato",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "sweetPotato-fridge-legacy-v1",
+    "foodId": "sweetPotato",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "sweetPotato-room-legacy-v1",
+    "foodId": "sweetPotato",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "taro-freezer-legacy-v1",
+    "foodId": "taro",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "taro-fridge-legacy-v1",
+    "foodId": "taro",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "taro-room-legacy-v1",
+    "foodId": "taro",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "tofu-freezer-legacy-v1",
+    "foodId": "tofu",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "tofu-fridge-legacy-v1",
+    "foodId": "tofu",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "开封后密封冷藏并尽快食用。"
+    }
+  },
+  {
+    "candidateId": "tofu-room-legacy-v1",
+    "foodId": "tofu",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "tomato-freezer-legacy-v1",
+    "foodId": "tomato",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "tomato-fridge-legacy-v1",
+    "foodId": "tomato",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "tomato-room-legacy-v1",
+    "foodId": "tomato",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "turkey-freezer-legacy-v1",
+    "foodId": "turkey",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 90,
+      "text": "冷冻保存需密封，避免反复解冻。"
+    }
+  },
+  {
+    "candidateId": "turkey-fridge-legacy-v1",
+    "foodId": "turkey",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 1,
+      "adultDaysMin": 1,
+      "adultDaysMax": 2,
+      "text": "冷藏保存也应尽快充分加热后食用。"
+    }
+  },
+  {
+    "candidateId": "turkey-room-legacy-v1",
+    "foodId": "turkey",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 0,
+      "text": "肉蛋奶类不建议常温放置。"
+    }
+  },
+  {
+    "candidateId": "watermelon-freezer-legacy-v1",
+    "foodId": "watermelon",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "watermelon-fridge-legacy-v1",
+    "foodId": "watermelon",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "watermelon-room-legacy-v1",
+    "foodId": "watermelon",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "waxGourd-freezer-legacy-v1",
+    "foodId": "waxGourd",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "waxGourd-fridge-legacy-v1",
+    "foodId": "waxGourd",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "waxGourd-room-legacy-v1",
+    "foodId": "waxGourd",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "wheatFlour-freezer-legacy-v1",
+    "foodId": "wheatFlour",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 60,
+      "adultDaysMin": 60,
+      "adultDaysMax": 120,
+      "text": "冷冻前建议切块分装。"
+    }
+  },
+  {
+    "candidateId": "wheatFlour-fridge-legacy-v1",
+    "foodId": "wheatFlour",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 4,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 14,
+      "text": "冷藏保存可延缓变质，切面需密封。"
+    }
+  },
+  {
+    "candidateId": "wheatFlour-room-legacy-v1",
+    "foodId": "wheatFlour",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 3,
+      "babyDaysMax": 7,
+      "adultDaysMin": 7,
+      "adultDaysMax": 15,
+      "text": "完整食材可阴凉常温保存，切开后请冷藏。"
+    }
+  },
+  {
+    "candidateId": "yam-freezer-legacy-v1",
+    "foodId": "yam",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "yam-fridge-legacy-v1",
+    "foodId": "yam",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "yam-room-legacy-v1",
+    "foodId": "yam",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  },
+  {
+    "candidateId": "yogurt-freezer-legacy-v1",
+    "foodId": "yogurt",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 15,
+      "babyDaysMax": 30,
+      "adultDaysMin": 30,
+      "adultDaysMax": 60,
+      "text": "冷冻前建议分装，解冻后尽快食用。"
+    }
+  },
+  {
+    "candidateId": "yogurt-fridge-legacy-v1",
+    "foodId": "yogurt",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 3,
+      "adultDaysMax": 5,
+      "text": "冷藏保存，宝宝食材建议尽早处理。"
+    }
+  },
+  {
+    "candidateId": "yogurt-room-legacy-v1",
+    "foodId": "yogurt",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 0,
+      "babyDaysMax": 0,
+      "adultDaysMin": 0,
+      "adultDaysMax": 1,
+      "text": "常温不建议久放，建议尽快冷藏。"
+    }
+  },
+  {
+    "candidateId": "zucchini-freezer-legacy-v1",
+    "foodId": "zucchini",
+    "foodState": "raw_whole",
+    "storageMethod": "freezer",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 30,
+      "babyDaysMax": 45,
+      "adultDaysMin": 60,
+      "adultDaysMax": 90,
+      "text": "冷冻保存前建议清洗、切分并密封。"
+    }
+  },
+  {
+    "candidateId": "zucchini-fridge-legacy-v1",
+    "foodId": "zucchini",
+    "foodState": "raw_whole",
+    "storageMethod": "fridge",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 2,
+      "babyDaysMax": 4,
+      "adultDaysMin": 5,
+      "adultDaysMax": 10,
+      "text": "冷藏保存更稳妥，取用后及时放回。"
+    }
+  },
+  {
+    "candidateId": "zucchini-room-legacy-v1",
+    "foodId": "zucchini",
+    "foodState": "raw_whole",
+    "storageMethod": "room",
+    "referenceDateType": "purchased_at",
+    "evidenceLevel": "insufficient",
+    "migrationStatus": "legacy_unverified",
+    "legacyPayload": {
+      "babyDaysMin": 1,
+      "babyDaysMax": 2,
+      "adultDaysMin": 2,
+      "adultDaysMax": 3,
+      "text": "阴凉常温可短暂保存，宝宝食材建议冷藏。"
+    }
+  }
+]
