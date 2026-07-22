@@ -40,6 +40,18 @@ function hasText(value) {
   return typeof value === 'string' && value.trim() !== ''
 }
 
+function describeValue(value) {
+  try {
+    return String(value)
+  } catch {
+    try {
+      return `<unprintable ${typeof value}>`
+    } catch {
+      return '<unprintable value>'
+    }
+  }
+}
+
 function isPlainObject(value) {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
     return false
@@ -79,13 +91,13 @@ function addDuplicateErrors(entries, idField, collectionName, errors) {
   }
 
   for (const id of duplicates) {
-    errors.add(`${collectionName}: duplicate ${idField} ${String(id)}`)
+    errors.add(`${collectionName}: duplicate ${idField} ${describeValue(id)}`)
   }
 }
 
 function validateEnum(value, allowedValues, fieldName, prefix, errors) {
   if (!allowedValues.has(value)) {
-    errors.add(`${prefix}: invalid ${fieldName} ${String(value)}`)
+    errors.add(`${prefix}: invalid ${fieldName} ${describeValue(value)}`)
   }
 }
 
@@ -126,7 +138,7 @@ function collectObjectEntries(items, collectionName, errors) {
 }
 
 function rangeValue(value) {
-  return value === undefined ? 'undefined' : String(value)
+  return describeValue(value)
 }
 
 function validateDeadlineRange(rule, audience, prefix, errors) {
@@ -220,7 +232,7 @@ function validateFoodKnowledge(input) {
     validateEnum(food.status, FOOD_STATUS_SET, 'status', prefix, errors)
     validateEnum(food.reviewStatus, REVIEW_STATUS_SET, 'reviewStatus', prefix, errors)
     if (!Number.isInteger(food.revision) || food.revision <= 0) {
-      errors.add(`${prefix}: invalid revision ${String(food.revision)}`)
+      errors.add(`${prefix}: invalid revision ${describeValue(food.revision)}`)
     }
     validateStringArray(food.allergenTags, 'allergenTags', prefix, errors)
     validateStringArray(food.riskTags, 'riskTags', prefix, errors)
@@ -236,7 +248,7 @@ function validateFoodKnowledge(input) {
       errors.add(`${prefix}: missing termId`)
     }
     if (!foodIds.has(searchTerm.foodId)) {
-      errors.add(`${prefix}: unknown foodId ${String(searchTerm.foodId)}`)
+      errors.add(`${prefix}: unknown foodId ${describeValue(searchTerm.foodId)}`)
     }
     if (!hasText(searchTerm.term)) {
       errors.add(`${prefix}: missing term`)
@@ -247,7 +259,7 @@ function validateFoodKnowledge(input) {
     validateEnum(searchTerm.type, TERM_TYPE_SET, 'type', prefix, errors)
     validateEnum(searchTerm.reviewStatus, REVIEW_STATUS_SET, 'reviewStatus', prefix, errors)
     if (!Number.isFinite(searchTerm.weight) || searchTerm.weight < 0) {
-      errors.add(`${prefix}: invalid weight ${String(searchTerm.weight)}`)
+      errors.add(`${prefix}: invalid weight ${describeValue(searchTerm.weight)}`)
     }
     if (typeof searchTerm.region !== 'string') {
       errors.add(`${prefix}: region must be a string`)
@@ -275,7 +287,7 @@ function validateFoodKnowledge(input) {
     }
 
     if (!foodIds.has(rule.foodId)) {
-      errors.add(`${prefix}: unknown foodId ${String(rule.foodId)}`)
+      errors.add(`${prefix}: unknown foodId ${describeValue(rule.foodId)}`)
     }
     validateEnum(rule.foodState, FOOD_STATE_SET, 'foodState', prefix, errors)
     validateEnum(rule.storageMethod, STORAGE_METHOD_SET, 'storageMethod', prefix, errors)
@@ -291,7 +303,7 @@ function validateFoodKnowledge(input) {
     }
     validateStringArray(rule.discardSigns, 'discardSigns', prefix, errors)
     if (!Number.isInteger(rule.ruleVersion) || rule.ruleVersion <= 0) {
-      errors.add(`${prefix}: invalid ruleVersion ${String(rule.ruleVersion)}`)
+      errors.add(`${prefix}: invalid ruleVersion ${describeValue(rule.ruleVersion)}`)
     }
 
     const hasTemperatureMin = hasValue(rule.temperatureMinC)
@@ -387,7 +399,7 @@ function validateFoodKnowledge(input) {
         sameOrderedArray(left.discardSigns, right.discardSigns)
 
       if (sameConditions && !sameGuidance) {
-        const ruleIds = [String(left.ruleId), String(right.ruleId)].sort(compareCodePoints)
+        const ruleIds = [describeValue(left.ruleId), describeValue(right.ruleId)].sort(compareCodePoints)
         errors.add(`storage_rules: conflicting rules ${ruleIds.join(',')}`)
       }
     }

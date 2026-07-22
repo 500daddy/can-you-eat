@@ -537,3 +537,83 @@ test('reports the exact conflict when any user-visible result field differs', ()
     ], item.name)
   }
 })
+
+test('returns a stable enum error for a null-prototype field value', () => {
+  const fixture = createFoodKnowledgeFixture()
+  fixture.foods[0].category = Object.create(null)
+  let result
+
+  assert.doesNotThrow(() => {
+    result = validateFoodKnowledge(fixture)
+  })
+  assert.equal(result.ok, false)
+  assert.ok(result.errors.includes(
+    'foods tomato: invalid category <unprintable object>'
+  ))
+})
+
+test('safely describes conversion-throwing values on every formatted validation path', () => {
+  function createUnprintableValue() {
+    return {
+      [Symbol.toPrimitive]() {
+        throw new Error('must not escape')
+      },
+      toString() {
+        throw new Error('must not escape')
+      }
+    }
+  }
+
+  const cases = [
+    {
+      name: 'revision',
+      arrange(fixture, value) { fixture.foods[0].revision = value },
+      error: 'foods tomato: invalid revision <unprintable object>'
+    },
+    {
+      name: 'weight',
+      arrange(fixture, value) { fixture.searchTerms[0].weight = value },
+      error: 'search_terms tomato-canonical: invalid weight <unprintable object>'
+    },
+    {
+      name: 'deadline',
+      arrange(fixture, value) { fixture.storageRules[0].adultDaysMin = value },
+      error: 'storage_rules tomato-cut-fridge-v1: invalid adult deadline range <unprintable object>-2'
+    },
+    {
+      name: 'foodId',
+      arrange(fixture, value) { fixture.storageRules[0].foodId = value },
+      error: 'storage_rules tomato-cut-fridge-v1: unknown foodId <unprintable object>'
+    }
+  ]
+
+  for (const item of cases) {
+    const fixture = createFoodKnowledgeFixture()
+    item.arrange(fixture, createUnprintableValue())
+    let result
+
+    assert.doesNotThrow(() => {
+      result = validateFoodKnowledge(fixture)
+    }, item.name)
+    assert.equal(result.ok, false, item.name)
+    assert.ok(result.errors.includes(item.error), item.name)
+  }
+})
+
+test('keeps normal String descriptions for Symbol and BigInt values', () => {
+  const fixture = createFoodKnowledgeFixture()
+  fixture.foods[0].category = Symbol('invalid-category')
+  fixture.searchTerms[0].weight = 1n
+  let result
+
+  assert.doesNotThrow(() => {
+    result = validateFoodKnowledge(fixture)
+  })
+  assert.equal(result.ok, false)
+  assert.ok(result.errors.includes(
+    'foods tomato: invalid category Symbol(invalid-category)'
+  ))
+  assert.ok(result.errors.includes(
+    'search_terms tomato-canonical: invalid weight 1'
+  ))
+})
